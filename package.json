@@ -1,0 +1,27 @@
+{
+  "name": "myLinuxBook",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docs:dev": "vuepress dev docs",
+    "docs:build": "vuepress build docs",
+    "deploy": "gh-pages -d .vuepress/dist",
+    "deploy:build": "npm run docs:build && gh-pages -d .vuepress/dist"
+  },
+  "repository": {
+    "type": "https",
+    "url": "https://github.com/Lqinggang/myLinuxBook"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Lqinggang/myLinuxBook/issues"
+  },
+  "homepage": "https://github.com/Lqinggang/myLinuxBook#readme",
+  "devDependencies": {
+    "vuepress": "^1.9.10"
+  }
+}
