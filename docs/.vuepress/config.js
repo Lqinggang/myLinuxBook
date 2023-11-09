@@ -23,7 +23,7 @@ module.exports = {
                 ]
             },
             {
-                title: '文件系统',
+                title: '虚拟文件系统',
                 children: [ '/fs/' ]
             },
             {
