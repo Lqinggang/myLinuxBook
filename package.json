@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "docs:dev": "vuepress dev docs",
-    "docs:build": "vuepress build docs",
-    "deploy": "gh-pages -d .vuepress/dist",
-    "deploy:build": "npm run docs:build && gh-pages -d .vuepress/dist"
+    "docs:dev": "export NODE_OPTIONS=--openssl-legacy-provider && vuepress dev docs",
+    "docs:build": "export NODE_OPTIONS=--openssl-legacy-provider && vuepress build docs",
+    "deploy": "export NODE_OPTIONS=--openssl-legacy-provider && gh-pages -d .vuepress/dist",
+    "deploy:build": "export NODE_OPTIONS=--openssl-legacy-provider && npm run docs:build && gh-pages -d .vuepress/dist"
   },
   "repository": {
     "type": "https",
@@ -23,5 +23,8 @@
   "homepage": "https://github.com/Lqinggang/myLinuxBook#readme",
   "devDependencies": {
     "vuepress": "^1.9.10"
+  },
+  "dependencies": {
+    "gh-pages": "^6.0.0"
   }
 }
