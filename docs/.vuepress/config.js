@@ -25,7 +25,10 @@ module.exports = {
             },
             {
                 title: '虚拟文件系统',
-                children: [ '/fs/' ]
+                children: [
+                    [ '/fs/', '虚拟文件系统' ],
+                    [ '/fs/specialfs.md', '特殊文件系统' ]
+                ]
             },
             {
                 title: '网络通信',
