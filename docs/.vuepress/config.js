@@ -1,11 +1,13 @@
 module.exports = {
     base: '/myLinuxBlogs/',
+    theme: 'reco',
     title: 'Linux 学习笔记',
     description: 'Linux 学习笔记',
     plugins: [
         [ 'vuepress-plugin-side-anchor' ]
     ],
     themeConfig: {
+        type: 'blog',
         repo: 'https://github.com/Lqinggang',
         repoLabel: 'GitHub',
         smoothScroll: true,
