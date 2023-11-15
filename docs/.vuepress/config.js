@@ -4,7 +4,15 @@ module.exports = {
     title: 'Linux 学习笔记',
     description: 'Linux 学习笔记',
     plugins: [
-        [ 'vuepress-plugin-side-anchor' ]
+        [
+            'vuepress-plugin-right-anchor', {
+                showDepth: 3,
+                expand: {
+                    trigger: 'click',
+                    clickModeDefaultOpen: true
+                }
+            }
+        ]
     ],
     themeConfig: {
         type: 'blog',

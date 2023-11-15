@@ -22,7 +22,9 @@
   },
   "homepage": "https://github.com/Lqinggang/myLinuxBook#readme",
   "devDependencies": {
-    "vuepress": "^1.9.10"
+    "vuepress": "^1.9.10",
+    "vuepress-plugin-right-anchor": "^0.5.5",
+    "vuepress-plugin-side-anchor": "^1.0.6"
   },
   "dependencies": {
     "gh-pages": "^6.0.0"
