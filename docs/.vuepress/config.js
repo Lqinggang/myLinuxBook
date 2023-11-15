@@ -21,6 +21,7 @@ module.exports = {
                 title: '设备驱动',
                 children: [
                     [ '/driver/', 'Linux 设备驱动' ],
+                    [ '/driver/kobject.md', 'kobject 对象' ],
                     [ '/driver/i2c.md', 'I2C 设备' ],
                     [ '/driver/spi.md', 'SPI 设备' ]
                 ]

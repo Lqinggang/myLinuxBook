@@ -20,19 +20,37 @@ Linux 系统将设备分成如下三种基本类型, 后续介绍的特定的设
 任何网络事务都经过一个网络接口形成, 即一个能够和其他主机交换数据的设备, 接口通常是一个硬件设备, 或者纯软件设备(如loopback设备)
 
 
-## Linux 设备文件
-
-
-设备标识符由设备文件的类型(字符或块)和一对参数组成，第一个参数称为住设备号
-
-
 ## Linux 设备驱动模型基本数据结构
 
 设备驱动模型都是建立在如下几个基本数据结构中, 其中总线是设备间进行数据流通的通路, 设备挂载在总线上, 每个总线上可以由多个设备, 每个设备对应一个驱动程序, 通过驱动程序完成设备的初始化, 并使设备功能正常工作
 
+
+### kobject 对象
+
+```c
+struct kobject {
+    const char      *name;
+    struct list_head    entry;
+    struct kobject      *parent;
+    struct kset     *kset;
+    struct kobj_type    *ktype;
+    struct kernfs_node  *sd; /* sysfs directory entry */
+    struct kref     kref;
+#ifdef CONFIG_DEBUG_KOBJECT_RELEASE
+    struct delayed_work release;
+#endif
+    unsigned int state_initialized:1;
+    unsigned int state_in_sysfs:1;
+    unsigned int state_add_uevent_sent:1;
+    unsigned int state_remove_uevent_sent:1;
+    unsigned int uevent_suppress:1;
+};
+```
+
+kobject 是组成设备模型的基本结构, 单独的 kobject 对象一般很少使用(甚至不会使用), kobject 对象都是被嵌入到其他数据结构中, 在其他数据结构中担任很重要的作用, 其他说明, 请参考[kobject对象](./kobject.md)一节
+
 ### Linux 设备对象
 
-设备驱动程序中, 每个设备是由一个`device`对象来描述
 
 ```c
 struct device {
@@ -128,11 +146,9 @@ ifdef CONFIG_DMA_OPS_BYPASS
 
 ```
 
+设备驱动程序中, 每个设备是由一个`device`对象来描述
 
 ### Linux 驱动程序对象
-
-每个设备驱动都由`device_drive`对象描述, 在Linux 设备对象(struct device结构体)中, 有一个`driver`字段, 即表示设备对应的驱动程序
-
 
 ```c
 struct device_driver {
@@ -165,10 +181,10 @@ struct device_driver {
 
 ```
 
+每个设备驱动都由`device_drive`对象描述, 在Linux 设备对象(struct device结构体)中, 有一个`driver`字段, 即表示设备对应的驱动程序
 
 ### Linux 总线对象
 
-内核支持的每一种总线类型都由一个`bus_type`对象描述
 
 
 ```c
@@ -208,6 +224,8 @@ struct bus_type {
 };
 ```
 
+内核支持的每一种总线类型都由一个`bus_type`对象描述
+
 
 ### Linux 类对象
 
@@ -238,3 +256,8 @@ struct class {
     struct subsys_private *p;
 };
 ```
+
+## Linux 设备文件
+
+
+设备标识符由设备文件的类型(字符或块)和一对参数组成，第一个参数称为主设备号, 长度为12位, 第二个参数为次设备号, 长度为20位, 通常这两个参数合并为一个32位的 dev_t 类型变量, 通过 MAJOR() 和 MINOR() 宏从 dev_t 类型变量中提取主设备号和次设备号, 通过 MKDEV() 宏将主设备号和次设备号合并成一个 dev_t 值
