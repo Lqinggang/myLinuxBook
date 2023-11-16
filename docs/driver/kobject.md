@@ -51,3 +51,28 @@ void kobject_put(struct kobject *kobj);
 ```
 
 该函数用于减少 kobject 的引用计数, 调用成功, 则减少 kobject 的引用计数, 并在可能的情况下释放该对象, kobject_init() 函数初始化时, 将 kobject 的引用计数设置为1, 所以至少需要调用一次 kobject_put 来释放该 kobject 对象
+
+
+## kobject 的释放
+
+kobject 的引用计数变为0是不可预知的, 则释放 kobject 的时间也是不可预知的, 为了解决这个问题， 当 kobject 的最后一个引用计数不再存在的时候, 必须通过使用 kobject 的 release 方法异步地通知要释放 kobject
+
+每个 kobject 都必须有一个 release 方法, 并且 kobject 在该方法被调用前必须保持不变
+
+release 方法并不包含在 kobject 自身内(不然释放的时候就不正确), kobject 包含在称为 ktype 的 kobj_type 数据结构中, 每个 kobject 都需要一个相应的 kobj_type 结构
+
+```c
+struct kobj_type {
+    void (*relese)(struct kobject *);
+    struct sysfs_ops *sysfs_ops;
+    struct attribute *default_attrs;
+};
+```
+
+在 kobject 结构中, ktype 成员变量保存 kobj_type 的指针， 对于 kset 数据结构, 可以通过
+
+```c
+struct kobj_type *get_ktype(struct kobject *kobj);
+```
+
+函数查找制定 kobject 对应的 kobj_type 指针

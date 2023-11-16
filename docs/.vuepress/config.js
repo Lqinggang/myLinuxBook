@@ -1,5 +1,5 @@
 module.exports = {
-    base: '/myLinuxBook/',
+    base: '/mylinuxbook/',
     theme: 'reco',
     title: 'Linux 学习笔记',
     description: 'Linux 学习笔记',
