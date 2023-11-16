@@ -30,8 +30,13 @@ module.exports = {
                 children: [
                     [ '/driver/', 'Linux 设备驱动' ],
                     [ '/driver/kobject.md', 'kobject 对象' ],
-                    [ '/driver/i2c.md', 'I2C 设备' ],
-                    [ '/driver/spi.md', 'SPI 设备' ]
+                    [ '/driver/bus_type.md', 'Linux 总线对象' ],
+                    [ '/driver/device.md', 'Linux 设备对象' ],
+                    [ '/driver/driver.md', 'Linux 驱动程序对象' ],
+                    [ '/driver/class.md', 'Linux 类对象' ],
+                    [ '/driver/model.md', 'Linux 设备模型' ],
+                    [ '/driver/i2c.md', 'I2C 设备驱动' ],
+                    [ '/driver/spi.md', 'SPI 设备驱动' ]
                 ]
             },
             {

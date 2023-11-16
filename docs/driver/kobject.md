@@ -1,5 +1,8 @@
 # kobject 对象
 
+
+## kobject 基础知识
+
 kobject 是组成设备模型的基本结构, 最初可以理解为一个简单的计数器，但现在 kobject 能处理的任务和支持的代码已经不仅仅是作为计数器
 
 当前 kobject 结构所能处理的任务和它支持的代码:
@@ -20,6 +23,27 @@ kobject 是组成设备模型的基本结构, 最初可以理解为一个简单�
 
 当系统中的硬件被热插拔时, 在 kobject 子系统控制下, 将产生事件以通知用户空间
 
+## kobject 对象
+
+```c
+struct kobject {
+    const char      *name;
+    struct list_head    entry;
+    struct kobject      *parent;
+    struct kset     *kset;
+    struct kobj_type    *ktype;
+    struct kernfs_node  *sd; /* sysfs directory entry */
+    struct kref     kref;
+#ifdef CONFIG_DEBUG_KOBJECT_RELEASE
+    struct delayed_work release;
+#endif
+    unsigned int state_initialized:1;
+    unsigned int state_in_sysfs:1;
+    unsigned int state_add_uevent_sent:1;
+    unsigned int state_remove_uevent_sent:1;
+    unsigned int uevent_suppress:1;
+};
+```
 
 ## kobject 初始化
 
