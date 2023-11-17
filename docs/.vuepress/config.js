@@ -57,7 +57,8 @@ module.exports = {
             {
                 title: '中断和异常',
                 children: [ '/interrupt/' ]
-            }
+            },
+            [ '/reference.md', '参考文献' ]
         ]
     }
 }
