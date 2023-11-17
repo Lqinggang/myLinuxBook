@@ -1,5 +1,6 @@
 # Linux 驱动程序对象
 
+设备驱动模型跟踪所有系统所知道的设备, 进行跟踪的主要原因是让驱动程序核心协调驱动程序于新设备之间的关系
 
 ## 驱动程序对象
 
@@ -32,6 +33,52 @@ struct device_driver {
     struct driver_private *p;
 };
 
+```
+
+| 字段       | 说明                                                |
+| ---------- | ----------------------------------------------------|
+| name       | 驱动程序的名字, 它将在 [sysfs 文件系统](../fs/specialfs.md#sysfs) 中显示 |
+| kobj       | 表示该驱动程序并把它连接到结构体系中的 kobject |
+| bus        | 标识了该驱动程序所操作的的总线类型 |
+| probe      | 用来查询特定设备是否存在以及这个驱动程序是否能够操纵它 |
+| remove     | 设备从系统中删除的时候调用 |
+| shutdown   | 关机的时候用于关闭设备 |
+
+
+## 驱动程序的注销和销毁
+
+```c
+int driver_register(struct device_driver *drv);
+void driver_unregister(struct device_driver *drv);
+```
+
+如上, 一般通过 driver_register 和 driver_unregister 函数对驱动程序对象分别进行注册和销毁, 即**往设备驱动模型中插入一个新的 driver 对象, 并自动地在 /sys/drivers 目录下为其创建一个新的目录, 或者将驱动程序对象从设备驱动模型中移除**
+
+和[设备对象](./device.md)类似, 驱动程序对象往往也会嵌入到更大的具体的驱动程序描述符中
+
+示例:
+
+```c
+struct ldd_driver {
+    char *version;
+    struct module *module;
+    struct device_driver driver;
+    struct driver_attribute version_attr;
+};
+```
+
+## 驱动程序的属性
+
+
+```c
+/* sysfs interface for exporting driver attributes */
+
+struct driver_attribute {
+    struct attribute attr;
+    ssize_t (*show)(struct device_driver *driver, char *buf);
+    ssize_t (*store)(struct device_driver *driver, const char *buf,
+             size_t count);
+};
 ```
 
 ## 对驱动程序对象的迭代

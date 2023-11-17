@@ -137,6 +137,28 @@ if (ret)
 }
 ```
 
+一般来说，大多数子系统记录了它们所拥有设备的其他信息, 设备结构并不单独使用, 而是嵌入到高层的设备结构体中, 即将 struct device 设备对象结构体内嵌到具体的设备中, 如I2C, PCI, USB等设备, struct device 作为这些具体设备的一个成员变量, 有点类似于基类
+
+示例:
+
+```c
+struct ldd_device {
+    char *name;
+    struct ldd_driver *driver;
+    struct device dev;
+};
+
+#define to_ldd_device(dev) container_of(dev, struct ldd_device, dev);
+```
+
+所以在这种情况下, 设备的注册会将会如下:
+
+```c
+ret = device_register(&ldd_device->dev);
+```
+
+当需要的时候, 可以调用 container_of 获取包含 struct device 设备对象的具体设备的结构体, 从而获取到具体设备的其他信息, 如上`to_ldd_device`宏, 就可以根据 struct device 设备对象获取到 ldd_device 对象的 name 字段的值
+
 
 ## 设备属性
 
@@ -149,22 +171,6 @@ struct device_attribute {
     ssize_t (*store)(struct device *dev, struct device_attribute *attr,
              const char *buf, size_t count);
 };
-```
-
-## 设备结构的嵌入
-
-大多数子系统记录了它们所拥有设备的其他信息, 因此通常把类似于 kobject 这样的结构内嵌的设备的高层表示之中, 即将 struct device 设备对象结构体内嵌到具体的设备中, 如I2C, PCI, USB等设备, struct device 作为这些具体设备的一个成员变量, 有点类似于基类
-
-示例:
-
-```c
-struct ldd_device {
-    char *name;
-    struct ldd_driver *driver;
-    struct device dev;
-};
-
-#define to_ldd_device(dev) container_of(dev, struct ldd_device, dev);
 ```
 
 ## 对设备的迭代
