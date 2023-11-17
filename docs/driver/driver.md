@@ -34,3 +34,12 @@ struct device_driver {
 
 ```
 
+## 对驱动程序对象的迭代
+
+为了操作注册到某个总线上的每个驱动程序对象，可以通过 `bus_for_each_drv` 函数进行迭代
+
+```c
+int bus_for_each_dev(struct bus_type *bus, struct device_driver *start, void *data, int (*fn)(struct device_driver *, void *));
+```
+
+该函数将迭代总线 bus 上的每个驱动程序对象, start 不为 NULL 的情况下, 从 bus 上 start 位置开始的驱动程序对象开始迭代, 否则从 bus 上的第一个驱动程序对象开始迭代, 迭代的每个驱动程序对象以及 data 将作为 fn 的参数，fn 返回非 0 时, 迭代结束， bus_for_each_drv 返回该值
