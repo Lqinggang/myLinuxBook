@@ -4,6 +4,8 @@
 
 所有计算机都拥有一条系统总线，它连接大部分内部硬件设备, 在[Linux 设备模型](./model.md)中所有的设备都通过总线相连
 
+总线将设备和驱动绑定, 系统每注册一个设备的时候, 会寻找与之匹配的驱动, 相反的, 系统每注册一个驱动的时候，会需找与之匹配而的设备, 而这里的匹配就是由总线完成的
+
 
 ## 总线对象
 
@@ -91,3 +93,20 @@ struct bus_attribute {
     ssize_t (*store)(struct bus_type *bus, const char *buf, size_t count);
 };
 ```
+
+
+## platform 总线
+
+<div id="platform_bus"/>
+一个现实中的设备和驱动通常都需要挂载在一种总线上, 但在 SoC 系统中集成的独立外设控制器、挂载在 SoC 内存空间的外设等不依附于此类总线, 所以, Linux 发明了一种虚拟的总线, 称为 platform 总线, 相应的设备称之为 platform_device, 而驱动称为 platform_driver
+
+
+匹配 platform_device 和 platform_driver 有 4 种可能性:
+
+1. 基于设备树风格的匹配
+
+2. 基于 ACPI 风格的匹配
+
+3. 匹配 ID 表, 即 platform_device 设备名是否出现在 platform_driver 的 ID 表内
+
+4. 匹配 platform_device 设备名和驱动的名字

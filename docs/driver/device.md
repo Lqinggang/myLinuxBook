@@ -182,3 +182,30 @@ int bus_for_each_dev(struct bus_type *bus, struct device *start, void *data, int
 ```
 
 该函数将迭代总线 bus 上的每个设备, start 不为 NULL 的情况下, 从 bus 上 start 位置开始的设备开始迭代, 否则从 bus 上的第一个设备开始迭代, 迭代的每个设备以及 data 将作为 fn 的参数，fn 返回非 0 时, 迭代结束， bus_for_each_dev 返回该值
+
+
+## platform 设备
+
+platform 总线上挂载的设备称为 platform 设备, 参考[platform 总线](./bus_type.md#platform_bus)
+
+```c
+struct platform_device {
+    const char  *name;
+    int     id;
+    bool        id_auto;
+    struct device   dev;
+    u64     platform_dma_mask;
+    struct device_dma_parameters dma_parms;
+    u32     num_resources;
+    struct resource *resource;
+
+    const struct platform_device_id *id_entry;
+    char *driver_override; /* Driver name to force a match */
+
+    /* MFD cell pointer */
+    struct mfd_cell *mfd_cell;
+
+    /* arch specific additions */
+    struct pdev_archdata    archdata;
+};
+```
