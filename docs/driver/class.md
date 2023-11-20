@@ -1,5 +1,6 @@
 # Linux 类对象
 
+类是一个设备的高层视图, 它抽象了底层的实现细节, 几乎所有的类对象都属于与 /sys/class 目录相对应的 class_subsys 子系统
 
 ```c
 struct class {
@@ -29,3 +30,10 @@ struct class {
 };
 ```
 
+
+## 类对象的注册和销毁
+
+```c
+int class_register(struct class *cls);
+void class_unregister(struct class *cls);
+```
