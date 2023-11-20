@@ -35,6 +35,7 @@ module.exports = {
                     [ '/driver/driver.md', 'Linux 驱动程序对象' ],
                     [ '/driver/class.md', 'Linux 类对象' ],
                     [ '/driver/model.md', 'Linux 设备模型' ],
+                    [ '/driver/cdev.md', '字符设备驱动' ],
                     [ '/driver/i2c.md', 'I2C 设备驱动' ],
                     [ '/driver/spi.md', 'SPI 设备驱动' ]
                 ]

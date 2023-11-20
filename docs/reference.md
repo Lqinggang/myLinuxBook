@@ -23,3 +23,5 @@
 ## 手册
 
 ## 其他在线文档
+
+1. [29.使用register_chrdev_region()系列来注册字符设备](https://www.cnblogs.com/lifexy/p/7827559.html)
