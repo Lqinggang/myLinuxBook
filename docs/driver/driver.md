@@ -90,21 +90,3 @@ int bus_for_each_dev(struct bus_type *bus, struct device_driver *start, void *da
 ```
 
 该函数将迭代总线 bus 上的每个驱动程序对象, start 不为 NULL 的情况下, 从 bus 上 start 位置开始的驱动程序对象开始迭代, 否则从 bus 上的第一个驱动程序对象开始迭代, 迭代的每个驱动程序对象以及 data 将作为 fn 的参数，fn 返回非 0 时, 迭代结束， bus_for_each_drv 返回该值
-
-
-## platform_driver 驱动
-
-platform 总线上挂载的设备对应的驱动程序称为 platform_driver, 参考[platform 总线](./bus_type.md#platform_bus)
-
-```c
-struct platform_driver {
-    int (*probe)(struct platform_device *);
-    int (*remove)(struct platform_device *);
-    void (*shutdown)(struct platform_device *);
-    int (*suspend)(struct platform_device *, pm_message_t state);
-    int (*resume)(struct platform_device *);
-    struct device_driver driver;
-    const struct platform_device_id *id_table;
-    bool prevent_deferred_probe;
-};
-```

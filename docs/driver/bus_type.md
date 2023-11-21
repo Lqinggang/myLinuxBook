@@ -93,20 +93,3 @@ struct bus_attribute {
     ssize_t (*store)(struct bus_type *bus, const char *buf, size_t count);
 };
 ```
-
-
-## platform 总线
-
-<div id="platform_bus"/>
-一个现实中的设备和驱动通常都需要挂载在一种总线上, 但在 SoC 系统中集成的独立外设控制器、挂载在 SoC 内存空间的外设等不依附于此类总线, 所以, Linux 发明了一种虚拟的总线, 称为 platform 总线, 相应的设备称之为 platform_device, 而驱动称为 platform_driver
-
-
-匹配 platform_device 和 platform_driver 有 4 种可能性:
-
-1. 基于设备树风格的匹配
-
-2. 基于 ACPI 风格的匹配
-
-3. 匹配 ID 表, 即 platform_device 设备名是否出现在 platform_driver 的 ID 表内
-
-4. 匹配 platform_device 设备名和驱动的名字
