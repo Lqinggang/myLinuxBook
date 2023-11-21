@@ -27,25 +27,25 @@ Linux 系统将设备分成如下三种基本类型, 后续介绍的特定的设
 
 ### kobject 对象
 
-kobject 是组成设备模型的基本结构, 单独的 kobject 对象一般很少使用(甚至不会使用), kobject 对象都是被嵌入到其他数据结构中, 在其他数据结构中担任很重要的作用, 其他说明, 请参考[kobject对象](./kobject.md)一节
+kobject 是组成设备模型的基本结构, 单独的 kobject 对象一般很少使用(甚至不会使用), kobject 对象都是被嵌入到其他数据结构中, 在其他数据结构中担任很重要的作用, 其他说明, 请参考[kobject对象](./modules/modules.md#kobject)一节
 
 ### Linux 总线对象
 
-总线是用于计算机内部数据流通的通路，内核支持的每一种总线类型都由一个`bus_type`对象描述, 详情请参考[Linux 总线对象](./bus_type.md)
+总线是用于计算机内部数据流通的通路，内核支持的每一种总线类型都由一个`bus_type`对象描述, 详情请参考[Linux 总线对象](./modules/modules.md#bus_type)
 
 
 ### Linux 设备对象
 
-设备驱动程序中, 每个设备是由一个`device`对象来描述, 详情请参考[Linux 设备对象](./device.md)
+设备驱动程序中, 每个设备是由一个`device`对象来描述, 详情请参考[Linux 设备对象](./modules/modules.md#device)
 
 ### Linux 驱动程序对象
 
 
-每个设备驱动都由`device_drive`对象描述, 在Linux 设备对象(struct device结构体)中, 有一个`driver`字段, 即表示设备对应的驱动程序, 详情请参考[Linux 驱动程序对象](./driver.md)
+每个设备驱动都由`device_drive`对象描述, 在Linux 设备对象(struct device结构体)中, 有一个`driver`字段, 即表示设备对应的驱动程序, 详情请参考[Linux 驱动程序对象](./modules/modules.md#driver)
 
 ### Linux 类对象
 
-表示一类设备，使用`class`数据结构表示, 详情请参考[Linux 类对象](./class.md)
+表示一类设备，使用`class`数据结构表示, 详情请参考[Linux 类对象](./modules/modules.md#class)
 
 ## Linux 设备文件
 

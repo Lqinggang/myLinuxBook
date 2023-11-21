@@ -29,11 +29,7 @@ module.exports = {
                 title: '设备驱动',
                 children: [
                     [ '/driver/', 'Linux 设备驱动' ],
-                    [ '/driver/kobject.md', 'kobject 对象' ],
-                    [ '/driver/bus_type.md', 'Linux 总线对象' ],
-                    [ '/driver/device.md', 'Linux 设备对象' ],
-                    [ '/driver/driver.md', 'Linux 驱动程序对象' ],
-                    [ '/driver/class.md', 'Linux 类对象' ],
+                    [ '/driver/modules/modules.md', 'Linux 设备驱动相关组件' ],
                     [ '/driver/platform/platform.md', 'platform 设备' ],
                     [ '/driver/model.md', 'Linux 设备模型' ],
                     [ '/driver/cdev/cdev.md', '字符设备驱动' ],
