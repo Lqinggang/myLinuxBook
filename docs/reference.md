@@ -25,3 +25,5 @@
 ## 其他在线文档
 
 1. [29.使用register_chrdev_region()系列来注册字符设备](https://www.cnblogs.com/lifexy/p/7827559.html)
+
+2. [Linux Kernel代码艺术——数组初始化](https://www.cnblogs.com/hazir/p/array_initialization.html)

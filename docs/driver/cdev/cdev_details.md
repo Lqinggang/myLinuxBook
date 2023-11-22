@@ -306,4 +306,4 @@ static int chrdev_open(struct inode *inode, struct file *filp)
 }
 ```
 
-具体字符设备的相关文件操作请参考[VFS 虚拟文件系统](../../fs/README.md)
+具体字符设备的相关文件操作请参考[VFS 虚拟文件系统](../../fs/README.md), 对于 open 系统调用请参考[open 系统调用](../../fs/open.md)
