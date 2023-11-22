@@ -50,11 +50,15 @@ module.exports = {
             },
             {
                 title: '网络通信',
-                children: [ '/network/' ]
+                children: [
+                    [ '/network/', '网络通信' ]
+                ]
             },
             {
-                title: '进程/线程间同步',
-                children: [ '/sync/' ]
+                title: '进程/线程',
+                children: [
+                    [ '/task/', '进程/线程'  ]
+                ]
             },
             {
                 title: '中断和异常',
