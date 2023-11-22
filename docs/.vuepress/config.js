@@ -42,6 +42,7 @@ module.exports = {
                 title: '虚拟文件系统',
                 children: [
                     [ '/fs/', '虚拟文件系统' ],
+                    [ '/fs/commonfs.md', '通用文件模型' ],
                     [ '/fs/specialfs.md', '特殊文件系统' ]
                 ]
             },
