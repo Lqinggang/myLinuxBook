@@ -34,7 +34,6 @@ module.exports = {
                     [ '/driver/model.md', 'Linux 设备模型' ],
                     [ '/driver/cdev/cdev.md', '字符设备驱动' ],
                     [ '/driver/cdev/cdev_details.md', '字符设备驱动详解' ],
-                    [ '/driver/open_driver.md', 'open 函数与设备驱动' ],
                     [ '/driver/i2c.md', 'I2C 设备驱动' ],
                     [ '/driver/spi.md', 'SPI 设备驱动' ]
                 ]
@@ -44,8 +43,7 @@ module.exports = {
                 children: [
                     [ '/fs/', '虚拟文件系统' ],
                     [ '/fs/commonfs.md', '通用文件模型' ],
-                    [ '/fs/specialfs.md', '特殊文件系统' ],
-                    [ '/fs/open.md', 'open 函数与 VFS' ]
+                    [ '/fs/specialfs.md', '特殊文件系统' ]
                 ]
             },
             {
@@ -64,8 +62,13 @@ module.exports = {
                 title: '中断和异常',
                 children: [
                     [ '/interrupt/', '中断和异常' ],
-                    [ '/interrupt/syscall.md', '系统调用' ],
-                    [ '/interrupt/open_syscall.md', 'open 系统调用' ]
+                    [ '/interrupt/syscall.md', '系统调用' ]
+                ]
+            },
+            {
+                title: '示例',
+                children: [
+                    [ '/example/open.md', 'open 函数'  ]
                 ]
             },
             [ '/reference.md', '参考文献' ]
