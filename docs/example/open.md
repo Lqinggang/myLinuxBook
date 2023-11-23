@@ -1,18 +1,38 @@
-#  open 函数
+#  从用户层说起之 open 函数
 
-<div id="open_syscall" />
+以下基于 Linux 6.6 内核 _x86_64_ 架构介绍, 在 <<深入理解Linux内核>> 中 Linux 版本为 2.6.11, 在源码上由较大出入, 以下说明是笔者结合书中介绍的内容, 对 Linux 6.6 版本做的分析, 不一定准确, 不过原理上应该差距不大，基本原理都是如下:
 
-## open 系统调用
+1. 用户层调用某些包含系统调用的函数(`man 2`中的函数)，触发中断
 
-open 系统调用对应的服务例程为 sys_open
+2. 根据中断号, 查找中断向量表, 找到中断号对应的中断处理函数(这里是系统调用函数, 中断号应该是`0x80`)
 
-## open 函数与VFS
+3. 执行系统调用中断处理函数, 从寄存器(对于`i386`应该是`eax`寄存器, 对于`_x86_64_`应该是`rax`寄存器, 其他架构的具体分析)中获取对应的系统调用号以及对应的参数(对于`i386`参数存放寄存器为: `ebx`, `ecx`, `edx`, `esi`, `edi`, 对于`_x86_64_`参数存放寄存器为`rdi`, `rsi`, `rdx`, `r10`, `r8`, `r9`, 参数更多的话就需要用到堆栈了)
 
-[open 系统调用](#open_syscall)对应的服务例程为 sys_open()  函数(即应用层的 open 函数通过系统调用的方式最终会调用sys_open 函数), 该函数定义如下
+4. 执行系统调用号对应的系统调用函数
+
+5. 从进程描述符中找到对应的打开的设备
+
+6. 从打开的设备中获取对应的文件操作表
+
+7. 执行打开设备对应文件操作表中的 open 回调函数
+
+8. 依次返回结果, 最后将结果保存在`eax`或者`rax`寄存器中
+
+9. 返回`eax`或`rax`寄存器中的值
+
+10. 应用层 open 返回结果
+
+::: tip 提示
+这个过程涉及到进程(需要知道进程中打开的文件对象数组, 应用层 open 返回的结果是这个文件对象数组下标), 中断(系统调用基于软中断), VFS(通用文件模型, 文件操作相关), 设备驱动(最后 open 函数执行的实际 open 函数)
+:::
+
+
+## open 函数
+
+如下，是提供给用户层的`open`函数, 在用户层应用中, 我们将调用该函数
 
 ```c
-static __attribute__((unused))
-int sys_open(const char *path, int flags, mode_t mode);
+int open(const char *pathname, int flags, mode_t mode);
 ```
 
 | 参数 |  说明 |
@@ -21,7 +41,39 @@ int sys_open(const char *path, int flags, mode_t mode);
 | flags | 访问模式标志 |
 | mode  | 文件被创建时需要的许可权限掩码 |
 
-该系统调用成功则返回一个文件描述符, 也就是指向文件对象的指针数组 current->files->fd 中分配给新文件的索引，否则，返回 -1
+
+## open 与系统调用
+
+在应用层应用调用 open 函数时, 将通过中断的方式触发[系统调用](../interrupt/syscall.md), 执行系统调用号对应的处理函数并返回结果
+
+```c
+#define my_syscall3(num, arg1, arg2, arg3)                                    \
+({                                                                            \
+    long _ret;                                                            \
+    register long _num  __asm__ ("rax") = (num);                          \
+    register long _arg1 __asm__ ("rdi") = (long)(arg1);                   \
+    register long _arg2 __asm__ ("rsi") = (long)(arg2);                   \
+    register long _arg3 __asm__ ("rdx") = (long)(arg3);                   \
+                                          \
+    __asm__ volatile (                                                    \
+        "syscall\n"                                                   \
+        : "=a"(_ret)                                                  \
+        : "r"(_arg1), "r"(_arg2), "r"(_arg3),                         \
+          "0"(_num)                                                   \
+        : "rcx", "r11", "memory", "cc"                                \
+    );                                                                    \
+    _ret;                                                                 \
+})
+```
+
+如上， 执行`syscall` 触发 `0x80` 号中断, 其中, `rax`寄存器保存系统调用号 num 的值, 然后将作为入参传递给中断向量表中第 `0x80` 号中断对应的处理函数，该中断处理函数将从`rax`寄存器中读取入参, 根据入参得到系统调用号, 并依次调用对应的系统调用函数，而`rdi`, `rsi`, `rdx` 这三个寄存器的值, 将作为系统调用函数的参数
 
 
-## open函数与设备驱动
+## open 函数与进程
+
+
+
+## open 函数与虚拟文件系统
+
+
+## open 函数与设备驱动
