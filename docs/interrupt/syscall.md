@@ -5,7 +5,7 @@
 
 ## 系统调用分派表
 
-为了把系统调用号与对应的服务例程关联起来，内核利用了一个系统调用分派表，这个表存放在 sys_call_table 数组中, 如下(以_x86_64_为例)
+为了把系统调用号与对应的服务例程关联起来，内核利用了一个系统调用分派表，这个表存放在 sys_call_table 数组中, 如下(以`_x86_64_`为例)
 
 ```c
 asmlinkage const sys_call_ptr_t sys_call_table[__NR_syscall_max+1] = {
