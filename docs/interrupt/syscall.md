@@ -21,10 +21,13 @@ asmlinkage const sys_call_ptr_t sys_call_table[__NR_syscall_max+1] = {
 其中, asm/syscalls_64.h 文件在编译时生成, 生成前内容如下:
 
 ```text
-__SYSCALL_COMMON(0, sys_read)
-__SYSCALL_COMMON(1, sys_write)
-__SYSCALL_COMMON(2, sys_open)
-__SYSCALL_COMMON(3, sys_close)
+__SYSCALL(1, sys_write)
+__SYSCALL(2, sys_open)
+__SYSCALL(3, sys_close)
+__SYSCALL(4, sys_newstat)
+__SYSCALL(5, sys_newfstat)
+__SYSCALL(6, sys_newlstat)
+__SYSCALL(7, sys_poll)
 ...
 ```
 
