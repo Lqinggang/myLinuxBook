@@ -59,10 +59,22 @@ module.exports = {
                 ]
             },
             {
+                title: '同步',
+                children: [
+                    [ '/sync/', '同步' ]
+                ]
+            },
+            {
                 title: '中断和异常',
                 children: [
                     [ '/interrupt/', '中断和异常' ],
                     [ '/interrupt/syscall.md', '系统调用' ]
+                ]
+            },
+            {
+                title: '定时器',
+                children: [
+                    [ '/timer/', '定时器' ]
                 ]
             },
             {
