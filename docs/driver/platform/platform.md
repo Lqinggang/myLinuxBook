@@ -7,6 +7,27 @@
 
 platform 总线存在的意义是为了保持 Linux 驱动模型的统一性(设备挂载在总线上, 由设备驱动程序驱动)
 
+```c
+struct device platform_bus = {
+    .init_name  = "platform",
+};
+EXPORT_SYMBOL_GPL(platform_bus);
+
+struct bus_type platform_bus_type = {
+    .name       = "platform",
+    .dev_groups = platform_dev_groups,
+    .match      = platform_match,
+    .uevent     = platform_uevent,
+    .probe      = platform_probe,
+    .remove     = platform_remove,
+    .shutdown   = platform_shutdown,
+    .dma_configure  = platform_dma_configure,
+    .dma_cleanup    = platform_dma_cleanup,
+    .pm     = &platform_dev_pm_ops,
+};
+EXPORT_SYMBOL_GPL(platform_bus_type);
+```
+
 匹配 platform_device 和 platform_driver 有 4 种可能性:
 
 1. 基于设备树风格的匹配

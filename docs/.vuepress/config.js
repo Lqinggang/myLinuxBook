@@ -31,7 +31,7 @@ module.exports = {
                     [ '/driver/', 'Linux 设备驱动' ],
                     [ '/driver/modules/modules.md', 'Linux 设备驱动相关组件' ],
                     [ '/driver/platform/platform.md', 'platform 设备' ],
-                    [ '/driver/platform/match.md', 'platform 设备的匹配' ],
+                    [ '/driver/platform/match.md', 'platform 设备和驱动的匹配' ],
                     [ '/driver/model.md', 'Linux 设备模型' ],
                     [ '/driver/cdev/cdev.md', '字符设备驱动' ],
                     [ '/driver/cdev/cdev_details.md', '字符设备驱动详解' ],
