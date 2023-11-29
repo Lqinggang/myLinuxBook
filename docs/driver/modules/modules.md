@@ -25,6 +25,34 @@ kobject 是组成设备模型的基本结构, 最初可以理解为一个简单�
 
 当系统中的硬件被热插拔时, 在 kobject 子系统控制下, 将产生事件以通知用户空间
 
+### kset 对象
+
+```c
+/**
+ * struct kset - a set of kobjects of a specific type, belonging to a specific subsystem.
+ *
+ * A kset defines a group of kobjects.  They can be individually
+ * different "types" but overall these kobjects all want to be grouped
+ * together and operated on in the same manner.  ksets are used to
+ * define the attribute callbacks and other common events that happen to
+ * a kobject.
+ *
+ * @list: the list of all kobjects for this kset
+ * @list_lock: a lock for iterating over the kobjects
+ * @kobj: the embedded kobject for this kset (recursion, isn't it fun...)
+ * @uevent_ops: the set of uevent operations for this kset.  These are
+ * called whenever a kobject has something happen to it so that the kset
+ * can add new environment variables, or filter out the uevents if so
+ * desired.
+ */
+struct kset {
+    struct list_head list;
+    spinlock_t list_lock;
+    struct kobject kobj;
+    const struct kset_uevent_ops *uevent_ops;
+} __randomize_layout;
+```
+
 ### kobject 对象
 
 ```c
