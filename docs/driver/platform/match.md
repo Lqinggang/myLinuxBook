@@ -178,6 +178,42 @@ int __init platform_bus_init(void)
 ```
 如上, 通过调用 platform_bus_init 函数注册和初始化 platform 总线, 同时也会注册一个总线设备
 
+### device_register
+
+```c
+struct device platform_bus = {
+    .init_name  = "platform",
+};
+EXPORT_SYMBOL_GPL(platform_bus);
+
+/**
+ * device_register - register a device with the system.
+ * @dev: pointer to the device structure
+ *
+ * This happens in two clean steps - initialize the device
+ * and add it to the system. The two steps can be called
+ * separately, but this is the easiest and most common.
+ * I.e. you should only call the two helpers separately if
+ * have a clearly defined need to use and refcount the device
+ * before it is added to the hierarchy.
+ *
+ * For more information, see the kerneldoc for device_initialize()
+ * and device_add().
+ *
+ * NOTE: _Never_ directly free @dev after calling this function, even
+ * if it returned an error! Always use put_device() to give up the
+ * reference initialized in this function instead.
+ */
+int device_register(struct device *dev)
+{
+    device_initialize(dev);
+    return device_add(dev);
+}
+EXPORT_SYMBOL_GPL(device_register);
+```
+
+如上是, 通过 device_register 函数注册一个 platform_bus, device_register 调用的 device_add 函数将在后续章节中介绍
+
 ### bus\_register
 
 ```c
@@ -196,6 +232,7 @@ int bus_register(const struct bus_type *bus)
     struct kobject *bus_kobj;
     struct lock_class_key *key;
 
+    /* 以下会给总线申请 struct subsys_private 数据结构*/
     priv = kzalloc(sizeof(struct subsys_private), GFP_KERNEL);
     if (!priv)
         return -ENOMEM;
@@ -211,7 +248,7 @@ int bus_register(const struct bus_type *bus)
 
     bus_kobj->kset = bus_kset;
     bus_kobj->ktype = &bus_ktype;
-    priv->drivers_autoprobe = 1;
+    priv->drivers_autoprobe = 1; /* 是否自动探测设备, 在 bus_probe_device 函数中会用到 */
 
     retval = kset_register(&priv->subsys);
     if (retval)
@@ -232,12 +269,12 @@ int bus_register(const struct bus_type *bus)
         goto bus_drivers_fail;
     }
 
-    INIT_LIST_HEAD(&priv->interfaces);
+    INIT_LIST_HEAD(&priv->interfaces);  /* 初始化接口链表? */
     key = &priv->lock_key;
     lockdep_register_key(key);
     __mutex_init(&priv->mutex, "subsys mutex", key);
-    klist_init(&priv->klist_devices, klist_devices_get, klist_devices_put);
-    klist_init(&priv->klist_drivers, NULL, NULL);
+    klist_init(&priv->klist_devices, klist_devices_get, klist_devices_put); /* 注意这里, 这里会初始化priv->klist_devices, 并设置其 get 和 put 回调函数, 该链表应该是挂载在总线上的设备链表 */
+    klist_init(&priv->klist_drivers, NULL, NULL);   /* priv->klist_drivers 应该是挂载在总线上的驱动链表 */
 
     retval = add_probe_files(bus);
     if (retval)
@@ -309,7 +346,7 @@ int __platform_driver_register(struct platform_driver *drv,
                 struct module *owner)
 {
     drv->driver.owner = owner;
-    drv->driver.bus = &platform_bus_type;
+    drv->driver.bus = &platform_bus_type; /* platform 驱动和设备都是挂载在 platform_bus_type 上 */
 
     return driver_register(&drv->driver);
 }
@@ -335,6 +372,7 @@ int driver_register(struct device_driver *drv)
     int ret;
     struct device_driver *other;
 
+    /* 检测总线是否已注册 */
     if (!bus_is_registered(drv->bus)) {
         pr_err("Driver '%s' was unable to register with bus_type '%s' because the bus was not initialized.\n",
                drv->name, drv->bus->name);
@@ -347,6 +385,7 @@ int driver_register(struct device_driver *drv)
         pr_warn("Driver '%s' needs updating - please use "
             "bus_type methods\n", drv->name);
 
+    /* 检测驱动是否已注册 */
     other = driver_find(drv->name, drv->bus);
     if (other) {
         pr_err("Error: Driver '%s' is already registered, "
@@ -354,6 +393,7 @@ int driver_register(struct device_driver *drv)
         return -EBUSY;
     }
 
+    /* 注册驱动到总线上 */
     ret = bus_add_driver(drv);
     if (ret)
         return ret;
@@ -457,6 +497,12 @@ out_put_bus:
 
 如上, 通过 bus_add_driver 函数将驱动注册到总线上, 后续设备挂载到总线上时, 将从该总线上查找对应的驱动程序
 
+其中，
+```c
+klist_add_tail(&priv->knode_bus, &sp->klist_drivers);
+```
+是将驱动注册到总线上的关键代码，`&sp->klist_drivers` 中的`sp`即在调用`bus_register`时申请的数据接口，同样在`bus_register`中也会对`klist_drivers`进行初始化, 所以每调用一次`bus_add_driver`函数新增的驱动就被追加到总线的`klist_drivers`链表中
+
 
 ## platform 设备注册
 
@@ -498,9 +544,11 @@ int platform_device_add(struct platform_device *pdev)
 {
     ...
 
+    /* 父设备 */
     if (!pdev->dev.parent)
         pdev->dev.parent = &platform_bus;
 
+    /* 总线 */
     pdev->dev.bus = &platform_bus_type;
 
     ...
@@ -518,9 +566,11 @@ EXPORT_SYMBOL_GPL(platform_device_add);
     pdev->dev.bus = &platform_bus_type;
 ```
 
-这行代码是将 platform_device 和 platform_bus 进行绑定(platform_bus_type 的定义在[platform 设备](./platform.md#platform_bus)一节, 其是一个全局变量), 在 platform_bus 中，有一个 .match 对应的回调函数, 将用于 platform_device 和 platform_driver 之间进行匹配
+这行代码是将 platform_device 和 platform_bus 进行绑定(platform_bus_type 的定义在[platform 设备](./platform.md#platform_bus)一节, 其是一个全局变量), 在 platform_bus_type 中，有一个 .match 对应的回调函数, 将用于 platform_device 和 platform_driver 之间进行匹配
 
-platform 设备最终会通过调用 device_add 函数将添加到设备驱动模型中
+另外, 在没有设置父设备的情况下, 会将新增设备的父设备设置为 platform_bus, 其在前一节中的 platform_bus_init 函数中进行注册
+
+这里，platform 设备最终会通过调用 device_add 函数将添加到设备驱动模型中
 
 
 ### device\_add
@@ -645,8 +695,13 @@ out_put:
 
 如上, 通过 klist_add_tail 函数将设备追加到了总线的 klist_devices 链表中(这里的总线指的是 platform_bus_init 中注册的总线 platform_bus_type, 可以看到在 bus_register 函数中为总线申请了 struct subsys_private 数据结构)
 
+`bus_to_subsys(dev->bus)` 是获取总线的`struct subsys_private`数据(即总线私有数据), 对于 platform 设备这里的 `dev->bus`是 platform_bus_type (可以在__platform_driver_register 函数中看到设置), 而 platform_bus_type  对应的`struct subsys_private`数据结构成员变量则在通过`bus_register(&platform_bus_type)`注册总线的时候进行申请
+
+
 ::: tip 说明
-在 bus_add_driver 函数中, 也有 klist_devices 的链表,  bus_add_device 函数中也有 klist_devices 链表, 所以它们的关系?
+在 bus_add_driver 函数中, 将准备注册的驱动追加到 klist_drivers 链表
+
+在 bus_add_device 函数中, 将准备注册的设备追加到 klist_devices 链表
 :::
 
 ### bus\_probe\_device
@@ -666,6 +721,7 @@ void bus_probe_device(struct device *dev)
     if (!sp)
         return;
 
+    /* 驱动的匹配 */
     if (sp->drivers_autoprobe)
         device_initial_probe(dev);
 
@@ -678,13 +734,109 @@ void bus_probe_device(struct device *dev)
 }
 ```
 
-如上, 是总线探测设备的实现函数，其会遍历在 bus_register 初始化的 &sp->interfaces 链表
+在执行完 bus_add_device 和 bus_add_driver 之后, 总线上就存在了已注册到设备和驱动, 这个时候就可以通过 bus_probe_device 去触发总线进行设备和驱动之间的匹配工作了
+
+其中, **驱动和设备的匹配是通过 device_initial_probe 完成的**, 其中 sp->drivers_autoprobe 是通过 bus_register 函数注册 platform_bus_type 时进行设置的, 其值等于1
 
 ::: tip 说明
 如果这里是总线探测设备, 找到对应的驱动的话, 那是不是在驱动注册的时候应该也有一个总线探测设备(针对先插入设备后安装驱动)? 不过似乎在注册驱动的时候, 没有看到有类似的操作, 但是在 `static void deferred_probe_work_func(struct work_struct *work)` 中, 有调用 bus_probe_device 函数, 难道是这里定时去检测?
 :::
 
 ## platform 设备和驱动匹配
+
+
+### device\_initial\_probe
+
+```c
+/**
+ * device_attach - try to attach device to a driver.
+ * @dev: device.
+ *
+ * Walk the list of drivers that the bus has and call
+ * driver_probe_device() for each pair. If a compatible
+ * pair is found, break out and return.
+ *
+ * Returns 1 if the device was bound to a driver;
+ * 0 if no matching driver was found;
+ * -ENODEV if the device is not registered.
+ *
+ * When called for a USB interface, @dev->parent lock must be held.
+ */
+int device_attach(struct device *dev)
+{
+    return __device_attach(dev, false);
+}
+EXPORT_SYMBOL_GPL(device_attach);
+
+void device_initial_probe(struct device *dev)
+{
+    __device_attach(dev, true);
+}
+```
+如上, 是为设备进行探测驱动的
+
+
+### \__device\_attach
+
+```c
+static int __device_attach(struct device *dev, bool allow_async)
+{
+    int ret = 0;
+    bool async = false;
+
+    device_lock(dev);
+    if (dev->p->dead) {
+        goto out_unlock;
+    } else if (dev->driver) {
+        if (device_is_bound(dev)) {
+            ret = 1;
+            goto out_unlock;
+        }
+        ret = device_bind_driver(dev);
+        if (ret == 0)
+            ret = 1;
+        else {
+            dev->driver = NULL;
+            ret = 0;
+        }
+    } else {
+        struct device_attach_data data = {
+            .dev = dev,
+            .check_async = allow_async,
+            .want_async = false,
+        };
+
+        if (dev->parent)
+            pm_runtime_get_sync(dev->parent);
+
+        ret = bus_for_each_drv(dev->bus, NULL, &data,
+                    __device_attach_driver);
+        if (!ret && allow_async && data.have_async) {
+            /*
+             * If we could not find appropriate driver
+             * synchronously and we are allowed to do
+             * async probes and there are drivers that
+             * want to probe asynchronously, we'll
+             * try them.
+             */
+            dev_dbg(dev, "scheduling asynchronous probe\n");
+            get_device(dev);
+            async = true;
+        } else {
+            pm_request_idle(dev);
+        }
+
+        if (dev->parent)
+            pm_runtime_put(dev->parent);
+    }
+out_unlock:
+    device_unlock(dev);
+    if (async)
+        async_schedule_dev(__device_attach_async_helper, dev);
+    return ret;
+}
+```
+
 
 ### platform\_match
 
