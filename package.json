@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "docs:dev": "export NODE_OPTIONS=--openssl-legacy-provider && vuepress dev docs",
-    "docs:build": "export NODE_OPTIONS=--openssl-legacy-provider && vuepress build docs",
+    "docs:dev": "export NODE_OPTIONS=--openssl-legacy-provider && npx vuepress dev docs",
+    "docs:build": "export NODE_OPTIONS=--openssl-legacy-provider && npx vuepress build docs",
     "deploy": "export NODE_OPTIONS=--openssl-legacy-provider && gh-pages -d .vuepress/dist",
     "deploy:build": "export NODE_OPTIONS=--openssl-legacy-provider && npm run docs:build && gh-pages -d .vuepress/dist"
   },
