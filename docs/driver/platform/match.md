@@ -104,6 +104,8 @@ static void __init do_basic_setup(void)
 
 ### driver\_init
 
+<div id="driver_init" />
+
 ```c
 /**
  * driver_init - initialize driver model.
@@ -138,6 +140,8 @@ void __init driver_init(void)
 
 
 ### platform\_bus\_init
+
+<div id="platform_bus_init"/>
 
 ```c
 struct device platform_bus = {
@@ -180,6 +184,9 @@ int __init platform_bus_init(void)
 
 ### device_register
 
+
+<div id="device_register" />
+
 ```c
 struct device platform_bus = {
     .init_name  = "platform",
@@ -215,6 +222,8 @@ EXPORT_SYMBOL_GPL(device_register);
 如上是, 通过 device_register 函数注册一个 platform_bus, device_register 调用的 device_add 函数将在后续章节中介绍
 
 ### bus\_register
+
+<div id="bus_register" />
 
 ```c
 /**
@@ -321,6 +330,9 @@ platform_driver_register
 
 ### platform\_driver\_register
 
+
+<div id="platform_driver_register" />
+
 ```c
 /*
  * use a macro to avoid include chaining to get THIS_MODULE
@@ -335,6 +347,8 @@ extern int __platform_driver_register(struct platform_driver *,
 
 
 ### \_\_platform\_driver\_register
+
+<div id="__platform_driver_register" />
 
 ```
 /**
@@ -357,6 +371,9 @@ EXPORT_SYMBOL_GPL(__platform_driver_register);
 
 
 ### driver\_register
+
+
+<div id="driver_register" />
 
 ```c
 /**
@@ -417,6 +434,9 @@ EXPORT_SYMBOL_GPL(driver_register);
 :::
 
 ### bus\_add\_driver
+
+
+<div id="bus_add_driver" />
 
 ```c
 /**
@@ -510,6 +530,8 @@ klist_add_tail(&priv->knode_bus, &sp->klist_drivers);
 
 ### platform\_device\_register
 
+<div id="platform_device_register" />
+
 ```c
 /**
  * platform_device_register - add a platform-level device
@@ -531,6 +553,8 @@ EXPORT_SYMBOL_GPL(platform_device_register);
 如上, 是 platform_device_register 函数的实现, 其用于注册 platform_device, 其中会调用到 platform_device_add 函数，这个函数会将 platform_device 添加到 Linux 设备驱动模型中
 
 ### platform\_device\_add
+
+<div id="platform_device_add" />
 
 ```c
 /**
@@ -574,6 +598,8 @@ EXPORT_SYMBOL_GPL(platform_device_add);
 
 
 ### device\_add
+
+<div id="device_add" />
 
 ```c
 /**
@@ -638,6 +664,8 @@ EXPORT_SYMBOL_GPL(device_add);
 
 
 ### bus\_add\_device
+
+<div id="bus_add_device" />
 
 ```c
 /**
@@ -706,6 +734,8 @@ out_put:
 
 ### bus\_probe\_device
 
+<div id="bus_probe_device" />
+
 ```c
 /**
  * bus_probe_device - probe drivers for a new device
@@ -744,8 +774,9 @@ void bus_probe_device(struct device *dev)
 
 ## platform 设备和驱动匹配
 
-
 ### device\_initial\_probe
+
+<div id="device_initial_probe" />
 
 ```c
 /**
@@ -773,10 +804,12 @@ void device_initial_probe(struct device *dev)
     __device_attach(dev, true);
 }
 ```
-如上, 是为设备进行探测驱动的
+如上一章所诉, 在 bus_probe_device 中, 通过 device_initial_probe 函数为设备进行探测驱动
 
 
 ### \__device\_attach
+
+<div id="__device_attach" />
 
 ```c
 static int __device_attach(struct device *dev, bool allow_async)
@@ -837,8 +870,220 @@ out_unlock:
 }
 ```
 
+如上, 是为设备匹配对应的驱动, 这里分成3部分, 第一部分是设备处于`dead`状态(?)时, 不进行处理, 第二部分是设备已经绑定了驱动程序, 此时直接运行其绑定的驱动(这个应该是手动选择驱动程序处理)，第三部分则是遍历总线, 找到运行合适的驱动(这个是自动选择驱动程序的处理)
 
-### platform\_match
+
+### 手动选择驱动
+
+#### device_bind_driver
+
+<div id="device_bind_driver" />
+
+```c
+/**
+ * device_bind_driver - bind a driver to one device.
+ * @dev: device.
+ *
+ * Allow manual attachment of a driver to a device.
+ * Caller must have already set @dev->driver.
+ *
+ * Note that this does not modify the bus reference count.
+ * Please verify that is accounted for before calling this.
+ * (It is ok to call with no other effort from a driver's probe() method.)
+ *
+ * This function must be called with the device lock held.
+ *
+ * Callers should prefer to use device_driver_attach() instead.
+ */
+int device_bind_driver(struct device *dev)
+{
+    int ret;
+
+    ret = driver_sysfs_add(dev);
+    if (!ret) {
+        device_links_force_bind(dev);
+        driver_bound(dev);
+    }
+    else
+        bus_notify(dev, BUS_NOTIFY_DRIVER_NOT_BOUND);
+    return ret;
+}
+EXPORT_SYMBOL_GPL(device_bind_driver);
+```
+
+如上, 是绑定一个驱动到设备的操作, 其具体实现通过 driver_bound 函数完成
+
+
+#### driver_bound
+
+<div id="driver_bound" />
+
+```c
+/**
+ * device_is_bound() - Check if device is bound to a driver
+ * @dev: device to check
+ *
+ * Returns true if passed device has already finished probing successfully
+ * against a driver.
+ *
+ * This function must be called with the device lock held.
+ */
+bool device_is_bound(struct device *dev)
+{
+    return dev->p && klist_node_attached(&dev->p->knode_driver);
+}
+
+static void driver_bound(struct device *dev)
+{
+    if (device_is_bound(dev)) {
+        pr_warn("%s: device %s already bound\n",
+            __func__, kobject_name(&dev->kobj));
+        return;
+    }
+
+    pr_debug("driver: '%s': %s: bound to device '%s'\n", dev->driver->name,
+         __func__, dev_name(dev));
+
+    klist_add_tail(&dev->p->knode_driver, &dev->driver->p->klist_devices);
+    device_links_driver_bound(dev);
+
+    device_pm_check_callbacks(dev);
+
+    /*
+     * Make sure the device is no longer in one of the deferred lists and
+     * kick off retrying all pending devices
+     */
+    driver_deferred_probe_del(dev);
+    driver_deferred_probe_trigger();
+
+    bus_notify(dev, BUS_NOTIFY_BOUND_DRIVER);
+    kobject_uevent(&dev->kobj, KOBJ_BIND);
+}
+```
+
+如上, 是手动为设备绑定一个驱动的实现, 可以看到其通过
+```c
+klist_add_tail(&dev->p->knode_driver, &dev->driver->p->klist_devices);
+```
+将设备追加到了驱动的`klist_devices`链表中，之后?
+
+### 自动选择驱动
+
+#### bus\_for\_eac\h_drv
+
+<div id="bus_for_each_drv" />
+
+```c
+/**
+ * bus_for_each_drv - driver iterator
+ * @bus: bus we're dealing with.
+ * @start: driver to start iterating on.
+ * @data: data to pass to the callback.
+ * @fn: function to call for each driver.
+ *
+ * This is nearly identical to the device iterator above.
+ * We iterate over each driver that belongs to @bus, and call
+ * @fn for each. If @fn returns anything but 0, we break out
+ * and return it. If @start is not NULL, we use it as the head
+ * of the list.
+ *
+ * NOTE: we don't return the driver that returns a non-zero
+ * value, nor do we leave the reference count incremented for that
+ * driver. If the caller needs to know that info, it must set it
+ * in the callback. It must also be sure to increment the refcount
+ * so it doesn't disappear before returning to the caller.
+ */
+int bus_for_each_drv(const struct bus_type *bus, struct device_driver *start,
+             void *data, int (*fn)(struct device_driver *, void *))
+{
+    struct subsys_private *sp = bus_to_subsys(bus);
+    struct klist_iter i;
+    struct device_driver *drv;
+    int error = 0;
+
+    if (!sp)
+        return -EINVAL;
+
+    klist_iter_init_node(&sp->klist_drivers, &i,
+                 start ? &start->p->knode_bus : NULL);
+    while ((drv = next_driver(&i)) && !error)
+        error = fn(drv, data);
+    klist_iter_exit(&i);
+    subsys_put(sp);
+    return error;
+}
+EXPORT_SYMBOL_GPL(bus_for_each_drv);
+```
+
+如上, 是迭代总线的 klist_drivers 链表, 依次为设备(data参数是一个结构体, 其dev成员遍历包含待驱动的设备)尝试调用每个驱动程序, 直到某个程序返回 0 为止(??), 表示可以驱动该设备(即这个驱动程序匹配该设备)
+
+
+#### \__device\_attach\_driver
+
+<div id="__device_attach_driver" />
+
+```c
+static int __device_attach_driver(struct device_driver *drv, void *_data)
+{
+    struct device_attach_data *data = _data;
+    struct device *dev = data->dev;
+    bool async_allowed;
+    int ret;
+
+    ret = driver_match_device(drv, dev);
+    if (ret == 0) {
+        /* no match */
+        return 0;
+    } else if (ret == -EPROBE_DEFER) {
+        dev_dbg(dev, "Device match requests probe deferral\n");
+        dev->can_match = true;
+        driver_deferred_probe_add(dev);
+        /*
+         * Device can't match with a driver right now, so don't attempt
+         * to match or bind with other drivers on the bus.
+         */
+        return ret;
+    } else if (ret < 0) {
+        dev_dbg(dev, "Bus failed to match device: %d\n", ret);
+        return ret;
+    } /* ret > 0 means positive match */
+
+    async_allowed = driver_allows_async_probing(drv);
+
+    if (async_allowed)
+        data->have_async = true;
+
+    if (data->check_async && async_allowed != data->want_async)
+        return 0;
+
+    /*
+     * Ignore errors returned by ->probe so that the next driver can try
+     * its luck.
+     */
+    ret = driver_probe_device(drv, dev);
+    if (ret < 0)
+        return ret;
+    return ret == 0;
+}
+```
+
+\__device_attach_driver 函数用于检测设备是否能够匹配驱动, 其通过 driver_match_device 完成
+
+
+#### driver_match_device
+
+```c
+static inline int driver_match_device(struct device_driver *drv,
+                      struct device *dev)
+{
+    return drv->bus->match ? drv->bus->match(dev, drv) : 1;
+}
+```
+如上, 是在总线的 match 回调函数不为空的情况下, 调用 match 回调函数, 对于 platform 总线来说， match对应的回调函数为 platform_match, 其在注册 platform_bus_type 中定义, 可以查看前面章节中的 [platform_bus_init 部分](#platform_bus_init)
+
+#### platform\_match
+
+<div id="platform_match" />
 
 ```c
 /**
@@ -879,5 +1124,3 @@ static int platform_match(struct device *dev, struct device_driver *drv)
     return (strcmp(pdev->name, drv->name) == 0);
 }
 ```
-
-

@@ -31,3 +31,5 @@
 3. [汇编语言基础:寄存器和系统调用](https://www.cnblogs.com/yungyu16/p/13024485.html)
 
 4. [最新 x86_64 系统调用入口分析 (基于 5.7.0)](https://www.cnblogs.com/RayWHL/p/16199553.html)
+
+5. [Linux 内核：设备驱动模型（2）driver-bus-device与probe](https://www.cnblogs.com/schips/p/linux_device_model_2.html)
