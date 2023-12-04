@@ -774,6 +774,17 @@ void bus_probe_device(struct device *dev)
 
 ## platform 设备和驱动匹配
 
+以下是 platform 总线注册时依次调用到的函数
+
+```text
+__device_attach
+    ----> device_bind_driver
+        ----> driver_bound
+    ----> bus_for_each_drv
+        ----> __device_attach_driver
+        ----> platform_match
+```
+
 ### device\_initial\_probe
 
 <div id="device_initial_probe" />
@@ -1124,3 +1135,51 @@ static int platform_match(struct device *dev, struct device_driver *drv)
     return (strcmp(pdev->name, drv->name) == 0);
 }
 ```
+
+如上, 是在相同总线上进行驱动和设备之间的匹配, 当设备和驱动匹配的情况下, platform_match 返回 1
+
+正如[platform 设备](./platform.md)中提到的一样, platform_match 函数中，platform 设备和 platform 驱动间匹配有 4 种可能性(同时也决定了匹配时的优先级):
+
+
+##### of_driver_match_device
+
+```c
+    /* Attempt an OF style match first */
+    if (of_driver_match_device(dev, drv))
+        return 1;
+```
+
+基于设备树的风格的匹配, 请参考[设备树](../devicetree.md)
+
+
+##### acpi_driver_match_device
+
+
+```c
+    /* Then try ACPI style match */
+    if (acpi_driver_match_device(dev, drv))
+        return 1;
+```
+
+基于 ACPI 风格的匹配, 关于 ACPI 表, 请参考[platform设备](./platform.md)
+
+##### platform_match_id
+
+
+```c
+    /* Then try to match against the id table */
+    if (pdrv->id_table)
+        return platform_match_id(pdrv->id_table, pdev) != NULL;
+```
+
+匹配 ID 表, 即 platform_device 设备名是否出现在 platform_driver 的 ID 表内, 关于 ID 表, 请参考[platform设备](./platform.md)
+
+##### dev->name 和 drv->name
+
+
+```c
+    /* fall-back to driver name match */
+    return (strcmp(pdev->name, drv->name) == 0);
+```
+
+匹配 platform_device 设备名和驱动的名字, 如上, 简单的比较设备和驱动名是否一致, 一致的情况下，表示驱动和设备匹配上了

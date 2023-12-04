@@ -123,6 +123,8 @@ extern void platform_driver_unregister(struct platform_driver *);
 
 ## platform 设备的匹配
 
+platform 设备和驱动之间的匹配请参考[platform 设备和驱动的匹配](./match.md), 从[platform 设备和驱动的匹配](./match.md)一节不难看出, platform 设备和platform 驱动实际上就是普通设备和驱动的一种特列形式, 最大的区别也就是总线部分了
+
 ## 示例
 
 ```c

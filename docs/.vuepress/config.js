@@ -29,10 +29,11 @@ module.exports = {
                 title: '设备驱动',
                 children: [
                     [ '/driver/', 'Linux 设备驱动' ],
+                    [ '/driver/model.md', 'Linux 设备模型' ],
                     [ '/driver/modules/modules.md', 'Linux 设备驱动相关组件' ],
+                    [ '/driver/devicetree.md', 'Linux 设备树' ],
                     [ '/driver/platform/platform.md', 'platform 设备' ],
                     [ '/driver/platform/match.md', 'platform 设备和驱动的匹配' ],
-                    [ '/driver/model.md', 'Linux 设备模型' ],
                     [ '/driver/cdev/cdev.md', '字符设备驱动' ],
                     [ '/driver/cdev/cdev_details.md', '字符设备驱动详解' ],
                     [ '/driver/i2c.md', 'I2C 设备驱动' ],
