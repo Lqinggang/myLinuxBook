@@ -35,9 +35,7 @@ module.exports = {
                     [ '/driver/platform/platform.md', 'platform 设备' ],
                     [ '/driver/platform/match.md', 'platform 设备和驱动的匹配' ],
                     [ '/driver/cdev/cdev.md', '字符设备驱动' ],
-                    [ '/driver/cdev/cdev_details.md', '字符设备驱动详解' ],
-                    [ '/driver/i2c.md', 'I2C 设备驱动' ],
-                    [ '/driver/spi.md', 'SPI 设备驱动' ]
+                    [ '/driver/cdev/cdev_details.md', '字符设备驱动详解' ]
                 ]
             },
             {
