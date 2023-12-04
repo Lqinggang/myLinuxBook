@@ -1,10 +1,10 @@
 # platform 设备
 
+一个现实中的设备和驱动通常都需要挂载在一种总线上, 但在 SoC 系统中集成的独立外设控制器、挂载在 SoC 内存空间的外设等不依附于此类总线, 所以, Linux 发明了一种虚拟的总线, 称为 platform 总线, 相应的设备称之为 platform_device, 而驱动称为 platform_driver
+
 ## platform 总线
 
 <div id="platform_bus"/>
-一个现实中的设备和驱动通常都需要挂载在一种总线上, 但在 SoC 系统中集成的独立外设控制器、挂载在 SoC 内存空间的外设等不依附于此类总线, 所以, Linux 发明了一种虚拟的总线, 称为 platform 总线, 相应的设备称之为 platform_device, 而驱动称为 platform_driver
-
 platform 总线存在的意义是为了保持 Linux 驱动模型的统一性(设备挂载在总线上, 由设备驱动程序驱动)
 
 ```c
