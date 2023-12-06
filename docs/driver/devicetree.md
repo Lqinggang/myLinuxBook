@@ -6,7 +6,7 @@
 
 设备树是一种描述硬件的数据结构, 由一系列被命名的节点(Node)和属性(Property)组成, 节点本身也可以包含字节点, 属性即成对出现的名称和值
 
-以下将要介绍的关于设备树的全部内容将基于 ARM 设备
+以下将要介绍的关于设备树的全部内容将基于 ARM 设备, ARM Linux 是在 3.x 中引入设备树的
 
 ### DTS(Device Tree Source)
 
@@ -26,7 +26,7 @@ DTC 是将 .dts 文件编译为 .dtb 的工具
 
 ## 设备树节点
 
-如下, 是Linux 6.6 中包含的树莓派4B 的 dts 文件, 本章节将以其作为示例讲解设备树节点
+如下, 是Linux 6.6 中包含的树莓派4B 的 dts 文件(bcm2711-rpi-4-b.dts), 本章节将以其作为示例讲解设备树节点
 
 ```dts
 // SPDX-License-Identifier: GPL-2.0
@@ -283,7 +283,193 @@ DTC 是将 .dts 文件编译为 .dtb 的工具
 
 根节点, 在所有的设备树中都包含由一个根节点, 用于表示设备树描述的起始点
 
+### compatible
+
+<div id="compatible" />
+
+dts 中使用 `compatible` 来表示兼容属性, 设备驱动会根据 `struct device_driver` 数据结构中的 `of_match_table` 成员对应的兼容性匹配表匹配设备
+
+#### 根节点兼容性
+
+```dts
+	compatible = "raspberrypi,4-model-b", "brcm,bcm2711";
+```
+
+如上, 是在 '/' 根节点下, 对应的就是 '/' 的兼容属性， 根节点 '/' 的兼容属性可判断启动的是什么设备, 一般而言, 第一个属性值是板子级别的属性, 后一个属性值是芯片级别(或者芯片系列级别)的属性, 兼容属性值按先后属性表示范围依次扩大
+
+这里, 第一个属性值表示的是这份 dts 文件作用于树莓派 4B 这块板子, 后一个属性值表示这份 dts 文件也兼容 bcm2711 芯片，作为对比，以下是树莓派400的 dts 文件, 和树莓派4B比较, 可以发现, 只有第一个属性值一样(这两个用的都是 bcm2711 的芯片)
+
+```dts
+    compatible = "raspberrypi,400", "brcm,bcm2711";
+```
+
+`compatible` 兼容属性也可以包含两个以上的情况, 如下 broadcom/bcm953012hr.dts 文件中定义的：
+
+```dts
+    compatible = "brcm,bcm953012hr", "brcm,bcm53012", "brcm,bcm4708";
+```
+
+此时, 第一个属性值依然表示板子级别的属性, 第二个属性值是特定芯片级别属性, 第三个属性是芯片系列级别属性
+
+在 Linux 内核中, 通过 [of_machine_is_compatible](#of_machine_is_compatible) 来判断根节点兼容性
+
+#### 设备节点兼容性
+
+除了根节点兼容性之外, 在 .dts 文件中的每个设备节点都可以有一个兼容属性:
+
+```dts
+	sd_io_1v8_reg: regulator-sd-io-1v8 {
+		compatible = "regulator-gpio";
+    };
+```
+
+如上, 在树莓派4B 中, regulator-sd-io-1v8 设备节点就有一个设备节点兼容性, 与根节点兼容性类似, 兼容属性列表越往后代表的兼容范围越大
+
+一般而言，设备节点兼容性是第一个兼容性值表示节点代表的确切设备, 形式为 `<manufacturer>,<model>`， 其后的兼容性值表示可以兼容的其他设备
+
+```dts
+        uart2: serial@7e201400 {
+            compatible = "arm,pl011", "arm,primecell";
+        };
+```
+
+如上, 是 bcm2711.dtsi 中 uart2 对应的节点兼容性, 第一个属性值为 "arm,pl011", 表示，这个节点可以兼容 manufacturer 为 arm, model 为 pl011 的设备, 后续兼容性依次类推
+
+
+在 Linux 内核中, 通过 [of_device_is_compatible](#of_device_compatible_match) 来判断设备节点兼容性
+
+### cpus
+
+cpus 用于描述此设备上的 cpu
+
+```dts
+    cpus: cpus {
+        #address-cells = <1>;
+        #size-cells = <0>;
+        enable-method = "brcm,bcm2836-smp"; // for ARM 32-bit
+
+        /* Source for d/i-cache-line-size and d/i-cache-sets
+         * https://developer.arm.com/documentation/100095/0003
+         * /Level-1-Memory-System/About-the-L1-memory-system?lang=en
+         * Source for d/i-cache-size
+         * https://www.raspberrypi.com/documentation/computers
+         * /processors.html#bcm2711
+         */
+        cpu0: cpu@0 {
+            device_type = "cpu";
+            compatible = "arm,cortex-a72";
+            reg = <0>;
+            enable-method = "spin-table";
+            cpu-release-addr = <0x0 0x000000d8>;
+            d-cache-size = <0x8000>;
+            d-cache-line-size = <64>;
+            d-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
+            i-cache-size = <0xc000>;
+            i-cache-line-size = <64>;
+            i-cache-sets = <256>; // 48KiB(size)/64(line-size)=768ways/3-way set
+            next-level-cache = <&l2>;
+        };
+    };
+```
+如上, 是在 bcm2711.dtsi 文件中, 截取的 cpus 设备节点部分内容, 这里不难看出 cpu 也有自己的[兼容性属性](#compatible), 在 bcm2711.dtsi 中, 一共描述出来了 4 个 cpu (bcm2711芯片是4个 cortex-a72 核)
+
+注意，这里的`cpus: cpus`和`cpu0: cpu0@0`表示形式, 它们遵循的组织形式为 `[label: ]<name>[@<unit-address>]`, 其中 label 和 unit-address 都是可选的, name 表示节点对应的设备类型, 多个相同类型设备节点的 name 值可以一样, 只要保证 unit-address 不同即可, 如bcm2711.dtsi 文件中,
+
+```dts
+    cpus: cpus {
+        cpu0: cpu@0 {
+        };
+        cpu1: cpu@1 {
+        };
+        cpu2: cpu@2 {
+        };
+        cpu3: cpu@3 {
+        };
+    };
+```
+
+它们对应的 name 都是相同, 但是 unit-address 不同
+
+对于挂载在内存空间的设备而言, @字符后跟的一般就是该设备在内存空间的基地址, 如
+
+```dts
+        pcie0: pcie@7d500000 {
+            compatible = "brcm,bcm2711-pcie";
+            reg = <0x0 0x7d500000 0x9310>;
+        };
+```
+
+对于挂载在总线上的外设而言, @字符后跟的一般是从设备的地址, 如
+
+```dts
+        i2c3: i2c@7e205600 {
+            compatible = "brcm,bcm2711-i2c", "brcm,bcm2835-i2c";
+            reg = <0x7e205600 0x200>;
+        };
+```
+
 ## 设备树部分函数
+
+### of_machine_is_compatible
+
+<div id="of_machine_is_compatible" />
+
+```c
+/**
+ * of_machine_is_compatible - Test root of device tree for a given compatible value
+ * @compat: compatible string to look for in root node's compatible property.
+ *
+ * Return: A positive integer if the root node has the given value in its
+ * compatible property.
+ */
+int of_machine_is_compatible(const char *compat)
+{
+    struct device_node *root;
+    int rc = 0;
+
+    root = of_find_node_by_path("/");
+    if (root) {
+        rc = of_device_is_compatible(root, compat);
+        of_node_put(root);
+    }
+    return rc;
+}
+EXPORT_SYMBOL(of_machine_is_compatible);
+```
+
+该函数用于判断目前运行的板子或 SoC 的兼容性, 即匹配设备树根节点下的兼容属性 compatible 对应的属性值是否匹配 compat 指定的字符串(即字符串值是否相等)
+
+
+### of_device_compatible_match
+
+<div id="of_device_compatible_match" />
+
+```c
+/** Checks if the device is compatible with any of the entries in
+ *  a NULL terminated array of strings. Returns the best match
+ *  score or 0.
+ */
+int of_device_compatible_match(const struct device_node *device,
+                   const char *const *compat)
+{
+    unsigned int tmp, score = 0;
+
+    if (!compat)
+        return 0;
+
+    while (*compat) {
+        tmp = of_device_is_compatible(device, *compat);
+        if (tmp > score)
+            score = tmp;
+        compat++;
+    }
+
+    return score;
+}
+EXPORT_SYMBOL_GPL(of_device_compatible_match);
+```
+
+该函数用于判断设备节点的兼容性, 即匹配设备节点下的兼容属性 compatible 对应的属性值是否匹配 compat 指定的字符串(即字符串值是否相等)
 
 ### of_find_property
 

@@ -481,7 +481,7 @@ struct device_driver {
     bool suppress_bind_attrs;
     enum probe_type probe_type;
 
-    const struct of_device_id *of_match_table;
+    const struct of_device_id *of_match_table;  /* 设备树节点兼容性匹配表 */
     const struct acpi_device_id *acpi_match_table;
 
     int (*probe)(struct device *dev); /* 探测设备的方法 */
