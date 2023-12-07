@@ -16,6 +16,12 @@
 #include "xxxxx.dtsi"
 ```
 
+dts 文件的编译过程支持 c 的预处理, 所以在 .dts 文件中可以通过 include 将 c 中的头文件包含进来, 比如:
+
+```c
+#include <dt-bindings/gpio/gpio.h>
+```
+
 ### DTC(Device Tree Compiler)
 
 DTC 是将 .dts 文件编译为 .dtb 的工具
@@ -24,7 +30,7 @@ DTC 是将 .dts 文件编译为 .dtb 的工具
 
 .dtb 是 .dts 被 DTC 编译之后生成的二进制格式的设备描述文件, 可由内核解析。
 
-## 设备树节点
+## 设备树节点/语法
 
 如下, 是Linux 6.6 中包含的树莓派4B 的 dts 文件(bcm2711-rpi-4-b.dts), 本章节将以其作为示例讲解设备树节点
 
@@ -274,7 +280,7 @@ DTC 是将 .dts 文件编译为 .dtb 的工具
 };
 ```
 
-### /
+### 根节点
 
 ```dts
 / {
@@ -283,7 +289,7 @@ DTC 是将 .dts 文件编译为 .dtb 的工具
 
 根节点, 在所有的设备树中都包含由一个根节点, 用于表示设备树描述的起始点
 
-### compatible
+### 兼容性
 
 <div id="compatible" />
 
@@ -338,7 +344,7 @@ dts 中使用 `compatible` 来表示兼容属性, 设备驱动会根据 `struct 
 
 在 Linux 内核中, 通过 [of_device_is_compatible](#of_device_compatible_match) 来判断设备节点兼容性
 
-### cpus
+### CPU 设备节点
 
 cpus 用于描述此设备上的 cpu
 
@@ -407,6 +413,131 @@ cpus 用于描述此设备上的 cpu
             reg = <0x7e205600 0x200>;
         };
 ```
+
+
+### 标签
+
+在定义一个设备节点的时候, 经常也同时定义一个 label, label 的命名一般形式为 '\<设备类型\>\<index\>', 如前面所述的cpu0, cpu1等即为一个label, label定义形式为: `[label:]<name>[@<unit-address>]`
+
+在定义之后, 可以通过 &label 的形式引用这个 label, 这种引用是通过phandle(pointer handle)进行的
+
+
+如示例中的 sd_vcc_reg
+
+```dts
+/ {
+	sd_vcc_reg: regulator-sd-vcc {
+	};
+};
+&emmc2 {
+	vmmc-supply = <&sd_vcc_reg>;
+};
+
+```
+
+### 地址编码
+
+在设备树中, 可寻址设备可以使用如下信息对地址进行编码
+
+```dts
+reg
+#address-cells
+#size-cells
+```
+
+
+reg 的组织形式为 `reg = <address0 length0 [address1 length1] [address2 length2] ...>`, 其中的每组`address length`表明了设备使用的一个地址范围， address 为1个或多个32位的整型(即cell), length 表示address地址范围长度, 即表示共 `length` 个地址: `[address, address + length - 1]`
+
+reg 中的 address 和 length 字段是可变长的, 其由父节点控制, 父节点的 #address-cells 和 #size-cells 分别决定子字节点 reg 属性的 address 和 length 字段的长度(或者元素个数)
+
+```dts
+    cpus: cpus {
+        #address-cells = <1>;
+        #size-cells = <0>;
+
+        cpu0: cpu@0 {
+            device_type = "cpu";
+            compatible = "arm,cortex-a72";
+            reg = <0>;
+        };
+    }
+
+```
+
+如上,  #address-cells = \<1\> 和 #size-cells = \<0\>, 分别表示子节点的address 为1, length 字段为0, 所以在 cpu0 中, `reg = <0>` 只有一个 address, 且其值为 0
+
+```dts
+&pcie0 {
+	pci@0,0 {
+		#address-cells = <3>;
+		#size-cells = <2>;
+		usb@0,0 {
+			reg = <0 1 2 3 4>;
+		};
+	};
+};
+```
+
+如上,  #address-cells = \<3\> 和 #size-cells = \<2\>, 分别表示子节点的address 为3 个元素, length 字段为2 个元素, 所以子节点 usb 中, `reg = <0 1 2 3 4>`, address 等于 `0 1 2`, length 等于 `3 4`
+
+
+### 地址转换表
+
+地址转换表用 ranges 属性来表示, 其中的每个项目是一个子地址、父地址以及在子地址空间的大小的映射，映射表中的子地址、父地址分别采用子地址空间的 #address-cells 和父地址空间的 #address-cells 的大小
+
+如下是在 bcm-nsp.dtsi 文件中 mpcore-bus 设备节点中包含的 ranges 属性的定义
+
+```dts
+/ {
+    #address-cells = <1>;
+    #size-cells = <1>;
+
+    mpcore-bus@19000000 {
+        compatible = "simple-bus";
+        ranges = <0x00000000 0x19000000 0x00023000>;
+        #address-cells = <1>;
+        #size-cells = <1>;
+    };
+};
+```
+
+如上, 从父节点(即根节点)的 `#address-cells` 和 `#size-cells`, 可以知道子节点定义时`address`和`length`都为1, 同理可以知道子节点(即mpcore-bus节点)的子节点定义时`address`也为1, 所以，对于上面的示例中, ranges 的 0x00000000 对应的是 mpcore-bus节点中 #address-cells=\<1\>, 0x19000000 对应的是父节点(即根节点)中的 #address-cells=\<1\>, 0x00023000 对应的是父节点(即根节点)中的 #size-cells = \<1\>, 这里的意思即 mpcore-bus 总线中, 从 0x00000000 地址空间开始的 0x00023000 个地址被映射到父地址空间的 0x19000000 开始的 0x00023000 个地址
+
+### 中断
+
+```dts
+/ {
+    soc {
+        gicv2: interrupt-controller@40041000 {
+            interrupt-controller;
+            #interrupt-cells = <3>;
+            compatible = "arm,gic-400";
+            reg =   <0x40041000 0x1000>,
+                <0x40042000 0x2000>,
+                <0x40044000 0x2000>,
+                <0x40046000 0x2000>;
+            interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(4) |
+                         IRQ_TYPE_LEVEL_HIGH)>;
+        };
+    };
+};
+
+```
+
+如上, 是在 bcm2711.dtsi 中定义的中断控制器
+
+#### interrupt-controller
+
+这个属性用于表明给设备节点为一个中断控制器, 其属性值为空, 其组织形式一般为 `interrupt-controller;`
+
+#### #interrupt-cells
+
+
+#### #interrupt-parent
+
+
+#### interrupts
+
 
 ## 设备树部分函数
 
