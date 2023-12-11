@@ -638,123 +638,34 @@ gpios 属性，用于指示某个 gpio 的初始属性, 由 #gpio-cells 控制 c
 
 ## 设备树部分函数
 
-### of_get_named_gpio
+### 寻找节点
 
-<div id="of_get_named_gpio" />
+#### of_find_compatible_node
 
-```c
-/**
- * of_get_named_gpio() - Get a GPIO number to use with GPIO API
- * @np:     device node to get GPIO from
- * @propname:   Name of property containing gpio specifier(s)
- * @index:  index of the GPIO
- *
- * Returns GPIO number to use with Linux generic GPIO API, or one of the errno
- * value on the error condition.
- */
-int of_get_named_gpio(const struct device_node *np, const char *propname,
-              int index)
-
-```
-
-### platform_get_irq
-
-<div id="platform_get_irq" />
+<div id="of_find_compatible_node" />
 
 ```c
 /**
- * platform_get_irq - get an IRQ for a device
- * @dev: platform device
- * @num: IRQ number index
+ * of_find_compatible_node - Find a node based on type and one of the
+ *                                tokens in its "compatible" property
+ * @from:   The node to start searching from or NULL, the node
+ *      you pass will not be searched, only the next one
+ *      will; typically, you pass what the previous call
+ *      returned. of_node_put() will be called on it
+ * @type:   The type string to match "device_type" or NULL to ignore
+ * @compatible: The string to match to one of the tokens in the device
+ *      "compatible" list.
  *
- * Gets an IRQ for a platform device and prints an error message if finding the
- * IRQ fails. Device drivers should check the return value for errors so as to
- * not pass a negative integer value to the request_irq() APIs.
- *
- * For example::
- *
- *      int irq = platform_get_irq(pdev, 0);
- *      if (irq < 0)
- *          return irq;
- *
- * Return: non-zero IRQ number on success, negative error number on failure.
+ * Return: A node pointer with refcount incremented, use
+ * of_node_put() on it when done.
  */
-int platform_get_irq(struct platform_device *dev, unsigned int num)
-{
-    int ret;
-
-    ret = platform_get_irq_optional(dev, num);
-    if (ret < 0)
-        return dev_err_probe(&dev->dev, ret,
-                     "IRQ index %u not found\n", num);
-
-    return ret;
-}
-EXPORT_SYMBOL_GPL(platform_get_irq);
+struct device_node *of_find_compatible_node(struct device_node *from,
+    const char *type, const char *compatible)
 ```
 
-### of_machine_is_compatible
+如上, `of_find_compatible_node` 函数用于根据兼容属性以及节点类型, 获取设备节点, 当from，type为空时, 表示遍历所有节点
 
-<div id="of_machine_is_compatible" />
-
-```c
-/**
- * of_machine_is_compatible - Test root of device tree for a given compatible value
- * @compat: compatible string to look for in root node's compatible property.
- *
- * Return: A positive integer if the root node has the given value in its
- * compatible property.
- */
-int of_machine_is_compatible(const char *compat)
-{
-    struct device_node *root;
-    int rc = 0;
-
-    root = of_find_node_by_path("/");
-    if (root) {
-        rc = of_device_is_compatible(root, compat);
-        of_node_put(root);
-    }
-    return rc;
-}
-EXPORT_SYMBOL(of_machine_is_compatible);
-```
-
-该函数用于判断目前运行的板子或 SoC 的兼容性, 即匹配设备树根节点下的兼容属性 compatible 对应的属性值是否匹配 compat 指定的字符串(即字符串值是否相等)
-
-
-### of_device_compatible_match
-
-<div id="of_device_compatible_match" />
-
-```c
-/** Checks if the device is compatible with any of the entries in
- *  a NULL terminated array of strings. Returns the best match
- *  score or 0.
- */
-int of_device_compatible_match(const struct device_node *device,
-                   const char *const *compat)
-{
-    unsigned int tmp, score = 0;
-
-    if (!compat)
-        return 0;
-
-    while (*compat) {
-        tmp = of_device_is_compatible(device, *compat);
-        if (tmp > score)
-            score = tmp;
-        compat++;
-    }
-
-    return score;
-}
-EXPORT_SYMBOL_GPL(of_device_compatible_match);
-```
-
-该函数用于判断设备节点的兼容性, 即匹配设备节点下的兼容属性 compatible 对应的属性值是否匹配 compat 指定的字符串(即字符串值是否相等)
-
-### of_find_property
+#### of_find_property
 
 <div id="of_find_property" />
 
@@ -796,7 +707,412 @@ struct property *of_find_property(const struct device_node *np,
 EXPORT_SYMBOL(of_find_property);
 ```
 
-### of_prop_next_string
+
+### 读取属性
+
+#### 整型属性
+
+如下几个函数用于读取设备节点 np 下属性名为 propname，属性类型为8，16，32，64 位整型数组的值
+
+##### of_property_read_u8_array
+
+<div id="of_property_read_u8_array" />
+
+```c
+/**
+ * of_property_read_u8_array - Find and read an array of u8 from a property.
+ *
+ * @np:     device node from which the property value is to be read.
+ * @propname:   name of the property to be searched.
+ * @out_values: pointer to return value, modified only if return value is 0.
+ * @sz:     number of array elements to read
+ *
+ * Search for a property in a device node and read 8-bit value(s) from
+ * it.
+ *
+ * dts entry of array should be like:
+ *  ``property = /bits/ 8 <0x50 0x60 0x70>;``
+ *
+ * Return: 0 on success, -EINVAL if the property does not exist,
+ * -ENODATA if property does not have a value, and -EOVERFLOW if the
+ * property data isn't large enough.
+ *
+ * The out_values is modified only if a valid u8 value can be decoded.
+ */
+static inline int of_property_read_u8_array(const struct device_node *np,
+                        const char *propname,
+                        u8 *out_values, size_t sz)
+
+```
+
+当数组大小为 1 时, 可以调用
+
+```c
+static inline int of_property_read_u8(const struct device_node *np,
+                       const char *propname,
+                       u8 *out_value)
+{
+    return of_property_read_u8_array(np, propname, out_value, 1);
+}
+```
+
+##### of_property_read_u16_array
+
+```c
+/**
+ * of_property_read_u16_array - Find and read an array of u16 from a property.
+ *
+ * @np:     device node from which the property value is to be read.
+ * @propname:   name of the property to be searched.
+ * @out_values: pointer to return value, modified only if return value is 0.
+ * @sz:     number of array elements to read
+ *
+ * Search for a property in a device node and read 16-bit value(s) from
+ * it.
+ *
+ * dts entry of array should be like:
+ *  ``property = /bits/ 16 <0x5000 0x6000 0x7000>;``
+ *
+ * Return: 0 on success, -EINVAL if the property does not exist,
+ * -ENODATA if property does not have a value, and -EOVERFLOW if the
+ * property data isn't large enough.
+ *
+ * The out_values is modified only if a valid u16 value can be decoded.
+ */
+static inline int of_property_read_u16_array(const struct device_node *np,
+                         const char *propname,
+                         u16 *out_values, size_t sz)
+```
+
+当数组大小为 1 时, 可以调用
+
+```c
+static inline int of_property_read_u16(const struct device_node *np,
+                       const char *propname,
+                       u16 *out_value)
+{
+    return of_property_read_u16_array(np, propname, out_value, 1);
+}
+```
+
+##### of_property_read_u32_array
+
+```c
+/**
+ * of_property_read_u32_array - Find and read an array of 32 bit integers
+ * from a property.
+ *
+ * @np:     device node from which the property value is to be read.
+ * @propname:   name of the property to be searched.
+ * @out_values: pointer to return value, modified only if return value is 0.
+ * @sz:     number of array elements to read
+ *
+ * Search for a property in a device node and read 32-bit value(s) from
+ * it.
+ *
+ * Return: 0 on success, -EINVAL if the property does not exist,
+ * -ENODATA if property does not have a value, and -EOVERFLOW if the
+ * property data isn't large enough.
+ *
+ * The out_values is modified only if a valid u32 value can be decoded.
+ */
+static inline int of_property_read_u32_array(const struct device_node *np,
+                         const char *propname,
+                         u32 *out_values, size_t sz)
+```
+
+当数组大小为 1 时, 可以调用
+
+```c
+static inline int of_property_read_u32(const struct device_node *np,
+                       const char *propname,
+                       u32 *out_value)
+{
+    return of_property_read_u32_array(np, propname, out_value, 1);
+}
+```
+
+##### of_property_read_u64_array
+
+```c
+/**
+ * of_property_read_u64_array - Find and read an array of 64 bit integers
+ * from a property.
+ *
+ * @np:     device node from which the property value is to be read.
+ * @propname:   name of the property to be searched.
+ * @out_values: pointer to return value, modified only if return value is 0.
+ * @sz:     number of array elements to read
+ *
+ * Search for a property in a device node and read 64-bit value(s) from
+ * it.
+ *
+ * Return: 0 on success, -EINVAL if the property does not exist,
+ * -ENODATA if property does not have a value, and -EOVERFLOW if the
+ * property data isn't large enough.
+ *
+ * The out_values is modified only if a valid u64 value can be decoded.
+ */
+static inline int of_property_read_u64_array(const struct device_node *np,
+                         const char *propname,
+                         u64 *out_values, size_t sz)
+```
+
+
+#### 字符串属性
+
+如下几个函数用于读取设备节点 np 下属性名为 propname，字符串类型的值
+
+##### of_property_read_string
+
+<div id="of_property_read_string" />
+
+```c
+/**
+ * of_property_read_string - Find and read a string from a property
+ * @np:     device node from which the property value is to be read.
+ * @propname:   name of the property to be searched.
+ * @out_string: pointer to null terminated return string, modified only if
+ *      return value is 0.
+ *
+ * Search for a property in a device tree node and retrieve a null
+ * terminated string value (pointer to data, not a copy).
+ *
+ * Return: 0 on success, -EINVAL if the property does not exist, -ENODATA if
+ * property does not have a value, and -EILSEQ if the string is not
+ * null-terminated within the length of the property data.
+ *
+ * Note that the empty string "" has length of 1, thus -ENODATA cannot
+ * be interpreted as an empty string.
+ *
+ * The out_string pointer is modified only if a valid string can be decoded.
+ */
+int of_property_read_string(const struct device_node *np, const char *propname,
+                const char **out_string)
+```
+
+如上, 是读取 np 设备节点下属性名为 propname 的设备节点的字符串属性值
+
+#### of_property_read_string_index
+
+```c
+/**
+ * of_property_read_string_index() - Find and read a string from a multiple
+ * strings property.
+ * @np:     device node from which the property value is to be read.
+ * @propname:   name of the property to be searched.
+ * @index:  index of the string in the list of strings
+ * @output: pointer to null terminated return string, modified only if
+ *      return value is 0.
+ *
+ * Search for a property in a device tree node and retrieve a null
+ * terminated string value (pointer to data, not a copy) in the list of strings
+ * contained in that property.
+ *
+ * Return: 0 on success, -EINVAL if the property does not exist, -ENODATA if
+ * property does not have a value, and -EILSEQ if the string is not
+ * null-terminated within the length of the property data.
+ *
+ * The out_string pointer is modified only if a valid string can be decoded.
+ */
+static inline int of_property_read_string_index(const struct device_node *np,
+                        const char *propname,
+                        int index, const char **output)
+```
+如上, 是读取 np 设备节点下属性名为 propname 的设备节点字符串数组的第 index 个属性值
+
+
+#### 布尔值
+
+```c
+/**
+ * of_property_read_bool - Find a property
+ * @np:     device node from which the property value is to be read.
+ * @propname:   name of the property to be searched.
+ *
+ * Search for a boolean property in a device node. Usage on non-boolean
+ * property types is deprecated.
+ *
+ * Return: true if the property exists false otherwise.
+ */
+static inline bool of_property_read_bool(const struct device_node *np,
+                     const char *propname)
+```
+
+如上, 是检查 np 设备节点下是否含有属性名为 propname 的设备节点, 有则返回true, 否则返回false
+
+
+### 内存映射
+
+#### of_iomap
+
+```c
+void __iomem *of_iomap(struct device_node *node, int index)
+```
+
+如上, 是通过设备节点进行设备内存区间的 ioremap(), index 是内存段的索引, 若设备节点的 reg 属性由多端时, 可通过 index 标示要 ioremap() 的是哪一段, 在只有 1 段的情况下, index 为0
+
+#### of_address_to_resource
+
+```c
+int of_address_to_resource(struct device_node *node, int index,
+               struct resource *r)
+```
+
+如上, 通过设备节点获取与它对应的内存资源的 resource 结构体, 其本质是分析 reg 属性以获取内存基地址、大小等信息并填充到 struct resource \*r 参数指向的结构体中
+
+### 解析中断
+
+```c
+/**
+ * irq_of_parse_and_map - Parse and map an interrupt into linux virq space
+ * @dev: Device node of the device whose interrupt is to be mapped
+ * @index: Index of the interrupt to map
+ *
+ * This function is a wrapper that chains of_irq_parse_one() and
+ * irq_create_of_mapping() to make things easier to callers
+ */
+unsigned int irq_of_parse_and_map(struct device_node *dev, int index)
+```
+如上, 通过设备树获取设备的中断号，实际上是从 .dts 中的 interrupts 属性里解析出中断号, 若设备使用了多个中断, index 指定中断的索引号
+
+
+### 获取与节点对应的 platform_device
+
+
+```c
+/**
+ * of_find_device_by_node - Find the platform_device associated with a node
+ * @np: Pointer to device tree node
+ *
+ * Takes a reference to the embedded struct device which needs to be dropped
+ * after use.
+ *
+ * Return: platform_device pointer, or NULL if not found
+ */
+struct platform_device *of_find_device_by_node(struct device_node *np)
+```
+
+如上, 通过设备节点其获取对应的 platform_device 设备
+### 其他of api
+
+#### of_get_named_gpio
+
+<div id="of_get_named_gpio" />
+
+```c
+/**
+ * of_get_named_gpio() - Get a GPIO number to use with GPIO API
+ * @np:     device node to get GPIO from
+ * @propname:   Name of property containing gpio specifier(s)
+ * @index:  index of the GPIO
+ *
+ * Returns GPIO number to use with Linux generic GPIO API, or one of the errno
+ * value on the error condition.
+ */
+int of_get_named_gpio(const struct device_node *np, const char *propname,
+              int index)
+
+```
+
+#### platform_get_irq
+
+<div id="platform_get_irq" />
+
+```c
+/**
+ * platform_get_irq - get an IRQ for a device
+ * @dev: platform device
+ * @num: IRQ number index
+ *
+ * Gets an IRQ for a platform device and prints an error message if finding the
+ * IRQ fails. Device drivers should check the return value for errors so as to
+ * not pass a negative integer value to the request_irq() APIs.
+ *
+ * For example::
+ *
+ *      int irq = platform_get_irq(pdev, 0);
+ *      if (irq < 0)
+ *          return irq;
+ *
+ * Return: non-zero IRQ number on success, negative error number on failure.
+ */
+int platform_get_irq(struct platform_device *dev, unsigned int num)
+{
+    int ret;
+
+    ret = platform_get_irq_optional(dev, num);
+    if (ret < 0)
+        return dev_err_probe(&dev->dev, ret,
+                     "IRQ index %u not found\n", num);
+
+    return ret;
+}
+EXPORT_SYMBOL_GPL(platform_get_irq);
+```
+
+#### of_machine_is_compatible
+
+<div id="of_machine_is_compatible" />
+
+```c
+/**
+ * of_machine_is_compatible - Test root of device tree for a given compatible value
+ * @compat: compatible string to look for in root node's compatible property.
+ *
+ * Return: A positive integer if the root node has the given value in its
+ * compatible property.
+ */
+int of_machine_is_compatible(const char *compat)
+{
+    struct device_node *root;
+    int rc = 0;
+
+    root = of_find_node_by_path("/");
+    if (root) {
+        rc = of_device_is_compatible(root, compat);
+        of_node_put(root);
+    }
+    return rc;
+}
+EXPORT_SYMBOL(of_machine_is_compatible);
+```
+
+该函数用于判断目前运行的板子或 SoC 的兼容性, 即匹配设备树根节点下的兼容属性 compatible 对应的属性值是否匹配 compat 指定的字符串(即字符串值是否相等)
+
+
+#### of_device_compatible_match
+
+<div id="of_device_compatible_match" />
+
+```c
+/** Checks if the device is compatible with any of the entries in
+ *  a NULL terminated array of strings. Returns the best match
+ *  score or 0.
+ */
+int of_device_compatible_match(const struct device_node *device,
+                   const char *const *compat)
+{
+    unsigned int tmp, score = 0;
+
+    if (!compat)
+        return 0;
+
+    while (*compat) {
+        tmp = of_device_is_compatible(device, *compat);
+        if (tmp > score)
+            score = tmp;
+        compat++;
+    }
+
+    return score;
+}
+EXPORT_SYMBOL_GPL(of_device_compatible_match);
+```
+
+该函数用于判断设备节点的兼容性, 即匹配设备节点下的兼容属性 compatible 对应的属性值是否匹配 compat 指定的字符串(即字符串值是否相等)
+
+#### of_prop_next_string
 ```c
 const char *of_prop_next_string(struct property *prop, const char *cur)
 {
@@ -817,7 +1133,7 @@ const char *of_prop_next_string(struct property *prop, const char *cur)
 EXPORT_SYMBOL_GPL(of_prop_next_string);
 ```
 
-### of_find_node_by_type
+#### of_find_node_by_type
 
 ```c
 static bool __of_node_is_type(const struct device_node *np, const char *type)
@@ -857,7 +1173,7 @@ EXPORT_SYMBOL(of_find_node_by_type);
 ```
 
 
-### of_node_name_eq
+#### of_node_name_eq
 
 ```c
 bool of_node_name_eq(const struct device_node *np, const char *name)
