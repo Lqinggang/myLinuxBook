@@ -528,18 +528,170 @@ reg 中的 address 和 length 字段是可变长的, 其由父节点控制, 父�
 
 #### interrupt-controller
 
-这个属性用于表明给设备节点为一个中断控制器, 其属性值为空, 其组织形式一般为 `interrupt-controller;`
+这个属性用于表明该设备节点为一个中断控制器, 其属性值为空, 其组织形式一般为 `interrupt-controller;`
 
 #### #interrupt-cells
+
+`#interrupt-cells`和`#address-cells`以及`#size-cells`类似，用于表明连接此中断控制器的设备的中断属性的`cell`大小, 即对应`interrupts`设备节点中的属性的大小
+
+如示例中, `#interrupt-cells=<3>`, 则 `interrupts`中由三个属性值组成, 它们依次分别代表中断类型`GIC_PPI`, 中断号`9`, 中断触发方式和中断掩码`(GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)`
 
 
 #### #interrupt-parent
 
+通过该设备节点指定它依附的中断控制器的 phandle, 当节点没有指定 interrupt-parent 时, 则从父节点继承
 
 #### interrupts
 
+用到中断的设备节点, 通过该节点指示中断类型, 中断号, 以及中断触发方式等，由 `#interrupt-cells` 控制具体包含几个`cell`
+
+
+### GPIO
+
+bcm2711-rpi.dtsi:
+
+```dts
+    expgpio: gpio {
+        compatible = "raspberrypi,firmware-gpio";
+        gpio-controller;
+        #gpio-cells = <2>;
+        status = "okay";
+    };
+```
+bcm283x-rpi-led-deprecated.dtsi:
+
+```dts
+    leds: leds {
+        compatible = "gpio-leds";
+
+        led_act: led-act {
+            label = "ACT";
+            default-state = "keep";
+            linux,default-trigger = "heartbeat";
+        };
+    };
+```
+
+bcm2711-rpi-4-b.dts:
+
+```dts
+&leds {
+    led_pwr: led-pwr {
+        label = "PWR";
+        gpios = <&expgpio 2 GPIO_ACTIVE_LOW>;
+        default-state = "keep";
+        linux,default-trigger = "default-on";
+    };
+};
+
+```
+#### gpio-controller
+
+与 `interrupt-controller`类似,  用于表明该设备是一个gpio控制器, 如 `bcm2711-rpi.dtsi` 文件中的示例
+
+#### #gpio-cells
+
+与 `interrupt-cells`等类似, 用于控制 gpios 设备节点中 cell 的大小
+
+#### gpios
+
+gpios 属性，用于指示某个 gpio 的初始属性, 由 #gpio-cells 控制 cell 的大小, 一般而言, `#gpio-cells=<2>`, 则对应的gpios的值代表的意思为: 第 1 值表示 gpio 号, 第 2 个值表示 gpio 的极性
+
+如 `bcm2711-rpi-4-b.dts`文件中的示例, 其属性值的含义为: gpio2 低电平有效
+
+
+### 时钟
+
+```dts
+    clk_27MHz: clk-27M {
+        #clock-cells = <0>;
+        compatible = "fixed-clock";
+        clock-frequency = <27000000>;
+        clock-output-names = "27MHz-clock";
+    };
+
+    clk_108MHz: clk-108M {
+        #clock-cells = <0>;
+        compatible = "fixed-clock";
+        clock-frequency = <108000000>;
+        clock-output-names = "108MHz-clock";
+    };
+```
+
+#### #clock-cells
+
+与 `gpio-cells`类似, 用于指示 clocks 设备节点中 cell 的大小
+
+#### clock-frequency
+
+时钟频率
+
+### pinmux连接
+
+设备节点使用的 pinmux 的引脚群
+
+
+#### pinctrl-names
+
+引脚名
+
 
 ## 设备树部分函数
+
+### of_get_named_gpio
+
+<div id="of_get_named_gpio" />
+
+```c
+/**
+ * of_get_named_gpio() - Get a GPIO number to use with GPIO API
+ * @np:     device node to get GPIO from
+ * @propname:   Name of property containing gpio specifier(s)
+ * @index:  index of the GPIO
+ *
+ * Returns GPIO number to use with Linux generic GPIO API, or one of the errno
+ * value on the error condition.
+ */
+int of_get_named_gpio(const struct device_node *np, const char *propname,
+              int index)
+
+```
+
+### platform_get_irq
+
+<div id="platform_get_irq" />
+
+```c
+/**
+ * platform_get_irq - get an IRQ for a device
+ * @dev: platform device
+ * @num: IRQ number index
+ *
+ * Gets an IRQ for a platform device and prints an error message if finding the
+ * IRQ fails. Device drivers should check the return value for errors so as to
+ * not pass a negative integer value to the request_irq() APIs.
+ *
+ * For example::
+ *
+ *      int irq = platform_get_irq(pdev, 0);
+ *      if (irq < 0)
+ *          return irq;
+ *
+ * Return: non-zero IRQ number on success, negative error number on failure.
+ */
+int platform_get_irq(struct platform_device *dev, unsigned int num)
+{
+    int ret;
+
+    ret = platform_get_irq_optional(dev, num);
+    if (ret < 0)
+        return dev_err_probe(&dev->dev, ret,
+                     "IRQ index %u not found\n", num);
+
+    return ret;
+}
+EXPORT_SYMBOL_GPL(platform_get_irq);
+```
 
 ### of_machine_is_compatible
 
@@ -603,6 +755,8 @@ EXPORT_SYMBOL_GPL(of_device_compatible_match);
 该函数用于判断设备节点的兼容性, 即匹配设备节点下的兼容属性 compatible 对应的属性值是否匹配 compat 指定的字符串(即字符串值是否相等)
 
 ### of_find_property
+
+<div id="of_find_property" />
 
 ```c
 #define of_prop_cmp(s1, s2)     strcasecmp((s1), (s2))
