@@ -893,7 +893,7 @@ int of_property_read_string(const struct device_node *np, const char *propname,
 
 如上, 是读取 np 设备节点下属性名为 propname 的设备节点的字符串属性值
 
-#### of_property_read_string_index
+#### of\_property\_read\_string\_index
 
 ```c
 /**
@@ -944,7 +944,7 @@ static inline bool of_property_read_bool(const struct device_node *np,
 
 ### 内存映射
 
-#### of_iomap
+#### of\_iomap
 
 ```c
 void __iomem *of_iomap(struct device_node *node, int index)
@@ -952,7 +952,7 @@ void __iomem *of_iomap(struct device_node *node, int index)
 
 如上, 是通过设备节点进行设备内存区间的 ioremap(), index 是内存段的索引, 若设备节点的 reg 属性由多端时, 可通过 index 标示要 ioremap() 的是哪一段, 在只有 1 段的情况下, index 为0
 
-#### of_address_to_resource
+#### of\_address\_to\_resource
 
 ```c
 int of_address_to_resource(struct device_node *node, int index,
@@ -994,9 +994,10 @@ struct platform_device *of_find_device_by_node(struct device_node *np)
 ```
 
 如上, 通过设备节点其获取对应的 platform_device 设备
+
 ### 其他of api
 
-#### of_get_named_gpio
+#### of\_get\_named\_gpio
 
 <div id="of_get_named_gpio" />
 
@@ -1015,7 +1016,9 @@ int of_get_named_gpio(const struct device_node *np, const char *propname,
 
 ```
 
-#### platform_get_irq
+如上, 是获取 np 设备节点下, 名为 propname 的子设备节点中第 index 个索引的 gpio 设备节点属性值
+
+#### platform\_get\_irq
 
 <div id="platform_get_irq" />
 
@@ -1051,7 +1054,9 @@ int platform_get_irq(struct platform_device *dev, unsigned int num)
 EXPORT_SYMBOL_GPL(platform_get_irq);
 ```
 
-#### of_machine_is_compatible
+如上, 是获取 dev 设备的第 index 个中断
+
+#### of\_machine\_is\_compatible
 
 <div id="of_machine_is_compatible" />
 
@@ -1081,7 +1086,7 @@ EXPORT_SYMBOL(of_machine_is_compatible);
 该函数用于判断目前运行的板子或 SoC 的兼容性, 即匹配设备树根节点下的兼容属性 compatible 对应的属性值是否匹配 compat 指定的字符串(即字符串值是否相等)
 
 
-#### of_device_compatible_match
+#### of\_device\_compatible\_match
 
 <div id="of_device_compatible_match" />
 
@@ -1112,7 +1117,7 @@ EXPORT_SYMBOL_GPL(of_device_compatible_match);
 
 该函数用于判断设备节点的兼容性, 即匹配设备节点下的兼容属性 compatible 对应的属性值是否匹配 compat 指定的字符串(即字符串值是否相等)
 
-#### of_prop_next_string
+#### of\_prop\_next\_string
 ```c
 const char *of_prop_next_string(struct property *prop, const char *cur)
 {
@@ -1133,7 +1138,7 @@ const char *of_prop_next_string(struct property *prop, const char *cur)
 EXPORT_SYMBOL_GPL(of_prop_next_string);
 ```
 
-#### of_find_node_by_type
+#### of\_find\_node\_by\_type
 
 ```c
 static bool __of_node_is_type(const struct device_node *np, const char *type)
@@ -1173,7 +1178,7 @@ EXPORT_SYMBOL(of_find_node_by_type);
 ```
 
 
-#### of_node_name_eq
+#### of\_node\_name\_eq
 
 ```c
 bool of_node_name_eq(const struct device_node *np, const char *name)
@@ -1195,7 +1200,7 @@ EXPORT_SYMBOL(of_node_name_eq);
 
 ## 基于设备树的设备和驱动的匹配
 
-### of_driver_match_device
+### of\_driver\_match\_device
 
 ```c
 /**
@@ -1227,10 +1232,34 @@ static inline int of_driver_match_device(struct device *dev,
 }
 ```
 
-正如[platform设备的匹配](./platform/match.md)中描述的那样, 基于设备树的设备和驱动的匹配通过 of_driver_match_device 进行, 而 of_driver_match_device 函数通过调用 of_match_device 进行匹配, 它们的实现如上
+正如[platform设备的匹配](./platform/match.md)中描述的那样, 基于设备树的设备和驱动的匹配通过 of_driver_match_device 进行, 而 of_driver_match_device 函数通过调用 of_match_device 进行匹配, 它们的实现如上, 可以看出基于设备树的设备和驱动的匹配就是设备的 of_node (设备树节点)和驱动的 of_match_table 之间的匹配
 
+其中 of_match_table 是驱动的匹配表, 驱动这个表判断是否匹配设备(即是否能够驱动这个设备), 其内容形式一般如下(参考drivers/spi/spidev.c文件):
 
-### of_match_node
+```c
+static const struct of_device_id spidev_dt_ids[] = {
+    { .compatible = "cisco,spi-petra", .data = &spidev_of_check },
+    { .compatible = "dh,dhcom-board", .data = &spidev_of_check },
+    { .compatible = "lineartechnology,ltc2488", .data = &spidev_of_check },
+    { .compatible = "lwn,bk4", .data = &spidev_of_check },
+    { .compatible = "menlo,m53cpld", .data = &spidev_of_check },
+    { .compatible = "micron,spi-authenta", .data = &spidev_of_check },
+    { .compatible = "rohm,dh2228fv", .data = &spidev_of_check },
+    { .compatible = "semtech,sx1301", .data = &spidev_of_check },
+    { .compatible = "silabs,em3581", .data = &spidev_of_check },
+    { .compatible = "silabs,si3210", .data = &spidev_of_check },
+    {},
+};
+MODULE_DEVICE_TABLE(of, spidev_dt_ids);
+```
+
+注意其中的 .compatible 字段，在进行设备匹配的时候将用到
+
+::: warning 注意
+从 \_\_of\_match\_node 函数的具体实现, 不难发现 of\_match\_table 匹配表数组中, 最后的 {} 是必须的, 因为 \_\_of\_match\_node 通过它来判断数组的结束
+:::
+
+### of\_match\_node
 
 ```c
 /**
@@ -1254,8 +1283,10 @@ const struct of_device_id *of_match_node(const struct of_device_id *matches,
 EXPORT_SYMBOL(of_match_node);
 ```
 
+如上, 通过设备的of_match_table表判断是否匹配设备树的设备节点
 
-### \__of_match_node
+
+### \_\_of\_match\_node
 
 ```c
 static
@@ -1281,7 +1312,9 @@ const struct of_device_id *__of_match_node(const struct of_device_id *matches,
 }
 ```
 
-### \__of_device_is_compatible
+如上, \_\_of\_match\_node 函数遍历 of\_match\_table 和设备树节点 node 进行比较, 找到最佳匹配结果
+
+### \_\_of\_device\_is\_compatible
 
 ```c
 #define of_compat_cmp(s1, s2, l)    strncmp((s1), (s2), (l))
@@ -1355,3 +1388,19 @@ static int __of_device_is_compatible(const struct device_node *device,
     return score;
 }
 ```
+
+如上, \_\_of\_device\_is\_compatible 函数进行设备节点兼容性的匹配, 不匹配的时候, 返回0, 否则返回大于0的值(值越大匹配度越小)
+
+从函数实现上看, 匹配分为三部分
+
+(1) 匹配设备树中的 .compatible 兼容性属性
+
+这里通过 for 循环和 of_prop_next_string 函数遍历 .compatible 兼容性属性
+
+因为 .compatible 可能是包含多个属性值, 在这里匹配的 .compatible 属性值越是后面, 匹配分值越高(意味着匹配度越低)
+
+(2) 匹配设备树中 .device_type 设备类型属性
+
+
+(3) 匹配设备树设备节点名
+

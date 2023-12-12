@@ -1149,7 +1149,13 @@ static int platform_match(struct device *dev, struct device_driver *drv)
         return 1;
 ```
 
-基于设备树的风格的匹配, 请参考[设备树](../devicetree.md)
+基于设备树的风格的匹配, 请参考[设备树](../devicetree.md), 基于设备树的匹配是通过驱动的 of_match_table 和设备对应的 of_node 设备树节点进行匹配, 其主要匹配三种类型
+
+(1) 设备树中的 .compatible 兼容属性值和驱动中 of_match_table 匹配表中的 .compatible 匹配
+
+(2) 匹配设备树中的 .device_type
+
+(3) 匹配设备树中的设备节点名
 
 
 ##### acpi_driver_match_device
