@@ -433,6 +433,10 @@ EXPORT_SYMBOL_GPL(driver_register);
 所以, 当一个设备插入时, 设备在总线上挂载, 并在该总线上从已注册的驱动中查找符合设备的驱动, 然后运行, Linux 设备驱动模型?
 :::
 
+::: warning 注意
+注意这里的 deferred_probe_extend_timeout() 函数, 这里会创建一个工作队列, 触发总线探测设备(定时任务?)
+:::
+
 ### bus\_add\_driver
 
 
@@ -473,7 +477,7 @@ int bus_add_driver(struct device_driver *drv)
         goto out_unregister;
 
     klist_add_tail(&priv->knode_bus, &sp->klist_drivers);
-    if (sp->drivers_autoprobe) {
+    if (sp->drivers_autoprobe) { /* 驱动自动探测设备 */
         error = driver_attach(drv);
         if (error)
             goto out_del_list;
@@ -523,10 +527,63 @@ klist_add_tail(&priv->knode_bus, &sp->klist_drivers);
 ```
 是将驱动注册到总线上的关键代码，`&sp->klist_drivers` 中的`sp`即在调用`bus_register`时申请的数据接口，同样在`bus_register`中也会对`klist_drivers`进行初始化, 所以每调用一次`bus_add_driver`函数新增的驱动就被追加到总线的`klist_drivers`链表中
 
+### driver\_attach
+
+```c
+/**
+ * driver_attach - try to bind driver to devices.
+ * @drv: driver.
+ *
+ * Walk the list of devices that the bus has on it and try to
+ * match the driver with each one.  If driver_probe_device()
+ * returns 0 and the @dev->driver is set, we've found a
+ * compatible pair.
+ */
+int driver_attach(struct device_driver *drv)
+{
+    return bus_for_each_dev(drv->bus, NULL, drv, __driver_attach);
+}
+EXPORT_SYMBOL_GPL(driver_attach);
+```
+
+如上, 在将驱动添加到总线的 klist_drivers 链表之后(即完成了驱动注册), 通过 driver_attach 函数尝试为总线上的所有设备探测该驱动，这里针对的是先插入设备后安装驱动的情况, 其遍历总线上的所有设备, 探测该驱动程序是否匹配设备, 匹配以及运行驱动将通过  \__driver_attach 函数进行
+
+其中 sp->drivers_autoprobe 是通过 bus_register 函数注册 platform_bus_type 时进行设置的, 其值等于1
+
+### deferred\_probe\_extend\_timeout
+
+```c
+static DECLARE_DELAYED_WORK(deferred_probe_timeout_work, deferred_probe_timeout_work_func);
+
+void deferred_probe_extend_timeout(void)
+{
+    /*
+     * If the work hasn't been queued yet or if the work expired, don't
+     * start a new one.
+     */
+    if (cancel_delayed_work(&deferred_probe_timeout_work)) {
+        schedule_delayed_work(&deferred_probe_timeout_work,
+                driver_deferred_probe_timeout * HZ);
+        pr_debug("Extended deferred probe timeout by %d secs\n",
+                    driver_deferred_probe_timeout);
+    }
+}
+```
+
+如上, 在驱动注册完成之后(驱动已经添加到总线上), 会通过 deferred_probe_extend_timeout 函数创建一个任务, 触发 deferred_probe_timeout_work_func 函数的执行, 从而去为新注册的驱动探测设备
+
 
 ## platform 设备注册
 
 以下 platform 设备注册过程, platform 设备通过 platform_device_register 函数进行注册
+
+```text
+platform_device_register
+    --> platform_device_add
+        --> device_add
+            --> bus_add_device  /* 将设备添加到总线上 */
+                --> bus_probe_device    /* 为新设备探测驱动 */
+```
 
 ### platform\_device\_register
 
@@ -770,11 +827,32 @@ void bus_probe_device(struct device *dev)
 
 ::: tip 说明
 如果这里是总线探测设备, 找到对应的驱动的话, 那是不是在驱动注册的时候应该也有一个总线探测设备(针对先插入设备后安装驱动)? 不过似乎在注册驱动的时候, 没有看到有类似的操作, 但是在 `static void deferred_probe_work_func(struct work_struct *work)` 中, 有调用 bus_probe_device 函数, 难道是这里定时去检测?
+
+---- 关于这个问题, 参见驱动注册部分, 已经进行来补充, 在设备驱动注册的时候也会注册总线去探测设备(通过driver_attach函数)
 :::
 
 ## platform 设备和驱动匹配
 
-以下是 platform 总线注册时依次调用到的函数
+::: warning 注意
+驱动注册的时候, 通过 bus_for_each_<span style="color:red;">dev</span> 遍历总线上的所有设备, 检查注册的驱动是否匹配某个设备, 通过 \__driver_attach 函数匹配驱动并执行
+
+设备注册的时候, 通过 bus_for_each_<span style="color:red;">drv</span> 遍历总线上的所有驱动, 检查注册的设备是否能够被某个驱动匹配, 通过 \__device_attach_driver 函数匹配驱动并执行
+:::
+
+### 先注册设备后注册驱动的情况
+
+#### bus_for_each_dev
+
+```c
+```
+
+如上, 通过 bus_for_each_dev 遍历总线上的所有设备, 探测该驱动程序是否匹配设备, 匹配以及运行驱动将通过  \__driver_attach 函数进行
+
+其中 sp->drivers_autoprobe 是通过 bus_register 函数注册 platform_bus_type 时进行设置的, 其值等于1
+
+### 先注册驱动后注册设备的情况
+
+如下是在设备注册的时候, platform 总线为新设备探测驱动时依次调用到的函数
 
 ```text
 __device_attach
@@ -785,7 +863,7 @@ __device_attach
         ----> platform_match
 ```
 
-### device\_initial\_probe
+#### device\_initial\_probe
 
 <div id="device_initial_probe" />
 
@@ -815,10 +893,11 @@ void device_initial_probe(struct device *dev)
     __device_attach(dev, true);
 }
 ```
-如上一章所诉, 在 bus_probe_device 中, 通过 device_initial_probe 函数为设备进行探测驱动
+
+如设备注册中描述的一样, 先注册驱动后注册设备的情况下, 将在 bus_probe_device 中, 通过 device_initial_probe 函数为设备进行探测驱动
 
 
-### \__device\_attach
+#### \__device\_attach
 
 <div id="__device_attach" />
 
@@ -884,9 +963,9 @@ out_unlock:
 如上, 是为设备匹配对应的驱动, 这里分成3部分, 第一部分是设备处于`dead`状态(?)时, 不进行处理, 第二部分是设备已经绑定了驱动程序, 此时直接运行其绑定的驱动(这个应该是手动选择驱动程序处理)，第三部分则是遍历总线, 找到运行合适的驱动(这个是自动选择驱动程序的处理)
 
 
-### 手动选择驱动
+#### 手动选择驱动
 
-#### device_bind_driver
+##### device_bind_driver
 
 <div id="device_bind_driver" />
 
@@ -925,7 +1004,7 @@ EXPORT_SYMBOL_GPL(device_bind_driver);
 如上, 是绑定一个驱动到设备的操作, 其具体实现通过 driver_bound 函数完成
 
 
-#### driver_bound
+##### driver_bound
 
 <div id="driver_bound" />
 
@@ -978,9 +1057,9 @@ klist_add_tail(&dev->p->knode_driver, &dev->driver->p->klist_devices);
 ```
 将设备追加到了驱动的`klist_devices`链表中，之后?
 
-### 自动选择驱动
+#### 自动选择驱动
 
-#### bus\_for\_eac\h_drv
+##### bus\_for\_each\_drv
 
 <div id="bus_for_each_drv" />
 
@@ -1029,7 +1108,7 @@ EXPORT_SYMBOL_GPL(bus_for_each_drv);
 如上, 是迭代总线的 klist_drivers 链表, 依次为设备(data参数是一个结构体, 其dev成员遍历包含待驱动的设备)尝试调用每个驱动程序, 直到某个程序返回 0 为止(??), 表示可以驱动该设备(即这个驱动程序匹配该设备)
 
 
-#### \__device\_attach\_driver
+##### \__device\_attach\_driver
 
 <div id="__device_attach_driver" />
 
@@ -1081,7 +1160,7 @@ static int __device_attach_driver(struct device_driver *drv, void *_data)
 \__device_attach_driver 函数用于检测设备是否能够匹配驱动, 其通过 driver_match_device 完成
 
 
-#### driver_match_device
+##### driver_match_device
 
 ```c
 static inline int driver_match_device(struct device_driver *drv,
@@ -1092,7 +1171,7 @@ static inline int driver_match_device(struct device_driver *drv,
 ```
 如上, 是在总线的 match 回调函数不为空的情况下, 调用 match 回调函数, 对于 platform 总线来说， match对应的回调函数为 platform_match, 其在注册 platform_bus_type 中定义, 可以查看前面章节中的 [platform_bus_init 部分](#platform_bus_init)
 
-#### platform\_match
+##### platform\_match
 
 <div id="platform_match" />
 
@@ -1138,10 +1217,10 @@ static int platform_match(struct device *dev, struct device_driver *drv)
 
 如上, 是在相同总线上进行驱动和设备之间的匹配, 当设备和驱动匹配的情况下, platform_match 返回 1
 
-正如[platform 设备](./platform.md)中提到的一样, platform_match 函数中，platform 设备和 platform 驱动间匹配有 4 种可能性(同时也决定了匹配时的优先级):
+正如[platform 设备](./platform.md)中提到的一样, platform_match 函数中，platform 设备和 platform 驱动间匹配有 4 种可能性(同时也决定了匹配时的优先级)
 
 
-##### of_driver_match_device
+###### of_driver_match_device
 
 ```c
     /* Attempt an OF style match first */
@@ -1158,7 +1237,7 @@ static int platform_match(struct device *dev, struct device_driver *drv)
 (3) 匹配设备树中的设备节点名
 
 
-##### acpi_driver_match_device
+###### acpi_driver_match_device
 
 
 ```c
@@ -1169,7 +1248,7 @@ static int platform_match(struct device *dev, struct device_driver *drv)
 
 基于 ACPI 风格的匹配, 关于 ACPI 表, 请参考[platform设备](./platform.md)
 
-##### platform_match_id
+###### platform_match_id
 
 
 ```c
@@ -1180,7 +1259,7 @@ static int platform_match(struct device *dev, struct device_driver *drv)
 
 匹配 ID 表, 即 platform_device 设备名是否出现在 platform_driver 的 ID 表内, 关于 ID 表, 请参考[platform设备](./platform.md)
 
-##### dev->name 和 drv->name
+###### dev->name 和 drv->name
 
 
 ```c
