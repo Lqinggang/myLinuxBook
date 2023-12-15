@@ -1,4 +1,6 @@
-# 字符设备驱动详解
+# 字符设备驱动介绍
+
+由前面章节的 [platform设备](../platform/platform.md)以及[platform 设备和驱动的匹配](../platform/match.md), 我们已经了解了 [Linux 设备驱动模型](./model.md) 大致样貌, 这里将以字符设备驱动为原型, 介绍 [Linux 设备驱动模型](./model.md) 和 [VFS虚拟文件系统](../fs/README.md)之间的关系
 
 ## 内核的启动
 
