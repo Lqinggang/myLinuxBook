@@ -41,7 +41,7 @@ kobject 是组成设备模型的基本结构, 单独的 kobject 对象一般很�
 ### Linux 驱动程序对象
 
 
-每个设备驱动都由`device_drive`对象描述, 在Linux 设备对象(struct device结构体)中, 有一个`driver`字段, 即表示设备对应的驱动程序, 详情请参考[Linux 驱动程序对象](./modules/modules.md#driver)
+每个设备驱动都由`device_drive`对象描述, 在Linux 设备对象(struct device结构体)中, 有一个`driver`字段, 即表示设备对应的驱动程序, 详情请参考[Linux 驱动程序对象](./modules/modules.md#device_driver)
 
 ### Linux 类对象
 

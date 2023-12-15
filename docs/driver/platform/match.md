@@ -1100,7 +1100,7 @@ static int __driver_attach(struct device *dev, void *data)
 }
 ```
 
-如上, 是驱动探测设备部分, 其首先通过 [driver_match_device](#driver_match_device) 函数判断驱动是否匹配设备, 在匹配之后, 将通过 driver_probe_device 函数触发驱动执行 probe 回调函数
+如上, 是驱动探测设备部分, 其首先通过 [driver_match_device](#driver_match_device) 函数判断驱动是否匹配设备, 在匹配之后, 将通过 [driver_probe_device](#driver_probe_device ) 函数触发驱动执行 probe 回调函数
 
 ### 先注册驱动后注册设备的情况
 
@@ -1382,7 +1382,7 @@ static int __device_attach_driver(struct device_driver *drv, void *_data)
 }
 ```
 
-\__device_attach_driver 函数用于检测设备是否能够匹配驱动, 其通过 [driver_match_device](#driver_match_device) 完成
+\__device_attach_driver 函数用于检测设备是否能够匹配驱动, 其通过 [driver_match_device](#driver_match_device) 完成, 匹配的情况下, 通过 [driver_probe_device](#driver_probe_device) 触发执行 probe 回调函数
 
 
 
@@ -1434,4 +1434,266 @@ static int driver_probe_device(struct device_driver *drv, struct device *dev)
 }
 ```
 
-如上, 是触发执行 probe (总线或驱动)回调函数的入口函数
+如上, 是触发执行 probe (总线或驱动)回调函数的入口函数, 具体的 probe 操作由 __driver_probe_device 函数完成
+
+
+#### \_\_driver\_probe\_device
+
+```c
+static int __driver_probe_device(struct device_driver *drv, struct device *dev)
+{
+    int ret = 0; 
+
+    if (dev->p->dead || !device_is_registered(dev))
+        return -ENODEV;
+    if (dev->driver)
+        return -EBUSY;
+
+    dev->can_match = true;
+    pr_debug("bus: '%s': %s: matched device %s with driver %s\n",
+         drv->bus->name, __func__, dev_name(dev), drv->name);
+
+    pm_runtime_get_suppliers(dev);
+    if (dev->parent)
+        pm_runtime_get_sync(dev->parent);
+
+    pm_runtime_barrier(dev);
+    if (initcall_debug)
+        ret = really_probe_debug(dev, drv);
+    else 
+        ret = really_probe(dev, drv);
+    pm_request_idle(dev);
+
+    if (dev->parent)
+        pm_runtime_put(dev->parent);
+
+    pm_runtime_put_suppliers(dev);
+    return ret; 
+}
+```
+
+如上 \_\_driver\_probe\_device 函数会在执行 probe 操作前后进行适当的判断, 然后通过调用 really_probe 执行真正的 probe 回调函数
+
+
+#### really\_probe
+
+```c
+static int really_probe(struct device *dev, struct device_driver *drv)
+{
+    bool test_remove = IS_ENABLED(CONFIG_DEBUG_TEST_DRIVER_REMOVE) &&
+               !drv->suppress_bind_attrs;
+    int ret, link_ret;
+    
+    if (defer_all_probes) {
+        /* 
+         * Value of defer_all_probes can be set only by
+         * device_block_probing() which, in turn, will call
+         * wait_for_device_probe() right after that to avoid any races.
+         */
+        dev_dbg(dev, "Driver %s force probe deferral\n", drv->name);
+        return -EPROBE_DEFER;
+    }
+
+    link_ret = device_links_check_suppliers(dev);
+    if (link_ret == -EPROBE_DEFER)
+        return link_ret;
+
+    pr_debug("bus: '%s': %s: probing driver %s with device %s\n",
+         drv->bus->name, __func__, drv->name, dev_name(dev));
+    if (!list_empty(&dev->devres_head)) {
+        dev_crit(dev, "Resources present before probing\n");
+        ret = -EBUSY;
+        goto done;
+    }
+
+re_probe:
+    dev->driver = drv;
+
+    /* If using pinctrl, bind pins now before probing */
+    ret = pinctrl_bind_pins(dev);
+    if (ret)
+        goto pinctrl_bind_failed;
+
+    if (dev->bus->dma_configure) {
+        ret = dev->bus->dma_configure(dev);
+        if (ret)
+            goto pinctrl_bind_failed;
+    }
+
+    ret = driver_sysfs_add(dev);
+    if (ret) {
+        pr_err("%s: driver_sysfs_add(%s) failed\n",
+               __func__, dev_name(dev));
+        goto sysfs_failed;
+    }
+
+    if (dev->pm_domain && dev->pm_domain->activate) {
+        ret = dev->pm_domain->activate(dev);
+        if (ret)
+            goto probe_failed;
+    }
+
+    ret = call_driver_probe(dev, drv);
+    if (ret) {
+        /*
+         * If fw_devlink_best_effort is active (denoted by -EAGAIN), the
+         * device might actually probe properly once some of its missing
+         * suppliers have probed. So, treat this as if the driver
+         * returned -EPROBE_DEFER.
+         */
+        if (link_ret == -EAGAIN)
+            ret = -EPROBE_DEFER;
+
+        /*
+         * Return probe errors as positive values so that the callers
+         * can distinguish them from other errors.
+         */
+        ret = -ret;
+        goto probe_failed;
+    }
+
+   ret = device_add_groups(dev, drv->dev_groups);
+    if (ret) {
+        dev_err(dev, "device_add_groups() failed\n");
+        goto dev_groups_failed;
+    }
+
+    if (dev_has_sync_state(dev)) {
+        ret = device_create_file(dev, &dev_attr_state_synced);
+        if (ret) {
+            dev_err(dev, "state_synced sysfs add failed\n");
+            goto dev_sysfs_state_synced_failed;
+        }
+    }
+
+    if (test_remove) {
+        test_remove = false;
+
+        device_remove(dev);
+        driver_sysfs_remove(dev);
+        if (dev->bus && dev->bus->dma_cleanup)
+            dev->bus->dma_cleanup(dev);
+        device_unbind_cleanup(dev);
+
+        goto re_probe;
+    }
+
+    pinctrl_init_done(dev);
+
+    if (dev->pm_domain && dev->pm_domain->sync)
+        dev->pm_domain->sync(dev);
+
+    driver_bound(dev);
+    pr_debug("bus: '%s': %s: bound device %s to driver %s\n",
+         drv->bus->name, __func__, dev_name(dev), drv->name);
+    goto done;
+
+dev_sysfs_state_synced_failed:
+dev_groups_failed:
+    device_remove(dev);
+probe_failed:
+    driver_sysfs_remove(dev);
+sysfs_failed:
+    bus_notify(dev, BUS_NOTIFY_DRIVER_NOT_BOUND);
+    if (dev->bus && dev->bus->dma_cleanup)
+        dev->bus->dma_cleanup(dev);
+pinctrl_bind_failed:
+    device_links_no_driver(dev);
+    device_unbind_cleanup(dev);
+done:
+    return ret;
+}
+```
+
+如上是 really_probe 具体实现, 其主要是通过调用 call_driver_probe 函数触发 probe 操作, 之后 driver_bound 将驱动和设备之间进行绑定(这里是为了下次不需要遍历全部驱动就可以知道要使用哪个驱动? 参考设备注册部分的[device_bind_driver](#device_bind_driver)函数, 应该这里生效之后, 下次就不需要在探测驱动了?)
+
+
+#### call_driver_probe
+
+```c
+static int call_driver_probe(struct device *dev, struct device_driver *drv)
+{
+    int ret = 0;
+
+    if (dev->bus->probe)
+        ret = dev->bus->probe(dev);
+    else if (drv->probe)
+        ret = drv->probe(dev);
+
+    switch (ret) {
+    case 0:
+        break;
+    case -EPROBE_DEFER:
+        /* Driver requested deferred probing */
+        dev_dbg(dev, "Driver %s requests probe deferral\n", drv->name);
+        break;
+    case -ENODEV:
+    case -ENXIO:
+        pr_debug("%s: probe of %s rejects match %d\n",
+             drv->name, dev_name(dev), ret);
+        break;
+    default:
+        /* driver matched but the probe failed */
+        pr_warn("%s: probe of %s failed with error %d\n",
+            drv->name, dev_name(dev), ret);
+        break;
+    }
+
+    return ret;
+}
+```
+
+如上，是通过 call_driver_probe 函数调用具体的 probe 回调函数, 在该函数中, 首先查看总线上是否有 probe 回调函数的定义, 有的话，优先执行总线上的 probe 回调函数，否则在驱动中定义有 probe 回调函数情况下, 执行驱动的 probe 函数
+
+参见 [platform_bus 总线注册部分](#platform_bus_init), 可以知道对于 platform_bus 总线，其是定义有 probe 回调函数(即 [platform_probe](#platform_probe))的, 所以对于 platform_bus 总线而言，call_driver_probe 将执行总线的 probe 回调函数 [platform_probe](#platform_probe)
+
+
+#### platform\_probe
+
+```c
+static int platform_probe(struct device *_dev)
+{
+    struct platform_driver *drv = to_platform_driver(_dev->driver);
+    struct platform_device *dev = to_platform_device(_dev);
+    int ret;
+
+    /*
+     * A driver registered using platform_driver_probe() cannot be bound
+     * again later because the probe function usually lives in __init code
+     * and so is gone. For these drivers .probe is set to
+     * platform_probe_fail in __platform_driver_probe(). Don't even prepare
+     * clocks and PM domains for these to match the traditional behaviour.
+     */
+    if (unlikely(drv->probe == platform_probe_fail))
+        return -ENXIO;
+
+    ret = of_clk_set_defaults(_dev->of_node, false);
+    if (ret < 0)
+        return ret;
+
+    ret = dev_pm_domain_attach(_dev, true);
+    if (ret)
+        goto out;
+
+    if (drv->probe) {
+        ret = drv->probe(dev);
+        if (ret)
+            dev_pm_domain_detach(_dev, true);
+    }
+
+out:
+    if (drv->prevent_deferred_probe && ret == -EPROBE_DEFER) {
+        dev_warn(_dev, "probe deferral not supported\n");
+        ret = -ENXIO;
+    }
+
+    return ret;
+}
+```
+
+如上, 是 platform_probe 的具体实现, 注意, 这里将[通用设备(即struct device)](../modules/modules.md#device)和[通用驱动(即 struct device_driver)](../modules/modules.md#device_driver)转换成了[platform 设备(即 struct platform_device)](platform.md#platform_device)和[platform 驱动 (即 struct platform_driver)](platform.md#platform_driver)
+
+在 platform_probe 函数中, 如果驱动也定义了 probe 回调函数, 则也会调用驱动的 probe 回调函数
+
+
+到这里，platform 总线，驱动和设备的注册，以及它们之间的匹配和触发执行 probe 回调函数的过程介绍完毕, 回顾这个过程，不难发现 platform 设备和驱动其实就是普通设备的一个特列而已, 同时也可以理解 [Linux 设备驱动模型](./model.md)的具体实现过程
