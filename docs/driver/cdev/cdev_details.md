@@ -262,6 +262,8 @@ const struct file_operations def_chr_fops = {
 };
 ```
 
+<div id="chrdev_open" />
+
 ### 字符设备的打开
 
 如上, 当一个字符设备被打开的时候, 将执行 chrdev_open 函数, 其定义如下

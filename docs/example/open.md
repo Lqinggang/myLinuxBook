@@ -89,11 +89,11 @@ int sys_open(const char *path, int flags, mode_t mode)
 
 如上， 执行`syscall` 触发系统调用中断, 其中, `rax`寄存器保存系统调用号 num 的值, 然后将作为入参传递给[中断向量表](../interrupt/README.md)中系统调用中断对应的处理函数，该中断处理函数将从`rax`寄存器中读取入参, 根据入参得到系统调用号, 并依次调用对应的系统调用函数，而`rdi`, `rsi`, `rdx` 这三个寄存器的值, 将作为系统调用函数的参数
 
-### do_syscall_64 与 do_syscall_x64
+### do\_syscall\_64 与 do\_syscall\_x64
 
 如上, 在执行 syscall 之后, 最终会在 `arch/x86/entry/entry_64.S`中通过`call do_syscall_64`执行 do_syscall_64 函数, 而该函数中将调用 do_syscall_x64 函数去执行系统调用回调函数
 
-### sys_call_table
+### sys\_call\_table
 
 在 do_syscall_x64 函数中, 将以传入的系统调用号(通过`rax`寄存器)为 `sys_call_table` 数组的下标, 然后执行对应的系统调用回调函数
 
@@ -146,10 +146,22 @@ static long do_sys_openat2(int dfd, const char __user *filename,
     return fd;
 }
 ```
+如上, 是打开一个文件时, 需要调用的函数, 其中, filename 是一个文件名, 即实际就是打开一个文件的时候, 通过 get_unused_fd_flags 从当前进程的进程描述符中的文件描述符表中找到可用的文件描述符, 然后将该[文件描述符](../fs/commonfs.md)和打开的文件对象进行关联
 
 ## open 函数与进程
 
 ```c
+int __get_unused_fd_flags(unsigned flags, unsigned long nofile)
+{
+    return alloc_fd(0, nofile, flags);
+}
+
+int get_unused_fd_flags(unsigned flags)
+{
+    return __get_unused_fd_flags(flags, rlimit(RLIMIT_NOFILE));
+}
+EXPORT_SYMBOL(get_unused_fd_flags);
+
 /*
  * allocate a file descriptor, mark it busy.
  */
@@ -237,9 +249,260 @@ struct files_struct init_files = {
 };
 ```
 
+
 ## open 函数与虚拟文件系统
 
+### do\_filp\_open 
+
+```c
+struct file *do_filp_open(int dfd, struct filename *pathname,
+        const struct open_flags *op) 
+{
+    struct nameidata nd;
+    int flags = op->lookup_flags;
+    struct file *filp;
+
+    set_nameidata(&nd, dfd, pathname, NULL);
+    filp = path_openat(&nd, op, flags | LOOKUP_RCU);
+    if (unlikely(filp == ERR_PTR(-ECHILD)))
+        filp = path_openat(&nd, op, flags);
+    if (unlikely(filp == ERR_PTR(-ESTALE)))
+        filp = path_openat(&nd, op, flags | LOOKUP_REVAL);
+    restore_nameidata();
+    return filp;
+}
+```
+在 do_sys_openat2 函数中, 通过 do_filp_open 打开一个文件对象, 其实现如上
+
+### path\_openat
+
+```c
+static struct file *path_openat(struct nameidata *nd,
+            const struct open_flags *op, unsigned flags)
+{
+    struct file *file;
+    int error;
+
+    file = alloc_empty_file(op->open_flag, current_cred());
+    if (IS_ERR(file))
+        return file;
+
+    if (unlikely(file->f_flags & __O_TMPFILE)) {
+        error = do_tmpfile(nd, flags, op, file);
+    } else if (unlikely(file->f_flags & O_PATH)) {
+        error = do_o_path(nd, flags, file);
+    } else {
+        const char *s = path_init(nd, flags);
+        while (!(error = link_path_walk(s, nd)) &&
+               (s = open_last_lookups(nd, file, op)) != NULL)
+            ;
+        if (!error)
+            error = do_open(nd, file, op);
+        terminate_walk(nd);
+    }
+    if (likely(!error)) {
+        if (likely(file->f_mode & FMODE_OPENED))
+            return file;
+        WARN_ON(1);
+        error = -EINVAL; 
+    }
+    fput(file);
+    if (error == -EOPENSTALE) {
+        if (flags & LOOKUP_RCU) 
+            error = -ECHILD;
+        else
+            error = -ESTALE;
+    }
+    return ERR_PTR(error);
+}
+```
+
+如上, 打开一个文件对象的时候, 首先通过 alloc_empty_file 分配一个空的文件对象, 之后, 根据打开的文件的类型, 调用不同的设备, 对于临时文件, 调用 do_tmpfile 函数, 对于目录, 调用 do_o_path 函数， 其他的文件将调用 do_open 打开
+
+### do_open
+
+```c
+/*
+ * Handle the last step of open()
+ */
+static int do_open(struct nameidata *nd,
+           struct file *file, const struct open_flags *op)
+{
+    ...
+    error = may_open(idmap, &nd->path, acc_mode, open_flag);
+    if (!error && !(file->f_mode & FMODE_OPENED))
+        error = vfs_open(&nd->path, file);
+    ...
+
+    return error;
+}
+```
+
+如上, 在进行一系列检查之后, 将通过 vfs_open 打开文件
+
+
+### vfs_open
+
+```c
+/**
+ * vfs_open - open the file at the given path
+ * @path: path to open
+ * @file: newly allocated file with f_flag initialized
+ */
+int vfs_open(const struct path *path, struct file *file)
+{
+    file->f_path = *path;
+    return do_dentry_open(file, d_backing_inode(path->dentry), NULL);
+}
+```
+
+### do_dentry_open
+
+```c
+static int do_dentry_open(struct file *f,
+              struct inode *inode,
+              int (*open)(struct inode *, struct file *))
+{
+    static const struct file_operations empty_fops = {};
+    int error;
+
+    path_get(&f->f_path);
+    f->f_inode = inode;
+    f->f_mapping = inode->i_mapping;
+    f->f_wb_err = filemap_sample_wb_err(f->f_mapping);
+    f->f_sb_err = file_sample_sb_err(f);
+
+    if (unlikely(f->f_flags & O_PATH)) {
+        f->f_mode = FMODE_PATH | FMODE_OPENED;
+        f->f_op = &empty_fops;
+        return 0;
+    }
+
+    if ((f->f_mode & (FMODE_READ | FMODE_WRITE)) == FMODE_READ) {
+        i_readcount_inc(inode);
+    } else if (f->f_mode & FMODE_WRITE && !special_file(inode->i_mode)) {
+        error = get_write_access(inode);
+        if (unlikely(error))
+            goto cleanup_file;
+        error = __mnt_want_write(f->f_path.mnt);
+        if (unlikely(error)) {
+            put_write_access(inode);
+            goto cleanup_file;
+        }
+        f->f_mode |= FMODE_WRITER;
+    }
+
+    /* POSIX.1-2008/SUSv4 Section XSI 2.9.7 */
+    if (S_ISREG(inode->i_mode) || S_ISDIR(inode->i_mode))
+        f->f_mode |= FMODE_ATOMIC_POS;
+
+    f->f_op = fops_get(inode->i_fop);
+    if (WARN_ON(!f->f_op)) {
+        error = -ENODEV;
+        goto cleanup_all;
+    }
+    error = security_file_open(f);
+    if (error)
+        goto cleanup_all;
+
+    error = break_lease(file_inode(f), f->f_flags);
+    if (error)
+        goto cleanup_all;
+
+    /* normally all 3 are set; ->open() can clear them if needed */
+    f->f_mode |= FMODE_LSEEK | FMODE_PREAD | FMODE_PWRITE;
+    if (!open)
+        open = f->f_op->open;
+    if (open) {
+        error = open(inode, f);
+        if (error)
+            goto cleanup_all;
+    }
+    f->f_mode |= FMODE_OPENED;
+    if ((f->f_mode & FMODE_READ) &&
+         likely(f->f_op->read || f->f_op->read_iter))
+        f->f_mode |= FMODE_CAN_READ;
+    if ((f->f_mode & FMODE_WRITE) &&
+         likely(f->f_op->write || f->f_op->write_iter))
+        f->f_mode |= FMODE_CAN_WRITE;
+    if ((f->f_mode & FMODE_LSEEK) && !f->f_op->llseek)
+        f->f_mode &= ~FMODE_LSEEK;
+    if (f->f_mapping->a_ops && f->f_mapping->a_ops->direct_IO)
+        f->f_mode |= FMODE_CAN_ODIRECT;
+
+    f->f_flags &= ~(O_CREAT | O_EXCL | O_NOCTTY | O_TRUNC);
+    f->f_iocb_flags = iocb_flags(f);
+
+    file_ra_state_init(&f->f_ra, f->f_mapping->host->i_mapping);
+
+    if ((f->f_flags & O_DIRECT) && !(f->f_mode & FMODE_CAN_ODIRECT))
+        return -EINVAL;
+    /*
+     * XXX: Huge page cache doesn't support writing yet. Drop all page
+     * cache for this file before processing writes.
+     */
+    if (f->f_mode & FMODE_WRITE) {
+        /*
+         * Paired with smp_mb() in collapse_file() to ensure nr_thps
+         * is up to date and the update to i_writecount by
+         * get_write_access() is visible. Ensures subsequent insertion
+         * of THPs into the page cache will fail.
+         */
+        smp_mb();
+        if (filemap_nr_thps(inode->i_mapping)) {
+            struct address_space *mapping = inode->i_mapping;
+
+            filemap_invalidate_lock(inode->i_mapping);
+            /*
+             * unmap_mapping_range just need to be called once
+             * here, because the private pages is not need to be
+             * unmapped mapping (e.g. data segment of dynamic
+             * shared libraries here).
+             */
+            unmap_mapping_range(mapping, 0, 0, 0);
+            truncate_inode_pages(mapping, 0);
+            filemap_invalidate_unlock(inode->i_mapping);
+        }
+    }
+
+    /*
+     * Once we return a file with FMODE_OPENED, __fput() will call
+     * fsnotify_close(), so we need fsnotify_open() here for symmetry.
+     */
+    fsnotify_open(f);
+    return 0;
+
+cleanup_all:
+    if (WARN_ON_ONCE(error > 0))
+        error = -EINVAL;
+    fops_put(f->f_op);
+    put_file_access(f);
+cleanup_file:
+    path_put(&f->f_path);
+    f->f_path.mnt = NULL;
+    f->f_path.dentry = NULL;
+    f->f_inode = NULL;
+    return error;
+}
+```
+如上, 是在调用指定文件的open函数的处理过程
+
+```c
+    f->f_op = fops_get(inode->i_fop);
+```
+其中, 如上是获取与[文件索引对象](../fs/commonfs.md#inode)的文件操作表, 正如[字符设备驱动介绍](../driver/cdev/cdev_details.md)一样，对于字符设备, 其通过 init_special_inode  函数在打开一个字符设备时，根据打开标志是字符设备, 则将[文件索引对象](../fs/commonfs.md#inode)的文件操作表设置为 def_chr_fops, 这里通过 fops_get 获取到的就是 def_chr_fops
+
+```c
+    if (!open)
+        open = f->f_op->open;
+    if (open) {
+        error = open(inode, f);
+        if (error)
+            goto cleanup_all;
+    }
+```
+如上, 在获取到文件索引对象关联的文件操作表之后, 通过关联的文件操作表打开文件, 对于字符设备, 在[字符设备驱动介绍](../driver/cdev/cdev_details.md)一节中, 可以看到对应的是 chrdev_open 函数, 至此, VFS 将转到通过字符设备的 open 函数打开字符设备
 
 ## open 函数与设备驱动
 
-
+这里以字符设备驱动为例, 在[字符设备驱动介绍](../driver/cdev/cdev_details.md#chrdev_open)一节中，已经介绍过 chrdev_open 函数， 这里不再重复介绍
