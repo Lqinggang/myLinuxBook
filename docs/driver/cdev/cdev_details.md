@@ -2,7 +2,11 @@
 
 由前面章节的 [platform设备](../platform/platform.md)以及[platform 设备和驱动的匹配](../platform/match.md), 我们已经了解了 [Linux 设备驱动模型](./model.md) 大致样貌, 这里将以字符设备驱动为原型, 介绍 [Linux 设备驱动模型](./model.md) 和 [VFS虚拟文件系统](../fs/README.md)之间的关系
 
-## 内核的启动
+## 前期准备
+
+这一部分是介绍字符设备能够注册和加载之前，系统做的一些准备, 主要是一些通用文件模型的初始化, 一些字符设备相关的全局变量的初始化等
+
+### 内核的启动
 
 Linux 内核通过 start_kernel() 函数开始启动, 该函数包含在 init/main.c 中
 
@@ -18,7 +22,7 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
 ```
 
 
-## vfs_caches_init 函数
+### vfs\_caches\_init 函数
 
 在 start_kernel 函数中, 会调用 vfs_caches_init() 函数初始化 [VFS 虚拟文件系统](../fs/README.md)
 
@@ -35,7 +39,7 @@ void __init vfs_caches_init(void)
 
 <div id="chrdev_init"/>
 
-## chrdev_init 函数
+### chrdev_init 函数
 
 这里会调用 kobj_map_init 函数初始化字符设备的 kobj 映射结构体 cdev_map, 如下
 
@@ -65,10 +69,28 @@ struct kobj_map {
 
 其中, base_probe 将赋值给  cdev_map->probes[i].get(0 &lt;= i &lt; 255), 静态声明的 chrdevs_lock 赋值给 cdev_map->lock
 
+::: warning 注意
+这里的 cdev_map 非常关键, 可以理解为保存所有注册的字符设备
+:::
 
-## alloc_chrdev_region 函数
 
-alloc_chrdev_region 函数动态的分配一个主设备号, 其实现如下
+## 字符设备的注册
+
+如下是字符设备的注册过程, 字符设备的注册由 cdev_add 函数完成, 这个函数实际上就是将注册的字符设备添加到上一节介绍的 cdev_map 中
+
+字符设备的注册由几个步骤组成：
+
+1. 申请字符设备描述符(alloc_chrdev_region )
+
+2. 申请字符设备(cdev_alloc)
+
+3. 绑定字符设备和字符设备文件操作表(cdev_init)
+
+4. 将字符设备描述符和字符设备做映射(cdev_add)
+
+### alloc\_chrdev\_region 函数
+
+alloc_chrdev_region 函数动态的分配一个主设备号(即申请一个字符设备描述符), 其实现如下
 
 ```c
 /**
@@ -96,9 +118,9 @@ int alloc_chrdev_region(dev_t *dev, unsigned baseminor, unsigned count,
 
 这里调用 __register_chrdev_region 函数申请指定数量的字符设备, 然后将其与 [chrdevs 散列表](./cdev.md#chrdevs)找到的没有使用字符设备进行绑定(指针赋值)
 
-## cdev_alloc 函数
+### cdev_alloc 函数
 
-cdev_alloc 函数用于动态申请一个 cdev 描述符,  然后初始化内嵌的 kobject 数据结构体, 其实现如下
+cdev_alloc 函数用于动态申请一个 cdev 描述符(即申请一个字符设备),  然后初始化内嵌的 kobject 数据结构体, 其实现如下
 
 ```c
 /**
@@ -117,10 +139,9 @@ struct cdev *cdev_alloc(void)
 }
 ```
 
-## cdev_init 函数
+### cdev_init 函数
 
-
-cdev_init 函数用于对申请到的字符设备进行初始化, 并建立字符设备和文件操作表之间的连接, 其实现如下
+cdev_init 函数用于对申请到的字符设备进行初始化, 并建立字符设备和文件操作表之间的连接(即将字符设备和对应的操作表进行绑定), 其实现如下
 
 ```c
 /**
@@ -140,7 +161,7 @@ void cdev_init(struct cdev *cdev, const struct file_operations *fops)
 }
 ```
 
-## cdev_add 函数
+### cdev_add 函数
 
 cdev_add 函数用于向[Linux 设备驱动模型](./model.md)中注册一个 cdev 描述符
 
@@ -176,9 +197,9 @@ int cdev_add(struct cdev *p, dev_t dev, unsigned count)
 }
 ```
 
-其中, cdev_map 在 [chrdev_init 函数](#chrdev_init)中初始化, 执行完转之后, dev 对应的主设备号开始的count个设备将链接到 cdev_map, 此时就可以从 cdev_map 中找到已经打开/申请的设备
+其中, cdev_map 在 [chrdev_init 函数](#chrdev_init)中初始化, 执行完成之后, dev 对应的主设备号开始的count个设备将链接到 cdev_map, 此时就可以从 cdev_map 中找到已经打开/申请的设备
 
-## kobj_map 函数
+### kobj_map 函数
 
 ```c
 int kobj_map(struct kobj_map *domain, dev_t dev, unsigned long range,
@@ -223,10 +244,11 @@ int kobj_map(struct kobj_map *domain, dev_t dev, unsigned long range,
 }
 ```
 
+如上，是将字符设备描述符和字符设备做映射, 然后添加到 cdev_map 中, 完成字符设备的注册, 经过这一步之后, dev_t 和 struct cdev 将进行关联, 后续就可以直接通过 dev_t 使用关联的 struct cdev 设备, 到这一步, 字符设备的注册就算完成了
 
-## 文件操作表
+## 文件操作
 
-如下是, 字符设备默认的文件操作表, 该文件操作表将在 init_special_inode 函数中， 当打开的设备是字符设备时, 被赋值给 inode 对应的文件操作表
+如下是, 字符设备默认的文件操作表, 该文件操作表将在 init_special_inode 函数中， 当打开的设备是字符设备时, 被赋值给 [inode 索引节点对象](../../fs/commonfs.md#inode)对应的文件操作表, 关于索引对象节点等, 请查看[VFS虚拟文件系统](../../fs/commonfs.md)
 
 ```c
 /*
@@ -240,8 +262,7 @@ const struct file_operations def_chr_fops = {
 };
 ```
 
-
-## 字符设备的打开
+### 字符设备的打开
 
 如上, 当一个字符设备被打开的时候, 将执行 chrdev_open 函数, 其定义如下
 
@@ -307,5 +328,7 @@ static int chrdev_open(struct inode *inode, struct file *filp)
     return ret;
 }
 ```
+
+综上, 对于 inode 索引节点对象, 即将调用 chrdev_open 函数, 而在 chrdev_open 中, 最终又调用字符设备的 open 函数
 
 具体字符设备的相关文件操作请参考[VFS 虚拟文件系统](../../fs/README.md), 对于 open 系统调用请参考[open 函数](../../example/open.md)

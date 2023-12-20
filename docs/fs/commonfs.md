@@ -166,7 +166,7 @@ struct super_block {
 
 所有的超级块对象都以双向循环链表的形式链接到一起, 链表中第一个元素使用 super_blocks 变量来表示
 
-
+<div id="inode" />
 ### 索引节点对象
 
 ```c
