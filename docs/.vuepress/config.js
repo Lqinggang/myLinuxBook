@@ -35,7 +35,14 @@ module.exports = {
                     [ '/driver/platform/platform.md', 'platform 设备' ],
                     [ '/driver/platform/match.md', 'platform 设备和驱动的匹配' ],
                     [ '/driver/cdev/cdev.md', '字符设备驱动' ],
-                    [ '/driver/cdev/cdev_details.md', '字符设备驱动介绍' ]
+                    [ '/driver/cdev/cdev_details.md', '字符设备驱动介绍' ],
+                    {
+                        title: "I2C 设备",
+                        children: [
+                            [ '/driver/i2c/i2c.md', 'I2C设备' ],
+                            [ '/driver/i2c/i2c_core.md', 'I2C核心' ]
+                        ]
+                    }
                 ]
             },
             {
