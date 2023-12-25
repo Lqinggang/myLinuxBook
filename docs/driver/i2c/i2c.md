@@ -30,22 +30,6 @@ I2C 总线驱动是对 I2C 硬件体系结构中适配器端的实现，适配�
 
 I2C 总线驱动主要包含了 I2C 适配器数据结构 i2c_adapter、I2C 适配器的 Algorithm 数据结构 i2c_algorithm 和控制 I2C 适配器产生通信信号的函数
 
-### i2c\_bus\_type
-
-```c
-    .name       = "i2c",
-    .match      = i2c_device_match,
-    .probe      = i2c_device_probe,
-    .remove     = i2c_device_remove,
-    .shutdown   = i2c_device_shutdown,
-};
-EXPORT_SYMBOL_GPL(i2c_bus_type);
-```
-
-正如[platform 设备](../platform/platform.md)中介绍的[platform总线](../platform/platform.md#platform_bus)一样, 对于 i2c 设备, 也有一个 i2c 总线, 即如上定义的 i2c_bus_type, 其和 [platform_bus_type](../platform/platform.md#platform_bus)一样, platform_bus_type 是所有 platform 设备和驱动挂载的总线, i2c_bus_type 是所有 i2c 设备和驱动挂载的总线
-
-i2c_bus_type 将在 i2c_init 函数中通过 bus_register 函数进行注册
-
 ### i2c\_adapter
 
 ```c
