@@ -39,8 +39,10 @@ module.exports = {
                     {
                         title: "I2C 设备",
                         children: [
-                            [ '/driver/i2c/i2c.md', 'I2C设备' ],
-                            [ '/driver/i2c/i2c_core.md', 'I2C核心' ]
+                            [ '/driver/i2c/i2c.md', 'I2C 设备' ],
+                            [ '/driver/i2c/i2c_bus.md', 'I2C 总线' ],
+                            [ '/driver/i2c/i2c_core.md', 'I2C 核心' ],
+                            [ '/driver/i2c/i2c_adapter.md', 'I2C 适配器' ]
                         ]
                     }
                 ]
