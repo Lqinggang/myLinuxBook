@@ -32,10 +32,20 @@ module.exports = {
                     [ '/driver/model.md', 'Linux 设备模型' ],
                     [ '/driver/modules/modules.md', 'Linux 设备驱动相关组件' ],
                     [ '/driver/devicetree.md', 'Linux 设备树' ],
-                    [ '/driver/platform/platform.md', 'platform 设备' ],
-                    [ '/driver/platform/match.md', 'platform 设备和驱动的匹配' ],
-                    [ '/driver/cdev/cdev.md', '字符设备驱动' ],
-                    [ '/driver/cdev/cdev_details.md', '字符设备驱动介绍' ],
+                    {
+                        title: "platform 设备",
+                        children: [
+                            [ '/driver/platform/platform.md', 'platform 设备' ],
+                            [ '/driver/platform/match.md', 'platform 设备和驱动的匹配' ]
+                        ]
+                    },
+                    {
+                        title: "字符设备",
+                        children: [
+                            [ '/driver/cdev/cdev.md', '字符设备驱动' ],
+                            [ '/driver/cdev/cdev_details.md', '字符设备驱动介绍' ]
+                        ]
+                    },
                     {
                         title: "I2C 设备",
                         children: [
