@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>设备树(Device Tree) | Linux 学习笔记</title>
+    <meta name="generator" content="VuePress 1.9.10">
+    
+    <meta name="description" content="Linux 学习笔记">
+    
+    <link rel="preload" href="/mylinuxbook/assets/css/0.styles.47dc1b2a.css" as="style"><link rel="preload" href="/mylinuxbook/assets/js/app.4ad5f28c.js" as="script"><link rel="preload" href="/mylinuxbook/assets/js/7.c4013074.js" as="script"><link rel="preload" href="/mylinuxbook/assets/js/2.da4ee029.js" as="script"><link rel="preload" href="/mylinuxbook/assets/js/1.8f7de685.js" as="script"><link rel="preload" href="/mylinuxbook/assets/js/44.20bb18b5.js" as="script"><link rel="prefetch" href="/mylinuxbook/assets/js/10.2a392a75.js"><link rel="prefetch" href="/mylinuxbook/assets/js/11.c06597a0.js"><link rel="prefetch" href="/mylinuxbook/assets/js/14.abfc81a7.js"><link rel="prefetch" href="/mylinuxbook/assets/js/15.8e04b7be.js"><link rel="prefetch" href="/mylinuxbook/assets/js/16.caf936ae.js"><link rel="prefetch" href="/mylinuxbook/assets/js/17.c375f3a8.js"><link rel="prefetch" href="/mylinuxbook/assets/js/18.8903301e.js"><link rel="prefetch" href="/mylinuxbook/assets/js/19.7ce306d8.js"><link rel="prefetch" href="/mylinuxbook/assets/js/20.5cd38348.js"><link rel="prefetch" href="/mylinuxbook/assets/js/21.2166e19b.js"><link rel="prefetch" href="/mylinuxbook/assets/js/22.8e2d2de4.js"><link rel="prefetch" href="/mylinuxbook/assets/js/23.02b6bf6e.js"><link rel="prefetch" href="/mylinuxbook/assets/js/24.b60c762f.js"><link rel="prefetch" href="/mylinuxbook/assets/js/25.9248acd9.js"><link rel="prefetch" href="/mylinuxbook/assets/js/26.78d25e49.js"><link rel="prefetch" href="/mylinuxbook/assets/js/27.3b523aff.js"><link rel="prefetch" href="/mylinuxbook/assets/js/28.3dc2c5d6.js"><link rel="prefetch" href="/mylinuxbook/assets/js/29.260e7456.js"><link rel="prefetch" href="/mylinuxbook/assets/js/3.77e74f7f.js"><link rel="prefetch" href="/mylinuxbook/assets/js/30.d8cf5cbe.js"><link rel="prefetch" href="/mylinuxbook/assets/js/31.aa735092.js"><link rel="prefetch" href="/mylinuxbook/assets/js/32.4e3e63fe.js"><link rel="prefetch" href="/mylinuxbook/assets/js/33.c253453f.js"><link rel="prefetch" href="/mylinuxbook/assets/js/34.6f66487f.js"><link rel="prefetch" href="/mylinuxbook/assets/js/35.50343bd1.js"><link rel="prefetch" href="/mylinuxbook/assets/js/36.94ff80f2.js"><link rel="prefetch" href="/mylinuxbook/assets/js/37.8ab4fea2.js"><link rel="prefetch" href="/mylinuxbook/assets/js/38.c6108e07.js"><link rel="prefetch" href="/mylinuxbook/assets/js/39.1457bbfb.js"><link rel="prefetch" href="/mylinuxbook/assets/js/4.e378dd76.js"><link rel="prefetch" href="/mylinuxbook/assets/js/40.e1bdfd94.js"><link rel="prefetch" href="/mylinuxbook/assets/js/41.66465ce3.js"><link rel="prefetch" href="/mylinuxbook/assets/js/42.b89cf0de.js"><link rel="prefetch" href="/mylinuxbook/assets/js/43.f94e4875.js"><link rel="prefetch" href="/mylinuxbook/assets/js/45.801523e5.js"><link rel="prefetch" href="/mylinuxbook/assets/js/46.f433d4b9.js"><link rel="prefetch" href="/mylinuxbook/assets/js/47.8affa365.js"><link rel="prefetch" href="/mylinuxbook/assets/js/48.72d455b2.js"><link rel="prefetch" href="/mylinuxbook/assets/js/49.c50686a8.js"><link rel="prefetch" href="/mylinuxbook/assets/js/5.78636818.js"><link rel="prefetch" href="/mylinuxbook/assets/js/50.cb3b550f.js"><link rel="prefetch" href="/mylinuxbook/assets/js/51.6a62369f.js"><link rel="prefetch" href="/mylinuxbook/assets/js/52.7e2b9374.js"><link rel="prefetch" href="/mylinuxbook/assets/js/53.3674e134.js"><link rel="prefetch" href="/mylinuxbook/assets/js/54.afd91567.js"><link rel="prefetch" href="/mylinuxbook/assets/js/55.c78bed3b.js"><link rel="prefetch" href="/mylinuxbook/assets/js/56.035f0150.js"><link rel="prefetch" href="/mylinuxbook/assets/js/57.b1b0bca2.js"><link rel="prefetch" href="/mylinuxbook/assets/js/58.e1f90db2.js"><link rel="prefetch" href="/mylinuxbook/assets/js/59.07c30f18.js"><link rel="prefetch" href="/mylinuxbook/assets/js/6.05d48268.js"><link rel="prefetch" href="/mylinuxbook/assets/js/60.0f4d3030.js"><link rel="prefetch" href="/mylinuxbook/assets/js/61.7fe51358.js"><link rel="prefetch" href="/mylinuxbook/assets/js/62.4b8a6bf3.js"><link rel="prefetch" href="/mylinuxbook/assets/js/63.f02ded6c.js"><link rel="prefetch" href="/mylinuxbook/assets/js/64.d5738a5d.js"><link rel="prefetch" href="/mylinuxbook/assets/js/8.9126a2d6.js"><link rel="prefetch" href="/mylinuxbook/assets/js/9.944e3509.js"><link rel="prefetch" href="/mylinuxbook/assets/js/vendors~docsearch.d9fedd68.js">
+    <link rel="stylesheet" href="/mylinuxbook/assets/css/0.styles.47dc1b2a.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container" data-v-7dd95ae2><div data-v-7dd95ae2><div class="password-shadow password-wrapper-out" style="display:none;" data-v-59e6cb88 data-v-7dd95ae2 data-v-7dd95ae2><h3 class="title" data-v-59e6cb88>Linux 学习笔记</h3> <p class="description" data-v-59e6cb88>Linux 学习笔记</p> <label id="box" class="inputBox" data-v-59e6cb88><input type="password" value="" data-v-59e6cb88> <span data-v-59e6cb88>Konck! Knock!</span> <button data-v-59e6cb88>OK</button></label> <div class="footer" data-v-59e6cb88><span data-v-59e6cb88><i class="iconfont reco-theme" data-v-59e6cb88></i> <a target="blank" href="https://vuepress-theme-reco.recoluan.com" data-v-59e6cb88>vuePress-theme-reco</a></span> <span data-v-59e6cb88><i class="iconfont reco-copyright" data-v-59e6cb88></i> <a data-v-59e6cb88><!---->
+          
+        <!---->
+        2023
+      </a></span></div></div> <div class="hide" data-v-7dd95ae2><header class="navbar" data-v-7dd95ae2><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/mylinuxbook/" class="home-link router-link-active"><!----> <span class="site-name">Linux 学习笔记</span></a> <div class="links"><div class="color-picker"><a class="color-button"><i class="iconfont reco-color"></i></a> <div class="color-picker-menu" style="display:none;"><div class="mode-options"><h4 class="title">Choose mode</h4> <ul class="color-mode-options"><li class="dark">dark</li><li class="auto active">auto</li><li class="light">light</li></ul></div></div></div> <div class="search-box"><i class="iconfont reco-search"></i> <input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/mylinuxbook/" class="nav-link"><i class="undefined"></i>
+  Home
+</a></div> <a href="https://github.com/Lqinggang" target="_blank" rel="noopener noreferrer" class="repo-link"><i class="iconfont reco-github"></i>
+    GitHub
+    <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></nav></div></header> <div class="sidebar-mask" data-v-7dd95ae2></div> <aside class="sidebar" data-v-7dd95ae2><div class="personal-info-wrapper" data-v-1fad0c41 data-v-7dd95ae2><!----> <!----> <div class="num" data-v-1fad0c41><div data-v-1fad0c41><h3 data-v-1fad0c41>27</h3> <h6 data-v-1fad0c41>Articles</h6></div> <div data-v-1fad0c41><h3 data-v-1fad0c41>0</h3> <h6 data-v-1fad0c41>Tags</h6></div></div> <ul class="social-links" data-v-1fad0c41></ul> <hr data-v-1fad0c41></div> <nav class="nav-links"><div class="nav-item"><a href="/mylinuxbook/" class="nav-link"><i class="undefined"></i>
+  Home
+</a></div> <a href="https://github.com/Lqinggang" target="_blank" rel="noopener noreferrer" class="repo-link"><i class="iconfont reco-github"></i>
+    GitHub
+    <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></nav> <ul class="sidebar-links"><li><a href="/mylinuxbook/" aria-current="page" class="sidebar-link">首页</a></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading open"><span>设备驱动</span> <span class="arrow down"></span></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/mylinuxbook/driver/" aria-current="page" class="sidebar-link">Linux 设备驱动</a></li><li><a href="/mylinuxbook/driver/model.html" class="sidebar-link">Linux 设备模型</a></li><li><a href="/mylinuxbook/driver/modules/modules.html" class="sidebar-link">Linux 设备驱动相关组件</a></li><li><a href="/mylinuxbook/driver/devicetree.html" aria-current="page" class="active sidebar-link">Linux 设备树</a></li><li><section class="sidebar-group collapsable is-sub-group depth-1"><p class="sidebar-heading"><span>platform 设备</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable is-sub-group depth-1"><p class="sidebar-heading"><span>字符设备</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable is-sub-group depth-1"><p class="sidebar-heading"><span>I2C 设备</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable is-sub-group depth-1"><p class="sidebar-heading"><span>SPI 设备</span> <span class="arrow right"></span></p> <!----></section></li></ul></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>虚拟文件系统</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>网络通信</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>进程/线程</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>同步</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>中断和异常</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>定时器</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>示例</span> <span class="arrow right"></span></p> <!----></section></li><li><a href="/mylinuxbook/reference.html" class="sidebar-link">参考文献</a></li></ul> </aside> <div class="password-shadow password-wrapper-in" style="display:none;" data-v-59e6cb88 data-v-7dd95ae2><h3 class="title" data-v-59e6cb88></h3> <!----> <label id="box" class="inputBox" data-v-59e6cb88><input type="password" value="" data-v-59e6cb88> <span data-v-59e6cb88>Konck! Knock!</span> <button data-v-59e6cb88>OK</button></label> <div class="footer" data-v-59e6cb88><span data-v-59e6cb88><i class="iconfont reco-theme" data-v-59e6cb88></i> <a target="blank" href="https://vuepress-theme-reco.recoluan.com" data-v-59e6cb88>vuePress-theme-reco</a></span> <span data-v-59e6cb88><i class="iconfont reco-copyright" data-v-59e6cb88></i> <a data-v-59e6cb88><!---->
+          
+        <!---->
+        2023
+      </a></span></div></div> <div data-v-7dd95ae2><div data-v-7dd95ae2><main class="page" style="padding-right:0;"><section style="display:;"><div class="page-title"><h1 class="title">设备树(Device Tree)</h1> <div data-v-8a445198><!----> <!----> <!----> <!----></div></div> <div class="theme-reco-content content__default"><h1 id="设备树-device-tree"><a href="#设备树-device-tree" class="header-anchor">#</a> 设备树(Device Tree)</h1> <h2 id="简介"><a href="#简介" class="header-anchor">#</a> 简介</h2> <p>设备树(Device Tree), 描述设备树的文件叫做DTS(Device Tree Source), 用于描述板级设备信息, 可以理解为物理设备的一种描述, 总结?</p> <p>设备树是一种描述硬件的数据结构, 由一系列被命名的节点(Node)和属性(Property)组成, 节点本身也可以包含字节点, 属性即成对出现的名称和值</p> <p>以下将要介绍的关于设备树的全部内容将基于 ARM 设备, ARM Linux 是在 3.x 中引入设备树的</p> <h3 id="dts-device-tree-source"><a href="#dts-device-tree-source" class="header-anchor">#</a> DTS(Device Tree Source)</h3> <p>.dts 文件是一种 ASCII 文本格式的设备树描述文件，.dtsi 文件包含 SoC 公用的部分或多个设备共同的部分, 类似与 c 语言中的头文件, 在 .dts 文件中可以通过 include 的方式包含进来:</p> <div class="language-dts extra-class"><pre class="language-text"><code>#include &quot;xxxxx.dtsi&quot;
+</code></pre></div><p>dts 文件的编译过程支持 c 的预处理, 所以在 .dts 文件中可以通过 include 将 c 中的头文件包含进来, 比如:</p> <div class="language-c extra-class"><pre class="language-c"><code><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;dt-bindings/gpio/gpio.h&gt;</span></span>
+</code></pre></div><h3 id="dtc-device-tree-compiler"><a href="#dtc-device-tree-compiler" class="header-anchor">#</a> DTC(Device Tree Compiler)</h3> <p>DTC 是将 .dts 文件编译为 .dtb 的工具</p> <h3 id="dtb-device-tree-blob"><a href="#dtb-device-tree-blob" class="header-anchor">#</a> DTB(Device Tree Blob)</h3> <p>.dtb 是 .dts 被 DTC 编译之后生成的二进制格式的设备描述文件, 可由内核解析。</p> <h2 id="设备树节点-语法"><a href="#设备树节点-语法" class="header-anchor">#</a> 设备树节点/语法</h2> <p>如下, 是Linux 6.6 中包含的树莓派4B 的 dts 文件(bcm2711-rpi-4-b.dts), 本章节将以其作为示例讲解设备树节点</p> <div class="language-dts extra-class"><pre class="language-text"><code>// SPDX-License-Identifier: GPL-2.0
+/dts-v1/;
+#include &quot;bcm2711.dtsi&quot;
+#include &quot;bcm2711-rpi.dtsi&quot;
+#include &quot;bcm283x-rpi-led-deprecated.dtsi&quot;
+#include &quot;bcm283x-rpi-usb-peripheral.dtsi&quot;
+#include &quot;bcm283x-rpi-wifi-bt.dtsi&quot;
+
+/ {
+	compatible = &quot;raspberrypi,4-model-b&quot;, &quot;brcm,bcm2711&quot;;
+	model = &quot;Raspberry Pi 4 Model B&quot;;
+
+	chosen {
+		/* 8250 auxiliary UART instead of pl011 */
+		stdout-path = &quot;serial1:115200n8&quot;;
+	};
+
+	sd_io_1v8_reg: regulator-sd-io-1v8 {
+		compatible = &quot;regulator-gpio&quot;;
+		regulator-name = &quot;vdd-sd-io&quot;;
+		regulator-min-microvolt = &lt;1800000&gt;;
+		regulator-max-microvolt = &lt;3300000&gt;;
+		regulator-boot-on;
+		regulator-always-on;
+		regulator-settling-time-us = &lt;5000&gt;;
+		gpios = &lt;&amp;expgpio 4 GPIO_ACTIVE_HIGH&gt;;
+		states = &lt;1800000 0x1&gt;,
+			 &lt;3300000 0x0&gt;;
+		status = &quot;okay&quot;;
+	};
+
+	sd_vcc_reg: regulator-sd-vcc {
+		compatible = &quot;regulator-fixed&quot;;
+		regulator-name = &quot;vcc-sd&quot;;
+		regulator-min-microvolt = &lt;3300000&gt;;
+		regulator-max-microvolt = &lt;3300000&gt;;
+		regulator-boot-on;
+		enable-active-high;
+		gpio = &lt;&amp;expgpio 6 GPIO_ACTIVE_HIGH&gt;;
+	};
+};
+
+&amp;bt {
+	shutdown-gpios = &lt;&amp;expgpio 0 GPIO_ACTIVE_HIGH&gt;;
+};
+
+&amp;ddc0 {
+	status = &quot;okay&quot;;
+};
+
+&amp;ddc1 {
+	status = &quot;okay&quot;;
+};
+
+&amp;expgpio {
+	gpio-line-names = &quot;BT_ON&quot;,		/*  0 */
+			  &quot;WL_ON&quot;,
+			  &quot;PWR_LED_OFF&quot;,
+			  &quot;GLOBAL_RESET&quot;,
+			  &quot;VDD_SD_IO_SEL&quot;,
+			  &quot;CAM_GPIO&quot;,		/*  5 */
+			  &quot;SD_PWR_ON&quot;,
+			  &quot;&quot;;
+};
+
+&amp;gpio {
+	/*
+	 * Parts taken from rpi_SCH_4b_4p0_reduced.pdf and
+	 * the official GPU firmware DT blob.
+	 *
+	 * Legend:
+	 * &quot;FOO&quot; = GPIO line named &quot;FOO&quot; on the schematic
+	 * &quot;FOO_N&quot; = GPIO line named &quot;FOO&quot; on schematic, active low
+	 */
+	gpio-line-names = &quot;ID_SDA&quot;,		/*  0 */
+			  &quot;ID_SCL&quot;,
+			  &quot;SDA1&quot;,
+			  &quot;SCL1&quot;,
+			  &quot;GPIO_GCLK&quot;,
+			  &quot;GPIO5&quot;,		/*  5 */
+			  &quot;GPIO6&quot;,
+			  &quot;SPI_CE1_N&quot;,
+			  &quot;SPI_CE0_N&quot;,
+			  &quot;SPI_MISO&quot;,
+			  &quot;SPI_MOSI&quot;,		/* 10 */
+			  &quot;SPI_SCLK&quot;,
+			  &quot;GPIO12&quot;,
+			  &quot;GPIO13&quot;,
+			  /* Serial port */
+			  &quot;TXD1&quot;,
+			  &quot;RXD1&quot;,		/* 15 */
+			  &quot;GPIO16&quot;,
+			  &quot;GPIO17&quot;,
+			  &quot;GPIO18&quot;,
+			  &quot;GPIO19&quot;,
+			  &quot;GPIO20&quot;,		/* 20 */
+			  &quot;GPIO21&quot;,
+			  &quot;GPIO22&quot;,
+			  &quot;GPIO23&quot;,
+			  &quot;GPIO24&quot;,
+			  &quot;GPIO25&quot;,		/* 25 */
+			  &quot;GPIO26&quot;,
+			  &quot;GPIO27&quot;,
+			  &quot;RGMII_MDIO&quot;,
+			  &quot;RGMIO_MDC&quot;,
+			  /* Used by BT module */
+			  &quot;CTS0&quot;,		/* 30 */
+			  &quot;RTS0&quot;,
+			  &quot;TXD0&quot;,
+			  &quot;RXD0&quot;,
+			  /* Used by Wifi */
+			  &quot;SD1_CLK&quot;,
+			  &quot;SD1_CMD&quot;,		/* 35 */
+			  &quot;SD1_DATA0&quot;,
+			  &quot;SD1_DATA1&quot;,
+			  &quot;SD1_DATA2&quot;,
+			  &quot;SD1_DATA3&quot;,
+			  /* Shared with SPI flash */
+			  &quot;PWM0_MISO&quot;,		/* 40 */
+			  &quot;PWM1_MOSI&quot;,
+			  &quot;STATUS_LED_G_CLK&quot;,
+			  &quot;SPIFLASH_CE_N&quot;,
+			  &quot;SDA0&quot;,
+			  &quot;SCL0&quot;,		/* 45 */
+			  &quot;RGMII_RXCLK&quot;,
+			  &quot;RGMII_RXCTL&quot;,
+			  &quot;RGMII_RXD0&quot;,
+			  &quot;RGMII_RXD1&quot;,
+			  &quot;RGMII_RXD2&quot;,		/* 50 */
+			  &quot;RGMII_RXD3&quot;,
+			  &quot;RGMII_TXCLK&quot;,
+			  &quot;RGMII_TXCTL&quot;,
+			  &quot;RGMII_TXD0&quot;,
+			  &quot;RGMII_TXD1&quot;,		/* 55 */
+			  &quot;RGMII_TXD2&quot;,
+			  &quot;RGMII_TXD3&quot;;
+};
+
+&amp;hdmi0 {
+	status = &quot;okay&quot;;
+};
+
+&amp;hdmi1 {
+	status = &quot;okay&quot;;
+};
+
+&amp;led_act {
+	gpios = &lt;&amp;gpio 42 GPIO_ACTIVE_HIGH&gt;;
+};
+
+&amp;leds {
+	led_pwr: led-pwr {
+		label = &quot;PWR&quot;;
+		gpios = &lt;&amp;expgpio 2 GPIO_ACTIVE_LOW&gt;;
+		default-state = &quot;keep&quot;;
+		linux,default-trigger = &quot;default-on&quot;;
+	};
+};
+
+&amp;pixelvalve0 {
+	status = &quot;okay&quot;;
+};
+
+&amp;pixelvalve1 {
+	status = &quot;okay&quot;;
+};
+
+&amp;pixelvalve2 {
+	status = &quot;okay&quot;;
+};
+
+&amp;pixelvalve4 {
+	status = &quot;okay&quot;;
+};
+
+&amp;pwm1 {
+	pinctrl-names = &quot;default&quot;;
+	pinctrl-0 = &lt;&amp;pwm1_0_gpio40 &amp;pwm1_1_gpio41&gt;;
+	status = &quot;okay&quot;;
+};
+
+/* EMMC2 is used to drive the SD card */
+&amp;emmc2 {
+	vqmmc-supply = &lt;&amp;sd_io_1v8_reg&gt;;
+	vmmc-supply = &lt;&amp;sd_vcc_reg&gt;;
+	broken-cd;
+	status = &quot;okay&quot;;
+};
+
+&amp;genet {
+	phy-handle = &lt;&amp;phy1&gt;;
+	phy-mode = &quot;rgmii-rxid&quot;;
+	status = &quot;okay&quot;;
+};
+
+&amp;genet_mdio {
+	phy1: ethernet-phy@1 {
+		/* No PHY interrupt */
+		reg = &lt;0x1&gt;;
+	};
+};
+
+&amp;pcie0 {
+	pci@0,0 {
+		device_type = &quot;pci&quot;;
+		#address-cells = &lt;3&gt;;
+		#size-cells = &lt;2&gt;;
+		ranges;
+
+		reg = &lt;0 0 0 0 0&gt;;
+
+		usb@0,0 {
+			reg = &lt;0 0 0 0 0&gt;;
+			resets = &lt;&amp;reset RASPBERRYPI_FIRMWARE_RESET_ID_USB&gt;;
+		};
+	};
+};
+
+/* uart0 communicates with the BT module */
+&amp;uart0 {
+	pinctrl-names = &quot;default&quot;;
+	pinctrl-0 = &lt;&amp;uart0_ctsrts_gpio30 &amp;uart0_gpio32&gt;;
+	uart-has-rtscts;
+};
+
+/* uart1 is mapped to the pin header */
+&amp;uart1 {
+	pinctrl-names = &quot;default&quot;;
+	pinctrl-0 = &lt;&amp;uart1_gpio14&gt;;
+	status = &quot;okay&quot;;
+};
+
+&amp;vc4 {
+	status = &quot;okay&quot;;
+};
+
+&amp;vec {
+	status = &quot;disabled&quot;;
+};
+
+&amp;wifi_pwrseq {
+	reset-gpios = &lt;&amp;expgpio 1 GPIO_ACTIVE_LOW&gt;;
+};
+</code></pre></div><h3 id="根节点"><a href="#根节点" class="header-anchor">#</a> 根节点</h3> <div class="language-dts extra-class"><pre class="language-text"><code>/ {
+};
+</code></pre></div><p>根节点, 在所有的设备树中都包含由一个根节点, 用于表示设备树描述的起始点</p> <h3 id="兼容性"><a href="#兼容性" class="header-anchor">#</a> 兼容性</h3> <div id="compatible"></div> <p>dts 中使用 <code>compatible</code> 来表示兼容属性, 设备驱动会根据 <code>struct device_driver</code> 数据结构中的 <code>of_match_table</code> 成员对应的兼容性匹配表匹配设备</p> <h4 id="根节点兼容性"><a href="#根节点兼容性" class="header-anchor">#</a> 根节点兼容性</h4> <div class="language-dts extra-class"><pre class="language-text"><code>	compatible = &quot;raspberrypi,4-model-b&quot;, &quot;brcm,bcm2711&quot;;
+</code></pre></div><p>如上, 是在 '/' 根节点下, 对应的就是 '/' 的兼容属性， 根节点 '/' 的兼容属性可判断启动的是什么设备, 一般而言, 第一个属性值是板子级别的属性, 后一个属性值是芯片级别(或者芯片系列级别)的属性, 兼容属性值按先后属性表示范围依次扩大</p> <p>这里, 第一个属性值表示的是这份 dts 文件作用于树莓派 4B 这块板子, 后一个属性值表示这份 dts 文件也兼容 bcm2711 芯片，作为对比，以下是树莓派400的 dts 文件, 和树莓派4B比较, 可以发现, 只有第一个属性值一样(这两个用的都是 bcm2711 的芯片)</p> <div class="language-dts extra-class"><pre class="language-text"><code>    compatible = &quot;raspberrypi,400&quot;, &quot;brcm,bcm2711&quot;;
+</code></pre></div><p><code>compatible</code> 兼容属性也可以包含两个以上的情况, 如下 broadcom/bcm953012hr.dts 文件中定义的：</p> <div class="language-dts extra-class"><pre class="language-text"><code>    compatible = &quot;brcm,bcm953012hr&quot;, &quot;brcm,bcm53012&quot;, &quot;brcm,bcm4708&quot;;
+</code></pre></div><p>此时, 第一个属性值依然表示板子级别的属性, 第二个属性值是特定芯片级别属性, 第三个属性是芯片系列级别属性</p> <p>在 Linux 内核中, 通过 <a href="#of_machine_is_compatible">of_machine_is_compatible</a> 来判断根节点兼容性</p> <h4 id="设备节点兼容性"><a href="#设备节点兼容性" class="header-anchor">#</a> 设备节点兼容性</h4> <p>除了根节点兼容性之外, 在 .dts 文件中的每个设备节点都可以有一个兼容属性:</p> <div class="language-dts extra-class"><pre class="language-text"><code>	sd_io_1v8_reg: regulator-sd-io-1v8 {
+		compatible = &quot;regulator-gpio&quot;;
+    };
+</code></pre></div><p>如上, 在树莓派4B 中, regulator-sd-io-1v8 设备节点就有一个设备节点兼容性, 与根节点兼容性类似, 兼容属性列表越往后代表的兼容范围越大</p> <p>一般而言，设备节点兼容性是第一个兼容性值表示节点代表的确切设备, 形式为 <code>&lt;manufacturer&gt;,&lt;model&gt;</code>， 其后的兼容性值表示可以兼容的其他设备</p> <div class="language-dts extra-class"><pre class="language-text"><code>        uart2: serial@7e201400 {
+            compatible = &quot;arm,pl011&quot;, &quot;arm,primecell&quot;;
+        };
+</code></pre></div><p>如上, 是 bcm2711.dtsi 中 uart2 对应的节点兼容性, 第一个属性值为 &quot;arm,pl011&quot;, 表示，这个节点可以兼容 manufacturer 为 arm, model 为 pl011 的设备, 后续兼容性依次类推</p> <p>在 Linux 内核中, 通过 <a href="#of_device_compatible_match">of_device_is_compatible</a> 来判断设备节点兼容性</p> <h3 id="cpu-设备节点"><a href="#cpu-设备节点" class="header-anchor">#</a> CPU 设备节点</h3> <p>cpus 用于描述此设备上的 cpu</p> <div class="language-dts extra-class"><pre class="language-text"><code>    cpus: cpus {
+        #address-cells = &lt;1&gt;;
+        #size-cells = &lt;0&gt;;
+        enable-method = &quot;brcm,bcm2836-smp&quot;; // for ARM 32-bit
+
+        /* Source for d/i-cache-line-size and d/i-cache-sets
+         * https://developer.arm.com/documentation/100095/0003
+         * /Level-1-Memory-System/About-the-L1-memory-system?lang=en
+         * Source for d/i-cache-size
+         * https://www.raspberrypi.com/documentation/computers
+         * /processors.html#bcm2711
+         */
+        cpu0: cpu@0 {
+            device_type = &quot;cpu&quot;;
+            compatible = &quot;arm,cortex-a72&quot;;
+            reg = &lt;0&gt;;
+            enable-method = &quot;spin-table&quot;;
+            cpu-release-addr = &lt;0x0 0x000000d8&gt;;
+            d-cache-size = &lt;0x8000&gt;;
+            d-cache-line-size = &lt;64&gt;;
+            d-cache-sets = &lt;256&gt;; // 32KiB(size)/64(line-size)=512ways/2-way set
+            i-cache-size = &lt;0xc000&gt;;
+            i-cache-line-size = &lt;64&gt;;
+            i-cache-sets = &lt;256&gt;; // 48KiB(size)/64(line-size)=768ways/3-way set
+            next-level-cache = &lt;&amp;l2&gt;;
+        };
+    };
+</code></pre></div><p>如上, 是在 bcm2711.dtsi 文件中, 截取的 cpus 设备节点部分内容, 这里不难看出 cpu 也有自己的<a href="#compatible">兼容性属性</a>, 在 bcm2711.dtsi 中, 一共描述出来了 4 个 cpu (bcm2711芯片是4个 cortex-a72 核)</p> <p>注意，这里的<code>cpus: cpus</code>和<code>cpu0: cpu0@0</code>表示形式, 它们遵循的组织形式为 <code>[label: ]&lt;name&gt;[@&lt;unit-address&gt;]</code>, 其中 label 和 unit-address 都是可选的, name 表示节点对应的设备类型, 多个相同类型设备节点的 name 值可以一样, 只要保证 unit-address 不同即可, 如bcm2711.dtsi 文件中,</p> <div class="language-dts extra-class"><pre class="language-text"><code>    cpus: cpus {
+        cpu0: cpu@0 {
+        };
+        cpu1: cpu@1 {
+        };
+        cpu2: cpu@2 {
+        };
+        cpu3: cpu@3 {
+        };
+    };
+</code></pre></div><p>它们对应的 name 都是相同, 但是 unit-address 不同</p> <p>对于挂载在内存空间的设备而言, @字符后跟的一般就是该设备在内存空间的基地址, 如</p> <div class="language-dts extra-class"><pre class="language-text"><code>        pcie0: pcie@7d500000 {
+            compatible = &quot;brcm,bcm2711-pcie&quot;;
+            reg = &lt;0x0 0x7d500000 0x9310&gt;;
+        };
+</code></pre></div><p>对于挂载在总线上的外设而言, @字符后跟的一般是从设备的地址, 如</p> <div class="language-dts extra-class"><pre class="language-text"><code>        i2c3: i2c@7e205600 {
+            compatible = &quot;brcm,bcm2711-i2c&quot;, &quot;brcm,bcm2835-i2c&quot;;
+            reg = &lt;0x7e205600 0x200&gt;;
+        };
+</code></pre></div><h3 id="标签"><a href="#标签" class="header-anchor">#</a> 标签</h3> <p>在定义一个设备节点的时候, 经常也同时定义一个 label, label 的命名一般形式为 '&lt;设备类型&gt;&lt;index&gt;', 如前面所述的cpu0, cpu1等即为一个label, label定义形式为: <code>[label:]&lt;name&gt;[@&lt;unit-address&gt;]</code></p> <p>在定义之后, 可以通过 &amp;label 的形式引用这个 label, 这种引用是通过phandle(pointer handle)进行的</p> <p>如示例中的 sd_vcc_reg</p> <div class="language-dts extra-class"><pre class="language-text"><code>/ {
+	sd_vcc_reg: regulator-sd-vcc {
+	};
+};
+&amp;emmc2 {
+	vmmc-supply = &lt;&amp;sd_vcc_reg&gt;;
+};
+
+</code></pre></div><h3 id="地址编码"><a href="#地址编码" class="header-anchor">#</a> 地址编码</h3> <p>在设备树中, 可寻址设备可以使用如下信息对地址进行编码</p> <div class="language-dts extra-class"><pre class="language-text"><code>reg
+#address-cells
+#size-cells
+</code></pre></div><p>reg 的组织形式为 <code>reg = &lt;address0 length0 [address1 length1] [address2 length2] ...&gt;</code>, 其中的每组<code>address length</code>表明了设备使用的一个地址范围， address 为1个或多个32位的整型(即cell), length 表示address地址范围长度, 即表示共 <code>length</code> 个地址: <code>[address, address + length - 1]</code></p> <p>reg 中的 address 和 length 字段是可变长的, 其由父节点控制, 父节点的 #address-cells 和 #size-cells 分别决定子字节点 reg 属性的 address 和 length 字段的长度(或者元素个数)</p> <div class="language-dts extra-class"><pre class="language-text"><code>    cpus: cpus {
+        #address-cells = &lt;1&gt;;
+        #size-cells = &lt;0&gt;;
+
+        cpu0: cpu@0 {
+            device_type = &quot;cpu&quot;;
+            compatible = &quot;arm,cortex-a72&quot;;
+            reg = &lt;0&gt;;
+        };
+    }
+
+</code></pre></div><p>如上,  #address-cells = &lt;1&gt; 和 #size-cells = &lt;0&gt;, 分别表示子节点的address 为1, length 字段为0, 所以在 cpu0 中, <code>reg = &lt;0&gt;</code> 只有一个 address, 且其值为 0</p> <div class="language-dts extra-class"><pre class="language-text"><code>&amp;pcie0 {
+	pci@0,0 {
+		#address-cells = &lt;3&gt;;
+		#size-cells = &lt;2&gt;;
+		usb@0,0 {
+			reg = &lt;0 1 2 3 4&gt;;
+		};
+	};
+};
+</code></pre></div><p>如上,  #address-cells = &lt;3&gt; 和 #size-cells = &lt;2&gt;, 分别表示子节点的address 为3 个元素, length 字段为2 个元素, 所以子节点 usb 中, <code>reg = &lt;0 1 2 3 4&gt;</code>, address 等于 <code>0 1 2</code>, length 等于 <code>3 4</code></p> <h3 id="地址转换表"><a href="#地址转换表" class="header-anchor">#</a> 地址转换表</h3> <p>地址转换表用 ranges 属性来表示, 其中的每个项目是一个子地址、父地址以及在子地址空间的大小的映射，映射表中的子地址、父地址分别采用子地址空间的 #address-cells 和父地址空间的 #address-cells 的大小</p> <p>如下是在 bcm-nsp.dtsi 文件中 mpcore-bus 设备节点中包含的 ranges 属性的定义</p> <div class="language-dts extra-class"><pre class="language-text"><code>/ {
+    #address-cells = &lt;1&gt;;
+    #size-cells = &lt;1&gt;;
+
+    mpcore-bus@19000000 {
+        compatible = &quot;simple-bus&quot;;
+        ranges = &lt;0x00000000 0x19000000 0x00023000&gt;;
+        #address-cells = &lt;1&gt;;
+        #size-cells = &lt;1&gt;;
+    };
+};
+</code></pre></div><p>如上, 从父节点(即根节点)的 <code>#address-cells</code> 和 <code>#size-cells</code>, 可以知道子节点定义时<code>address</code>和<code>length</code>都为1, 同理可以知道子节点(即mpcore-bus节点)的子节点定义时<code>address</code>也为1, 所以，对于上面的示例中, ranges 的 0x00000000 对应的是 mpcore-bus节点中 #address-cells=&lt;1&gt;, 0x19000000 对应的是父节点(即根节点)中的 #address-cells=&lt;1&gt;, 0x00023000 对应的是父节点(即根节点)中的 #size-cells = &lt;1&gt;, 这里的意思即 mpcore-bus 总线中, 从 0x00000000 地址空间开始的 0x00023000 个地址被映射到父地址空间的 0x19000000 开始的 0x00023000 个地址</p> <h3 id="中断"><a href="#中断" class="header-anchor">#</a> 中断</h3> <div class="language-dts extra-class"><pre class="language-text"><code>/ {
+    soc {
+        gicv2: interrupt-controller@40041000 {
+            interrupt-controller;
+            #interrupt-cells = &lt;3&gt;;
+            compatible = &quot;arm,gic-400&quot;;
+            reg =   &lt;0x40041000 0x1000&gt;,
+                &lt;0x40042000 0x2000&gt;,
+                &lt;0x40044000 0x2000&gt;,
+                &lt;0x40046000 0x2000&gt;;
+            interrupts = &lt;GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(4) |
+                         IRQ_TYPE_LEVEL_HIGH)&gt;;
+        };
+    };
+};
+
+</code></pre></div><p>如上, 是在 bcm2711.dtsi 中定义的中断控制器</p> <h4 id="interrupt-controller"><a href="#interrupt-controller" class="header-anchor">#</a> interrupt-controller</h4> <p>这个属性用于表明该设备节点为一个中断控制器, 其属性值为空, 其组织形式一般为 <code>interrupt-controller;</code></p> <h4 id="interrupt-cells"><a href="#interrupt-cells" class="header-anchor">#</a> #interrupt-cells</h4> <p><code>#interrupt-cells</code>和<code>#address-cells</code>以及<code>#size-cells</code>类似，用于表明连接此中断控制器的设备的中断属性的<code>cell</code>大小, 即对应<code>interrupts</code>设备节点中的属性的大小</p> <p>如示例中, <code>#interrupt-cells=&lt;3&gt;</code>, 则 <code>interrupts</code>中由三个属性值组成, 它们依次分别代表中断类型<code>GIC_PPI</code>, 中断号<code>9</code>, 中断触发方式和中断掩码<code>(GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)</code></p> <h4 id="interrupt-parent"><a href="#interrupt-parent" class="header-anchor">#</a> #interrupt-parent</h4> <p>通过该设备节点指定它依附的中断控制器的 phandle, 当节点没有指定 interrupt-parent 时, 则从父节点继承</p> <h4 id="interrupts"><a href="#interrupts" class="header-anchor">#</a> interrupts</h4> <p>用到中断的设备节点, 通过该节点指示中断类型, 中断号, 以及中断触发方式等，由 <code>#interrupt-cells</code> 控制具体包含几个<code>cell</code></p> <h3 id="gpio"><a href="#gpio" class="header-anchor">#</a> GPIO</h3> <p>bcm2711-rpi.dtsi:</p> <div class="language-dts extra-class"><pre class="language-text"><code>    expgpio: gpio {
+        compatible = &quot;raspberrypi,firmware-gpio&quot;;
+        gpio-controller;
+        #gpio-cells = &lt;2&gt;;
+        status = &quot;okay&quot;;
+    };
+</code></pre></div><p>bcm283x-rpi-led-deprecated.dtsi:</p> <div class="language-dts extra-class"><pre class="language-text"><code>    leds: leds {
+        compatible = &quot;gpio-leds&quot;;
+
+        led_act: led-act {
+            label = &quot;ACT&quot;;
+            default-state = &quot;keep&quot;;
+            linux,default-trigger = &quot;heartbeat&quot;;
+        };
+    };
+</code></pre></div><p>bcm2711-rpi-4-b.dts:</p> <div class="language-dts extra-class"><pre class="language-text"><code>&amp;leds {
+    led_pwr: led-pwr {
+        label = &quot;PWR&quot;;
+        gpios = &lt;&amp;expgpio 2 GPIO_ACTIVE_LOW&gt;;
+        default-state = &quot;keep&quot;;
+        linux,default-trigger = &quot;default-on&quot;;
+    };
+};
+
+</code></pre></div><h4 id="gpio-controller"><a href="#gpio-controller" class="header-anchor">#</a> gpio-controller</h4> <p>与 <code>interrupt-controller</code>类似,  用于表明该设备是一个gpio控制器, 如 <code>bcm2711-rpi.dtsi</code> 文件中的示例</p> <h4 id="gpio-cells"><a href="#gpio-cells" class="header-anchor">#</a> #gpio-cells</h4> <p>与 <code>interrupt-cells</code>等类似, 用于控制 gpios 设备节点中 cell 的大小</p> <h4 id="gpios"><a href="#gpios" class="header-anchor">#</a> gpios</h4> <p>gpios 属性，用于指示某个 gpio 的初始属性, 由 #gpio-cells 控制 cell 的大小, 一般而言, <code>#gpio-cells=&lt;2&gt;</code>, 则对应的gpios的值代表的意思为: 第 1 值表示 gpio 号, 第 2 个值表示 gpio 的极性</p> <p>如 <code>bcm2711-rpi-4-b.dts</code>文件中的示例, 其属性值的含义为: gpio2 低电平有效</p> <h3 id="时钟"><a href="#时钟" class="header-anchor">#</a> 时钟</h3> <div class="language-dts extra-class"><pre class="language-text"><code>    clk_27MHz: clk-27M {
+        #clock-cells = &lt;0&gt;;
+        compatible = &quot;fixed-clock&quot;;
+        clock-frequency = &lt;27000000&gt;;
+        clock-output-names = &quot;27MHz-clock&quot;;
+    };
+
+    clk_108MHz: clk-108M {
+        #clock-cells = &lt;0&gt;;
+        compatible = &quot;fixed-clock&quot;;
+        clock-frequency = &lt;108000000&gt;;
+        clock-output-names = &quot;108MHz-clock&quot;;
+    };
+</code></pre></div><h4 id="clock-cells"><a href="#clock-cells" class="header-anchor">#</a> #clock-cells</h4> <p>与 <code>gpio-cells</code>类似, 用于指示 clocks 设备节点中 cell 的大小</p> <h4 id="clock-frequency"><a href="#clock-frequency" class="header-anchor">#</a> clock-frequency</h4> <p>时钟频率</p> <h3 id="pinmux连接"><a href="#pinmux连接" class="header-anchor">#</a> pinmux连接</h3> <p>设备节点使用的 pinmux 的引脚群</p> <h4 id="pinctrl-names"><a href="#pinctrl-names" class="header-anchor">#</a> pinctrl-names</h4> <p>引脚名</p> <h2 id="设备树部分函数"><a href="#设备树部分函数" class="header-anchor">#</a> 设备树部分函数</h2> <h3 id="寻找节点"><a href="#寻找节点" class="header-anchor">#</a> 寻找节点</h3> <h4 id="of-find-compatible-node"><a href="#of-find-compatible-node" class="header-anchor">#</a> of_find_compatible_node</h4> <div id="of_find_compatible_node"></div> <div class="language-c extra-class"><pre class="language-c"><code><span class="token comment">/**
+ * of_find_compatible_node - Find a node based on type and one of the
+ *                                tokens in its &quot;compatible&quot; property
+ * @from:   The node to start searching from or NULL, the node
+ *      you pass will not be searched, only the next one
+ *      will; typically, you pass what the previous call
+ *      returned. of_node_put() will be called on it
+ * @type:   The type string to match &quot;device_type&quot; or NULL to ignore
+ * @compatible: The string to match to one of the tokens in the device
+ *      &quot;compatible&quot; list.
+ *
+ * Return: A node pointer with refcount incremented, use
+ * of_node_put() on it when done.
+ */</span>
+<span class="token keyword">struct</span> <span class="token class-name">device_node</span> <span class="token operator">*</span><span class="token function">of_find_compatible_node</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">device_node</span> <span class="token operator">*</span>from<span class="token punctuation">,</span>
+    <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>type<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>compatible<span class="token punctuation">)</span>
+</code></pre></div><p>如上, <code>of_find_compatible_node</code> 函数用于根据兼容属性以及节点类型, 获取设备节点, 当from，type为空时, 表示遍历所有节点</p> <h4 id="of-find-property"><a href="#of-find-property" class="header-anchor">#</a> of_find_property</h4> <div id="of_find_property"></div> <div class="language-c extra-class"><pre class="language-c"><code><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name function">of_prop_cmp</span><span class="token expression"><span class="token punctuation">(</span>s1<span class="token punctuation">,</span> s2<span class="token punctuation">)</span>     <span class="token function">strcasecmp</span><span class="token punctuation">(</span><span class="token punctuation">(</span>s1<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>s2<span class="token punctuation">)</span><span class="token punctuation">)</span></span></span>
+
+<span class="token keyword">static</span> <span class="token keyword">struct</span> <span class="token class-name">property</span> <span class="token operator">*</span><span class="token function">__of_find_property</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">device_node</span> <span class="token operator">*</span>np<span class="token punctuation">,</span>
+                       <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>name<span class="token punctuation">,</span> <span class="token keyword">int</span> <span class="token operator">*</span>lenp<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">struct</span> <span class="token class-name">property</span> <span class="token operator">*</span>pp<span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>np<span class="token punctuation">)</span>
+        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">for</span> <span class="token punctuation">(</span>pp <span class="token operator">=</span> np<span class="token operator">-&gt;</span>properties<span class="token punctuation">;</span> pp<span class="token punctuation">;</span> pp <span class="token operator">=</span> pp<span class="token operator">-&gt;</span>next<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">of_prop_cmp</span><span class="token punctuation">(</span>pp<span class="token operator">-&gt;</span>name<span class="token punctuation">,</span> name<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>lenp<span class="token punctuation">)</span>
+                <span class="token operator">*</span>lenp <span class="token operator">=</span> pp<span class="token operator">-&gt;</span>length<span class="token punctuation">;</span>
+            <span class="token keyword">break</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">return</span> pp<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">struct</span> <span class="token class-name">property</span> <span class="token operator">*</span><span class="token function">of_find_property</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">device_node</span> <span class="token operator">*</span>np<span class="token punctuation">,</span>
+                  <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>name<span class="token punctuation">,</span>
+                  <span class="token keyword">int</span> <span class="token operator">*</span>lenp<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">struct</span> <span class="token class-name">property</span> <span class="token operator">*</span>pp<span class="token punctuation">;</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">long</span> flags<span class="token punctuation">;</span>
+
+    <span class="token function">raw_spin_lock_irqsave</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>devtree_lock<span class="token punctuation">,</span> flags<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    pp <span class="token operator">=</span> <span class="token function">__of_find_property</span><span class="token punctuation">(</span>np<span class="token punctuation">,</span> name<span class="token punctuation">,</span> lenp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">raw_spin_unlock_irqrestore</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>devtree_lock<span class="token punctuation">,</span> flags<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">return</span> pp<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token function">EXPORT_SYMBOL</span><span class="token punctuation">(</span>of_find_property<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><h3 id="读取属性"><a href="#读取属性" class="header-anchor">#</a> 读取属性</h3> <h4 id="整型属性"><a href="#整型属性" class="header-anchor">#</a> 整型属性</h4> <p>如下几个函数用于读取设备节点 np 下属性名为 propname，属性类型为8，16，32，64 位整型数组的值</p> <h5 id="of-property-read-u8-array"><a href="#of-property-read-u8-array" class="header-anchor">#</a> of_property_read_u8_array</h5> <div id="of_property_read_u8_array"></div> <div class="language-c extra-class"><pre class="language-c"><code><span class="token comment">/**
+ * of_property_read_u8_array - Find and read an array of u8 from a property.
+ *
+ * @np:     device node from which the property value is to be read.
+ * @propname:   name of the property to be searched.
+ * @out_values: pointer to return value, modified only if return value is 0.
+ * @sz:     number of array elements to read
+ *
+ * Search for a property in a device node and read 8-bit value(s) from
+ * it.
+ *
+ * dts entry of array should be like:
+ *  ``property = /bits/ 8 &lt;0x50 0x60 0x70&gt;;``
+ *
+ * Return: 0 on success, -EINVAL if the property does not exist,
+ * -ENODATA if property does not have a value, and -EOVERFLOW if the
+ * property data isn't large enough.
+ *
+ * The out_values is modified only if a valid u8 value can be decoded.
+ */</span>
+<span class="token keyword">static</span> <span class="token keyword">inline</span> <span class="token keyword">int</span> <span class="token function">of_property_read_u8_array</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">device_node</span> <span class="token operator">*</span>np<span class="token punctuation">,</span>
+                        <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>propname<span class="token punctuation">,</span>
+                        u8 <span class="token operator">*</span>out_values<span class="token punctuation">,</span> <span class="token class-name">size_t</span> sz<span class="token punctuation">)</span>
+
+</code></pre></div><p>当数组大小为 1 时, 可以调用</p> <div class="language-c extra-class"><pre class="language-c"><code><span class="token keyword">static</span> <span class="token keyword">inline</span> <span class="token keyword">int</span> <span class="token function">of_property_read_u8</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">device_node</span> <span class="token operator">*</span>np<span class="token punctuation">,</span>
+                       <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>propname<span class="token punctuation">,</span>
+                       u8 <span class="token operator">*</span>out_value<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token function">of_property_read_u8_array</span><span class="token punctuation">(</span>np<span class="token punctuation">,</span> propname<span class="token punctuation">,</span> out_value<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h5 id="of-property-read-u16-array"><a href="#of-property-read-u16-array" class="header-anchor">#</a> of_property_read_u16_array</h5> <div class="language-c extra-class"><pre class="language-c"><code><span class="token comment">/**
+ * of_property_read_u16_array - Find and read an array of u16 from a property.
+ *
+ * @np:     device node from which the property value is to be read.
+ * @propname:   name of the property to be searched.
+ * @out_values: pointer to return value, modified only if return value is 0.
+ * @sz:     number of array elements to read
+ *
+ * Search for a property in a device node and read 16-bit value(s) from
+ * it.
+ *
+ * dts entry of array should be like:
+ *  ``property = /bits/ 16 &lt;0x5000 0x6000 0x7000&gt;;``
+ *
+ * Return: 0 on success, -EINVAL if the property does not exist,
+ * -ENODATA if property does not have a value, and -EOVERFLOW if the
+ * property data isn't large enough.
+ *
+ * The out_values is modified only if a valid u16 value can be decoded.
+ */</span>
+<span class="token keyword">static</span> <span class="token keyword">inline</span> <span class="token keyword">int</span> <span class="token function">of_property_read_u16_array</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">device_node</span> <span class="token operator">*</span>np<span class="token punctuation">,</span>
+                         <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>propname<span class="token punctuation">,</span>
+                         u16 <span class="token operator">*</span>out_values<span class="token punctuation">,</span> <span class="token class-name">size_t</span> sz<span class="token punctuation">)</span>
+</code></pre></div><p>当数组大小为 1 时, 可以调用</p> <div class="language-c extra-class"><pre class="language-c"><code><span class="token keyword">static</span> <span class="token keyword">inline</span> <span class="token keyword">int</span> <span class="token function">of_property_read_u16</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">device_node</span> <span class="token operator">*</span>np<span class="token punctuation">,</span>
+                       <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>propname<span class="token punctuation">,</span>
+                       u16 <span class="token operator">*</span>out_value<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token function">of_property_read_u16_array</span><span class="token punctuation">(</span>np<span class="token punctuation">,</span> propname<span class="token punctuation">,</span> out_value<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h5 id="of-property-read-u32-array"><a href="#of-property-read-u32-array" class="header-anchor">#</a> of_property_read_u32_array</h5> <div class="language-c extra-class"><pre class="language-c"><code><span class="token comment">/**
+ * of_property_read_u32_array - Find and read an array of 32 bit integers
+ * from a property.
+ *
+ * @np:     device node from which the property value is to be read.
+ * @propname:   name of the property to be searched.
+ * @out_values: pointer to return value, modified only if return value is 0.
+ * @sz:     number of array elements to read
+ *
+ * Search for a property in a device node and read 32-bit value(s) from
+ * it.
+ *
+ * Return: 0 on success, -EINVAL if the property does not exist,
+ * -ENODATA if property does not have a value, and -EOVERFLOW if the
+ * property data isn't large enough.
+ *
+ * The out_values is modified only if a valid u32 value can be decoded.
+ */</span>
+<span class="token keyword">static</span> <span class="token keyword">inline</span> <span class="token keyword">int</span> <span class="token function">of_property_read_u32_array</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">device_node</span> <span class="token operator">*</span>np<span class="token punctuation">,</span>
+                         <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>propname<span class="token punctuation">,</span>
+                         u32 <span class="token operator">*</span>out_values<span class="token punctuation">,</span> <span class="token class-name">size_t</span> sz<span class="token punctuation">)</span>
+</code></pre></div><p>当数组大小为 1 时, 可以调用</p> <div class="language-c extra-class"><pre class="language-c"><code><span class="token keyword">static</span> <span class="token keyword">inline</span> <span class="token keyword">int</span> <span class="token function">of_property_read_u32</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">device_node</span> <span class="token operator">*</span>np<span class="token punctuation">,</span>
+                       <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>propname<span class="token punctuation">,</span>
+                       u32 <span class="token operator">*</span>out_value<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token function">of_property_read_u32_array</span><span class="token punctuation">(</span>np<span class="token punctuation">,</span> propname<span class="token punctuation">,</span> out_value<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h5 id="of-property-read-u64-array"><a href="#of-property-read-u64-array" class="header-anchor">#</a> of_property_read_u64_array</h5> <div class="language-c extra-class"><pre class="language-c"><code><span class="token comment">/**
+ * of_property_read_u64_array - Find and read an array of 64 bit integers
+ * from a property.
+ *
+ * @np:     device node from which the property value is to be read.
+ * @propname:   name of the property to be searched.
+ * @out_values: pointer to return value, modified only if return value is 0.
+ * @sz:     number of array elements to read
+ *
+ * Search for a property in a device node and read 64-bit value(s) from
+ * it.
+ *
+ * Return: 0 on success, -EINVAL if the property does not exist,
+ * -ENODATA if property does not have a value, and -EOVERFLOW if the
+ * property data isn't large enough.
+ *
+ * The out_values is modified only if a valid u64 value can be decoded.
+ */</span>
+<span class="token keyword">static</span> <span class="token keyword">inline</span> <span class="token keyword">int</span> <span class="token function">of_property_read_u64_array</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">device_node</span> <span class="token operator">*</span>np<span class="token punctuation">,</span>
+                         <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>propname<span class="token punctuation">,</span>
+                         u64 <span class="token operator">*</span>out_values<span class="token punctuation">,</span> <span class="token class-name">size_t</span> sz<span class="token punctuation">)</span>
+</code></pre></div><h4 id="字符串属性"><a href="#字符串属性" class="header-anchor">#</a> 字符串属性</h4> <p>如下几个函数用于读取设备节点 np 下属性名为 propname，字符串类型的值</p> <h5 id="of-property-read-string"><a href="#of-property-read-string" class="header-anchor">#</a> of_property_read_string</h5> <div id="of_property_read_string"></div> <div class="language-c extra-class"><pre class="language-c"><code><span class="token comment">/**
+ * of_property_read_string - Find and read a string from a property
+ * @np:     device node from which the property value is to be read.
+ * @propname:   name of the property to be searched.
+ * @out_string: pointer to null terminated return string, modified only if
+ *      return value is 0.
+ *
+ * Search for a property in a device tree node and retrieve a null
+ * terminated string value (pointer to data, not a copy).
+ *
+ * Return: 0 on success, -EINVAL if the property does not exist, -ENODATA if
+ * property does not have a value, and -EILSEQ if the string is not
+ * null-terminated within the length of the property data.
+ *
+ * Note that the empty string &quot;&quot; has length of 1, thus -ENODATA cannot
+ * be interpreted as an empty string.
+ *
+ * The out_string pointer is modified only if a valid string can be decoded.
+ */</span>
+<span class="token keyword">int</span> <span class="token function">of_property_read_string</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">device_node</span> <span class="token operator">*</span>np<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>propname<span class="token punctuation">,</span>
+                <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span><span class="token operator">*</span>out_string<span class="token punctuation">)</span>
+</code></pre></div><p>如上, 是读取 np 设备节点下属性名为 propname 的设备节点的字符串属性值</p> <h4 id="of-property-read-string-index"><a href="#of-property-read-string-index" class="header-anchor">#</a> of_property_read_string_index</h4> <div class="language-c extra-class"><pre class="language-c"><code><span class="token comment">/**
+ * of_property_read_string_index() - Find and read a string from a multiple
+ * strings property.
+ * @np:     device node from which the property value is to be read.
+ * @propname:   name of the property to be searched.
+ * @index:  index of the string in the list of strings
+ * @output: pointer to null terminated return string, modified only if
+ *      return value is 0.
+ *
+ * Search for a property in a device tree node and retrieve a null
+ * terminated string value (pointer to data, not a copy) in the list of strings
+ * contained in that property.
+ *
+ * Return: 0 on success, -EINVAL if the property does not exist, -ENODATA if
+ * property does not have a value, and -EILSEQ if the string is not
+ * null-terminated within the length of the property data.
+ *
+ * The out_string pointer is modified only if a valid string can be decoded.
+ */</span>
+<span class="token keyword">static</span> <span class="token keyword">inline</span> <span class="token keyword">int</span> <span class="token function">of_property_read_string_index</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">device_node</span> <span class="token operator">*</span>np<span class="token punctuation">,</span>
+                        <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>propname<span class="token punctuation">,</span>
+                        <span class="token keyword">int</span> index<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span><span class="token operator">*</span>output<span class="token punctuation">)</span>
+</code></pre></div><p>如上, 是读取 np 设备节点下属性名为 propname 的设备节点字符串数组的第 index 个属性值</p> <h4 id="布尔值"><a href="#布尔值" class="header-anchor">#</a> 布尔值</h4> <div class="language-c extra-class"><pre class="language-c"><code><span class="token comment">/**
+ * of_property_read_bool - Find a property
+ * @np:     device node from which the property value is to be read.
+ * @propname:   name of the property to be searched.
+ *
+ * Search for a boolean property in a device node. Usage on non-boolean
+ * property types is deprecated.
+ *
+ * Return: true if the property exists false otherwise.
+ */</span>
+<span class="token keyword">static</span> <span class="token keyword">inline</span> bool <span class="token function">of_property_read_bool</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">device_node</span> <span class="token operator">*</span>np<span class="token punctuation">,</span>
+                     <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>propname<span class="token punctuation">)</span>
+</code></pre></div><p>如上, 是检查 np 设备节点下是否含有属性名为 propname 的设备节点, 有则返回true, 否则返回false</p> <h3 id="内存映射"><a href="#内存映射" class="header-anchor">#</a> 内存映射</h3> <h4 id="of-iomap"><a href="#of-iomap" class="header-anchor">#</a> of_iomap</h4> <div class="language-c extra-class"><pre class="language-c"><code><span class="token keyword">void</span> __iomem <span class="token operator">*</span><span class="token function">of_iomap</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">device_node</span> <span class="token operator">*</span>node<span class="token punctuation">,</span> <span class="token keyword">int</span> index<span class="token punctuation">)</span>
+</code></pre></div><p>如上, 是通过设备节点进行设备内存区间的 ioremap(), index 是内存段的索引, 若设备节点的 reg 属性由多端时, 可通过 index 标示要 ioremap() 的是哪一段, 在只有 1 段的情况下, index 为0</p> <h4 id="of-address-to-resource"><a href="#of-address-to-resource" class="header-anchor">#</a> of_address_to_resource</h4> <div class="language-c extra-class"><pre class="language-c"><code><span class="token keyword">int</span> <span class="token function">of_address_to_resource</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">device_node</span> <span class="token operator">*</span>node<span class="token punctuation">,</span> <span class="token keyword">int</span> index<span class="token punctuation">,</span>
+               <span class="token keyword">struct</span> <span class="token class-name">resource</span> <span class="token operator">*</span>r<span class="token punctuation">)</span>
+</code></pre></div><p>如上, 通过设备节点获取与它对应的内存资源的 resource 结构体, 其本质是分析 reg 属性以获取内存基地址、大小等信息并填充到 struct resource *r 参数指向的结构体中</p> <h3 id="解析中断"><a href="#解析中断" class="header-anchor">#</a> 解析中断</h3> <div class="language-c extra-class"><pre class="language-c"><code><span class="token comment">/**
+ * irq_of_parse_and_map - Parse and map an interrupt into linux virq space
+ * @dev: Device node of the device whose interrupt is to be mapped
+ * @index: Index of the interrupt to map
+ *
+ * This function is a wrapper that chains of_irq_parse_one() and
+ * irq_create_of_mapping() to make things easier to callers
+ */</span>
+<span class="token keyword">unsigned</span> <span class="token keyword">int</span> <span class="token function">irq_of_parse_and_map</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">device_node</span> <span class="token operator">*</span>dev<span class="token punctuation">,</span> <span class="token keyword">int</span> index<span class="token punctuation">)</span>
+</code></pre></div><p>如上, 通过设备树获取设备的中断号，实际上是从 .dts 中的 interrupts 属性里解析出中断号, 若设备使用了多个中断, index 指定中断的索引号</p> <h3 id="获取与节点对应的-platform-device"><a href="#获取与节点对应的-platform-device" class="header-anchor">#</a> 获取与节点对应的 platform_device</h3> <div class="language-c extra-class"><pre class="language-c"><code><span class="token comment">/**
+ * of_find_device_by_node - Find the platform_device associated with a node
+ * @np: Pointer to device tree node
+ *
+ * Takes a reference to the embedded struct device which needs to be dropped
+ * after use.
+ *
+ * Return: platform_device pointer, or NULL if not found
+ */</span>
+<span class="token keyword">struct</span> <span class="token class-name">platform_device</span> <span class="token operator">*</span><span class="token function">of_find_device_by_node</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">device_node</span> <span class="token operator">*</span>np<span class="token punctuation">)</span>
+</code></pre></div><p>如上, 通过设备节点其获取对应的 platform_device 设备</p> <h3 id="其他of-api"><a href="#其他of-api" class="header-anchor">#</a> 其他of api</h3> <h4 id="of-get-named-gpio"><a href="#of-get-named-gpio" class="header-anchor">#</a> of_get_named_gpio</h4> <div id="of_get_named_gpio"></div> <div class="language-c extra-class"><pre class="language-c"><code><span class="token comment">/**
+ * of_get_named_gpio() - Get a GPIO number to use with GPIO API
+ * @np:     device node to get GPIO from
+ * @propname:   Name of property containing gpio specifier(s)
+ * @index:  index of the GPIO
+ *
+ * Returns GPIO number to use with Linux generic GPIO API, or one of the errno
+ * value on the error condition.
+ */</span>
+<span class="token keyword">int</span> <span class="token function">of_get_named_gpio</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">device_node</span> <span class="token operator">*</span>np<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>propname<span class="token punctuation">,</span>
+              <span class="token keyword">int</span> index<span class="token punctuation">)</span>
+
+</code></pre></div><p>如上, 是获取 np 设备节点下, 名为 propname 的子设备节点中第 index 个索引的 gpio 设备节点属性值</p> <h4 id="platform-get-irq"><a href="#platform-get-irq" class="header-anchor">#</a> platform_get_irq</h4> <div id="platform_get_irq"></div> <div class="language-c extra-class"><pre class="language-c"><code><span class="token comment">/**
+ * platform_get_irq - get an IRQ for a device
+ * @dev: platform device
+ * @num: IRQ number index
+ *
+ * Gets an IRQ for a platform device and prints an error message if finding the
+ * IRQ fails. Device drivers should check the return value for errors so as to
+ * not pass a negative integer value to the request_irq() APIs.
+ *
+ * For example::
+ *
+ *      int irq = platform_get_irq(pdev, 0);
+ *      if (irq &lt; 0)
+ *          return irq;
+ *
+ * Return: non-zero IRQ number on success, negative error number on failure.
+ */</span>
+<span class="token keyword">int</span> <span class="token function">platform_get_irq</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">platform_device</span> <span class="token operator">*</span>dev<span class="token punctuation">,</span> <span class="token keyword">unsigned</span> <span class="token keyword">int</span> num<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">int</span> ret<span class="token punctuation">;</span>
+
+    ret <span class="token operator">=</span> <span class="token function">platform_get_irq_optional</span><span class="token punctuation">(</span>dev<span class="token punctuation">,</span> num<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>ret <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> <span class="token function">dev_err_probe</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>dev<span class="token operator">-&gt;</span>dev<span class="token punctuation">,</span> ret<span class="token punctuation">,</span>
+                     <span class="token string">&quot;IRQ index %u not found\n&quot;</span><span class="token punctuation">,</span> num<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">return</span> ret<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token function">EXPORT_SYMBOL_GPL</span><span class="token punctuation">(</span>platform_get_irq<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>如上, 是获取 dev 设备的第 index 个中断</p> <h4 id="of-machine-is-compatible"><a href="#of-machine-is-compatible" class="header-anchor">#</a> of_machine_is_compatible</h4> <div id="of_machine_is_compatible"></div> <div class="language-c extra-class"><pre class="language-c"><code><span class="token comment">/**
+ * of_machine_is_compatible - Test root of device tree for a given compatible value
+ * @compat: compatible string to look for in root node's compatible property.
+ *
+ * Return: A positive integer if the root node has the given value in its
+ * compatible property.
+ */</span>
+<span class="token keyword">int</span> <span class="token function">of_machine_is_compatible</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>compat<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">struct</span> <span class="token class-name">device_node</span> <span class="token operator">*</span>root<span class="token punctuation">;</span>
+    <span class="token keyword">int</span> rc <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+
+    root <span class="token operator">=</span> <span class="token function">of_find_node_by_path</span><span class="token punctuation">(</span><span class="token string">&quot;/&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>root<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        rc <span class="token operator">=</span> <span class="token function">of_device_is_compatible</span><span class="token punctuation">(</span>root<span class="token punctuation">,</span> compat<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">of_node_put</span><span class="token punctuation">(</span>root<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> rc<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token function">EXPORT_SYMBOL</span><span class="token punctuation">(</span>of_machine_is_compatible<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>该函数用于判断目前运行的板子或 SoC 的兼容性, 即匹配设备树根节点下的兼容属性 compatible 对应的属性值是否匹配 compat 指定的字符串(即字符串值是否相等)</p> <h4 id="of-device-compatible-match"><a href="#of-device-compatible-match" class="header-anchor">#</a> of_device_compatible_match</h4> <div id="of_device_compatible_match"></div> <div class="language-c extra-class"><pre class="language-c"><code><span class="token comment">/** Checks if the device is compatible with any of the entries in
+ *  a NULL terminated array of strings. Returns the best match
+ *  score or 0.
+ */</span>
+<span class="token keyword">int</span> <span class="token function">of_device_compatible_match</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">device_node</span> <span class="token operator">*</span>device<span class="token punctuation">,</span>
+                   <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span><span class="token keyword">const</span> <span class="token operator">*</span>compat<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">int</span> tmp<span class="token punctuation">,</span> score <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>compat<span class="token punctuation">)</span>
+        <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token operator">*</span>compat<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        tmp <span class="token operator">=</span> <span class="token function">of_device_is_compatible</span><span class="token punctuation">(</span>device<span class="token punctuation">,</span> <span class="token operator">*</span>compat<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>tmp <span class="token operator">&gt;</span> score<span class="token punctuation">)</span>
+            score <span class="token operator">=</span> tmp<span class="token punctuation">;</span>
+        compat<span class="token operator">++</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">return</span> score<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token function">EXPORT_SYMBOL_GPL</span><span class="token punctuation">(</span>of_device_compatible_match<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>该函数用于判断设备节点的兼容性, 即匹配设备节点下的兼容属性 compatible 对应的属性值是否匹配 compat 指定的字符串(即字符串值是否相等)</p> <h4 id="of-prop-next-string"><a href="#of-prop-next-string" class="header-anchor">#</a> of_prop_next_string</h4> <div class="language-c extra-class"><pre class="language-c"><code><span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span><span class="token function">of_prop_next_string</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">property</span> <span class="token operator">*</span>prop<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>cur<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">const</span> <span class="token keyword">void</span> <span class="token operator">*</span>curv <span class="token operator">=</span> cur<span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>prop<span class="token punctuation">)</span>
+        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>cur<span class="token punctuation">)</span>
+        <span class="token keyword">return</span> prop<span class="token operator">-&gt;</span>value<span class="token punctuation">;</span>
+
+    curv <span class="token operator">+=</span> <span class="token function">strlen</span><span class="token punctuation">(</span>cur<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>curv <span class="token operator">&gt;=</span> prop<span class="token operator">-&gt;</span>value <span class="token operator">+</span> prop<span class="token operator">-&gt;</span>length<span class="token punctuation">)</span>
+        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">return</span> curv<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token function">EXPORT_SYMBOL_GPL</span><span class="token punctuation">(</span>of_prop_next_string<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><h4 id="of-find-node-by-type"><a href="#of-find-node-by-type" class="header-anchor">#</a> of_find_node_by_type</h4> <div class="language-c extra-class"><pre class="language-c"><code><span class="token keyword">static</span> bool <span class="token function">__of_node_is_type</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">device_node</span> <span class="token operator">*</span>np<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>type<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>match <span class="token operator">=</span> <span class="token function">__of_get_property</span><span class="token punctuation">(</span>np<span class="token punctuation">,</span> <span class="token string">&quot;device_type&quot;</span><span class="token punctuation">,</span> <span class="token constant">NULL</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">return</span> np <span class="token operator">&amp;&amp;</span> match <span class="token operator">&amp;&amp;</span> type <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span><span class="token function">strcmp</span><span class="token punctuation">(</span>match<span class="token punctuation">,</span> type<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">/**
+ * of_find_node_by_type - Find a node by its &quot;device_type&quot; property
+ * @from:   The node to start searching from, or NULL to start searching
+ *      the entire device tree. The node you pass will not be
+ *      searched, only the next one will; typically, you pass
+ *      what the previous call returned. of_node_put() will be
+ *      called on from for you.
+ * @type:   The type string to match against
+ *
+ * Return: A node pointer with refcount incremented, use
+ * of_node_put() on it when done.
+ */</span>
+<span class="token keyword">struct</span> <span class="token class-name">device_node</span> <span class="token operator">*</span><span class="token function">of_find_node_by_type</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">device_node</span> <span class="token operator">*</span>from<span class="token punctuation">,</span>
+    <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>type<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">struct</span> <span class="token class-name">device_node</span> <span class="token operator">*</span>np<span class="token punctuation">;</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">long</span> flags<span class="token punctuation">;</span>
+
+    <span class="token function">raw_spin_lock_irqsave</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>devtree_lock<span class="token punctuation">,</span> flags<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">for_each_of_allnodes_from</span><span class="token punctuation">(</span>from<span class="token punctuation">,</span> np<span class="token punctuation">)</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">__of_node_is_type</span><span class="token punctuation">(</span>np<span class="token punctuation">,</span> type<span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token function">of_node_get</span><span class="token punctuation">(</span>np<span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token keyword">break</span><span class="token punctuation">;</span>
+    <span class="token function">of_node_put</span><span class="token punctuation">(</span>from<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">raw_spin_unlock_irqrestore</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>devtree_lock<span class="token punctuation">,</span> flags<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> np<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token function">EXPORT_SYMBOL</span><span class="token punctuation">(</span>of_find_node_by_type<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><h4 id="of-node-name-eq"><a href="#of-node-name-eq" class="header-anchor">#</a> of_node_name_eq</h4> <div class="language-c extra-class"><pre class="language-c"><code>bool <span class="token function">of_node_name_eq</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">device_node</span> <span class="token operator">*</span>np<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>name<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>node_name<span class="token punctuation">;</span>
+    <span class="token class-name">size_t</span> len<span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>np<span class="token punctuation">)</span>
+        <span class="token keyword">return</span> false<span class="token punctuation">;</span>
+
+    node_name <span class="token operator">=</span> <span class="token function">kbasename</span><span class="token punctuation">(</span>np<span class="token operator">-&gt;</span>full_name<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    len <span class="token operator">=</span> <span class="token function">strchrnul</span><span class="token punctuation">(</span>node_name<span class="token punctuation">,</span> <span class="token char">'@'</span><span class="token punctuation">)</span> <span class="token operator">-</span> node_name<span class="token punctuation">;</span>
+
+    <span class="token keyword">return</span> <span class="token punctuation">(</span><span class="token function">strlen</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span> <span class="token operator">==</span> len<span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span><span class="token function">strncmp</span><span class="token punctuation">(</span>node_name<span class="token punctuation">,</span> name<span class="token punctuation">,</span> len<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token function">EXPORT_SYMBOL</span><span class="token punctuation">(</span>of_node_name_eq<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+</code></pre></div><h2 id="基于设备树的设备和驱动的匹配"><a href="#基于设备树的设备和驱动的匹配" class="header-anchor">#</a> 基于设备树的设备和驱动的匹配</h2> <h3 id="of-driver-match-device"><a href="#of-driver-match-device" class="header-anchor">#</a> of_driver_match_device</h3> <div class="language-c extra-class"><pre class="language-c"><code><span class="token comment">/**
+ * of_match_device - Tell if a struct device matches an of_device_id list
+ * @matches: array of of device match structures to search in
+ * @dev: the of device structure to match against
+ *
+ * Used by a driver to check whether an platform_device present in the
+ * system is in its list of supported devices.
+ */</span>
+<span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">of_device_id</span> <span class="token operator">*</span><span class="token function">of_match_device</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">of_device_id</span> <span class="token operator">*</span>matches<span class="token punctuation">,</span>
+                       <span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">device</span> <span class="token operator">*</span>dev<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>matches <span class="token operator">||</span> <span class="token operator">!</span>dev<span class="token operator">-&gt;</span>of_node <span class="token operator">||</span> dev<span class="token operator">-&gt;</span>of_node_reused<span class="token punctuation">)</span>
+        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token function">of_match_node</span><span class="token punctuation">(</span>matches<span class="token punctuation">,</span> dev<span class="token operator">-&gt;</span>of_node<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token function">EXPORT_SYMBOL</span><span class="token punctuation">(</span>of_match_device<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">/**
+ * of_driver_match_device - Tell if a driver's of_match_table matches a device.
+ * @drv: the device_driver structure to test
+ * @dev: the device structure to match against
+ */</span>
+<span class="token keyword">static</span> <span class="token keyword">inline</span> <span class="token keyword">int</span> <span class="token function">of_driver_match_device</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">device</span> <span class="token operator">*</span>dev<span class="token punctuation">,</span>
+                     <span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">device_driver</span> <span class="token operator">*</span>drv<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token function">of_match_device</span><span class="token punctuation">(</span>drv<span class="token operator">-&gt;</span>of_match_table<span class="token punctuation">,</span> dev<span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>正如<a href="/mylinuxbook/driver/platform/match.html">platform设备的匹配</a>中描述的那样, 基于设备树的设备和驱动的匹配通过 of_driver_match_device 进行, 而 of_driver_match_device 函数通过调用 of_match_device 进行匹配, 它们的实现如上, 可以看出基于设备树的设备和驱动的匹配就是设备的 of_node (设备树节点)和驱动的 of_match_table 之间的匹配</p> <p>其中 of_match_table 是驱动的匹配表, 驱动这个表判断是否匹配设备(即是否能够驱动这个设备), 其内容形式一般如下(参考drivers/spi/spidev.c文件):</p> <div class="language-c extra-class"><pre class="language-c"><code><span class="token keyword">static</span> <span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">of_device_id</span> spidev_dt_ids<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token punctuation">{</span> <span class="token punctuation">.</span>compatible <span class="token operator">=</span> <span class="token string">&quot;cisco,spi-petra&quot;</span><span class="token punctuation">,</span> <span class="token punctuation">.</span>data <span class="token operator">=</span> <span class="token operator">&amp;</span>spidev_of_check <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span> <span class="token punctuation">.</span>compatible <span class="token operator">=</span> <span class="token string">&quot;dh,dhcom-board&quot;</span><span class="token punctuation">,</span> <span class="token punctuation">.</span>data <span class="token operator">=</span> <span class="token operator">&amp;</span>spidev_of_check <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span> <span class="token punctuation">.</span>compatible <span class="token operator">=</span> <span class="token string">&quot;lineartechnology,ltc2488&quot;</span><span class="token punctuation">,</span> <span class="token punctuation">.</span>data <span class="token operator">=</span> <span class="token operator">&amp;</span>spidev_of_check <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span> <span class="token punctuation">.</span>compatible <span class="token operator">=</span> <span class="token string">&quot;lwn,bk4&quot;</span><span class="token punctuation">,</span> <span class="token punctuation">.</span>data <span class="token operator">=</span> <span class="token operator">&amp;</span>spidev_of_check <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span> <span class="token punctuation">.</span>compatible <span class="token operator">=</span> <span class="token string">&quot;menlo,m53cpld&quot;</span><span class="token punctuation">,</span> <span class="token punctuation">.</span>data <span class="token operator">=</span> <span class="token operator">&amp;</span>spidev_of_check <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span> <span class="token punctuation">.</span>compatible <span class="token operator">=</span> <span class="token string">&quot;micron,spi-authenta&quot;</span><span class="token punctuation">,</span> <span class="token punctuation">.</span>data <span class="token operator">=</span> <span class="token operator">&amp;</span>spidev_of_check <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span> <span class="token punctuation">.</span>compatible <span class="token operator">=</span> <span class="token string">&quot;rohm,dh2228fv&quot;</span><span class="token punctuation">,</span> <span class="token punctuation">.</span>data <span class="token operator">=</span> <span class="token operator">&amp;</span>spidev_of_check <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span> <span class="token punctuation">.</span>compatible <span class="token operator">=</span> <span class="token string">&quot;semtech,sx1301&quot;</span><span class="token punctuation">,</span> <span class="token punctuation">.</span>data <span class="token operator">=</span> <span class="token operator">&amp;</span>spidev_of_check <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span> <span class="token punctuation">.</span>compatible <span class="token operator">=</span> <span class="token string">&quot;silabs,em3581&quot;</span><span class="token punctuation">,</span> <span class="token punctuation">.</span>data <span class="token operator">=</span> <span class="token operator">&amp;</span>spidev_of_check <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span> <span class="token punctuation">.</span>compatible <span class="token operator">=</span> <span class="token string">&quot;silabs,si3210&quot;</span><span class="token punctuation">,</span> <span class="token punctuation">.</span>data <span class="token operator">=</span> <span class="token operator">&amp;</span>spidev_of_check <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token function">MODULE_DEVICE_TABLE</span><span class="token punctuation">(</span>of<span class="token punctuation">,</span> spidev_dt_ids<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>注意其中的 .compatible 字段，在进行设备匹配的时候将用到</p> <div class="custom-block warning"><p class="title">注意</p><p>从 __of_match_node 函数的具体实现, 不难发现 of_match_table 匹配表数组中, 最后的 {} 是必须的, 因为 __of_match_node 通过它来判断数组的结束</p></div><h3 id="of-match-node"><a href="#of-match-node" class="header-anchor">#</a> of_match_node</h3> <div class="language-c extra-class"><pre class="language-c"><code><span class="token comment">/**
+ * of_match_node - Tell if a device_node has a matching of_match structure
+ * @matches:    array of of device match structures to search in
+ * @node:   the of device structure to match against
+ *
+ * Low level utility function used by device matching.
+ */</span>
+<span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">of_device_id</span> <span class="token operator">*</span><span class="token function">of_match_node</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">of_device_id</span> <span class="token operator">*</span>matches<span class="token punctuation">,</span>
+                     <span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">device_node</span> <span class="token operator">*</span>node<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">of_device_id</span> <span class="token operator">*</span>match<span class="token punctuation">;</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">long</span> flags<span class="token punctuation">;</span>
+
+    <span class="token function">raw_spin_lock_irqsave</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>devtree_lock<span class="token punctuation">,</span> flags<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    match <span class="token operator">=</span> <span class="token function">__of_match_node</span><span class="token punctuation">(</span>matches<span class="token punctuation">,</span> node<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">raw_spin_unlock_irqrestore</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>devtree_lock<span class="token punctuation">,</span> flags<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> match<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token function">EXPORT_SYMBOL</span><span class="token punctuation">(</span>of_match_node<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>如上, 通过设备的of_match_table表判断是否匹配设备树的设备节点</p> <h3 id="of-match-node-2"><a href="#of-match-node-2" class="header-anchor">#</a> __of_match_node</h3> <div class="language-c extra-class"><pre class="language-c"><code><span class="token keyword">static</span>
+<span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">of_device_id</span> <span class="token operator">*</span><span class="token function">__of_match_node</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">of_device_id</span> <span class="token operator">*</span>matches<span class="token punctuation">,</span>
+                       <span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">device_node</span> <span class="token operator">*</span>node<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">of_device_id</span> <span class="token operator">*</span>best_match <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> score<span class="token punctuation">,</span> best_score <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>matches<span class="token punctuation">)</span>
+        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token punctuation">;</span> matches<span class="token operator">-&gt;</span>name<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">||</span> matches<span class="token operator">-&gt;</span>type<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">||</span> matches<span class="token operator">-&gt;</span>compatible<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">;</span> matches<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        score <span class="token operator">=</span> <span class="token function">__of_device_is_compatible</span><span class="token punctuation">(</span>node<span class="token punctuation">,</span> matches<span class="token operator">-&gt;</span>compatible<span class="token punctuation">,</span>
+                          matches<span class="token operator">-&gt;</span>type<span class="token punctuation">,</span> matches<span class="token operator">-&gt;</span>name<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>score <span class="token operator">&gt;</span> best_score<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            best_match <span class="token operator">=</span> matches<span class="token punctuation">;</span>
+            best_score <span class="token operator">=</span> score<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">return</span> best_match<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>如上, __of_match_node 函数遍历 of_match_table 和设备树节点 node 进行比较, 找到最佳匹配结果</p> <h3 id="of-device-is-compatible"><a href="#of-device-is-compatible" class="header-anchor">#</a> __of_device_is_compatible</h3> <div class="language-c extra-class"><pre class="language-c"><code><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name function">of_compat_cmp</span><span class="token expression"><span class="token punctuation">(</span>s1<span class="token punctuation">,</span> s2<span class="token punctuation">,</span> l<span class="token punctuation">)</span>    <span class="token function">strncmp</span><span class="token punctuation">(</span><span class="token punctuation">(</span>s1<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>s2<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>l<span class="token punctuation">)</span><span class="token punctuation">)</span></span></span>
+
+
+<span class="token comment">/**
+ * __of_device_is_compatible() - Check if the node matches given constraints
+ * @device: pointer to node
+ * @compat: required compatible string, NULL or &quot;&quot; for any match
+ * @type: required device_type value, NULL or &quot;&quot; for any match
+ * @name: required node name, NULL or &quot;&quot; for any match
+ *
+ * Checks if the given @compat, @type and @name strings match the
+ * properties of the given @device. A constraints can be skipped by
+ * passing NULL or an empty string as the constraint.
+ *
+ * Returns 0 for no match, and a positive integer on match. The return
+ * value is a relative score with larger values indicating better
+ * matches. The score is weighted for the most specific compatible value
+ * to get the highest score. Matching type is next, followed by matching
+ * name. Practically speaking, this results in the following priority
+ * order for matches:
+ *
+ * 1. specific compatible &amp;&amp; type &amp;&amp; name
+ * 2. specific compatible &amp;&amp; type
+ * 3. specific compatible &amp;&amp; name
+ * 4. specific compatible
+ * 5. general compatible &amp;&amp; type &amp;&amp; name
+ * 6. general compatible &amp;&amp; type
+ * 7. general compatible &amp;&amp; name
+ * 8. general compatible
+ * 9. type &amp;&amp; name
+ * 10. type
+ * 11. name
+ */</span>
+<span class="token keyword">static</span> <span class="token keyword">int</span> <span class="token function">__of_device_is_compatible</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">device_node</span> <span class="token operator">*</span>device<span class="token punctuation">,</span>
+                     <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>compat<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>type<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>name<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">struct</span> <span class="token class-name">property</span> <span class="token operator">*</span>prop<span class="token punctuation">;</span>
+    <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>cp<span class="token punctuation">;</span>
+    <span class="token keyword">int</span> index <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">,</span> score <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+
+    <span class="token comment">/* Compatible match has highest priority */</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>compat <span class="token operator">&amp;&amp;</span> compat<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        prop <span class="token operator">=</span> <span class="token function">__of_find_property</span><span class="token punctuation">(</span>device<span class="token punctuation">,</span> <span class="token string">&quot;compatible&quot;</span><span class="token punctuation">,</span> <span class="token constant">NULL</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span>cp <span class="token operator">=</span> <span class="token function">of_prop_next_string</span><span class="token punctuation">(</span>prop<span class="token punctuation">,</span> <span class="token constant">NULL</span><span class="token punctuation">)</span><span class="token punctuation">;</span> cp<span class="token punctuation">;</span>
+             cp <span class="token operator">=</span> <span class="token function">of_prop_next_string</span><span class="token punctuation">(</span>prop<span class="token punctuation">,</span> cp<span class="token punctuation">)</span><span class="token punctuation">,</span> index<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">of_compat_cmp</span><span class="token punctuation">(</span>cp<span class="token punctuation">,</span> compat<span class="token punctuation">,</span> <span class="token function">strlen</span><span class="token punctuation">(</span>compat<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                score <span class="token operator">=</span> INT_MAX<span class="token operator">/</span><span class="token number">2</span> <span class="token operator">-</span> <span class="token punctuation">(</span>index <span class="token operator">&lt;&lt;</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">break</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>score<span class="token punctuation">)</span>
+            <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment">/* Matching type is better than matching name */</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>type <span class="token operator">&amp;&amp;</span> type<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">__of_node_is_type</span><span class="token punctuation">(</span>device<span class="token punctuation">,</span> type<span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        score <span class="token operator">+=</span> <span class="token number">2</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment">/* Matching name is a bit better than not */</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>name <span class="token operator">&amp;&amp;</span> name<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">of_node_name_eq</span><span class="token punctuation">(</span>device<span class="token punctuation">,</span> name<span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        score<span class="token operator">++</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">return</span> score<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>如上, __of_device_is_compatible 函数进行设备节点兼容性的匹配, 不匹配的时候, 返回0, 否则返回大于0的值(值越大匹配度越小)</p> <p>从函数实现上看, 匹配分为三部分</p> <p>(1) 匹配设备树中的 .compatible 兼容性属性</p> <p>这里通过 for 循环和 of_prop_next_string 函数遍历 .compatible 兼容性属性</p> <p>因为 .compatible 可能是包含多个属性值, 在这里匹配的 .compatible 属性值越是后面, 匹配分值越高(意味着匹配度越低)</p> <p>(2) 匹配设备树中 .device_type 设备类型属性</p> <p>(3) 匹配设备树设备节点名</p></div></section> <footer class="page-edit"><!----> <!----></footer> <div class="page-nav"><p class="inner"><span class="prev"><a href="/mylinuxbook/driver/modules/modules.html" class="prev">
+          Linux 设备驱动相关组件
+        </a></span> <span class="next"><a href="/mylinuxbook/driver/platform/platform.html">
+          platform 设备
+        </a></span></p></div> <div class="comments-wrapper"><!----></div></main></div> <!----></div> <ul class="sub-sidebar sub-sidebar-wrapper" style="width:0;" data-v-b57cc07c data-v-7dd95ae2></ul></div></div></div><div class="global-ui"><div class="back-to-ceiling" style="right:1rem;bottom:6rem;width:2.5rem;height:2.5rem;border-radius:.25rem;line-height:2.5rem;display:none;" data-v-c6073ba8 data-v-c6073ba8><svg t="1574745035067" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5404" class="icon" data-v-c6073ba8><path d="M526.60727968 10.90185116a27.675 27.675 0 0 0-29.21455937 0c-131.36607665 82.28402758-218.69155461 228.01873535-218.69155402 394.07834331a462.20625001 462.20625001 0 0 0 5.36959153 69.94390903c1.00431239 6.55289093-0.34802892 13.13561351-3.76865779 18.80351572-32.63518765 54.11355614-51.75690182 118.55860487-51.7569018 187.94566865a371.06718723 371.06718723 0 0 0 11.50484808 91.98906777c6.53300375 25.50556257 41.68394495 28.14064038 52.69160883 4.22606766 17.37162448-37.73630017 42.14135425-72.50938081 72.80769204-103.21549295 2.18761121 3.04276886 4.15646224 6.24463696 6.40373557 9.22774369a1871.4375 1871.4375 0 0 0 140.04691725 5.34970492 1866.36093723 1866.36093723 0 0 0 140.04691723-5.34970492c2.24727335-2.98310674 4.21612437-6.18497483 6.3937923-9.2178004 30.66633723 30.70611158 55.4360664 65.4791928 72.80769147 103.21549355 11.00766384 23.91457269 46.15860503 21.27949489 52.69160879-4.22606768a371.15156223 371.15156223 0 0 0 11.514792-91.99901164c0-69.36717486-19.13165746-133.82216804-51.75690182-187.92578088-3.42062944-5.66790279-4.76302748-12.26056868-3.76865837-18.80351632a462.20625001 462.20625001 0 0 0 5.36959269-69.943909c-0.00994388-166.08943902-87.32547796-311.81420293-218.6915546-394.09823051zM605.93803103 357.87693858a93.93749974 93.93749974 0 1 1-187.89594924 6.1e-7 93.93749974 93.93749974 0 0 1 187.89594924-6.1e-7z" p-id="5405" data-v-c6073ba8></path><path d="M429.50777625 765.63860547C429.50777625 803.39355007 466.44236686 1000.39046097 512.00932183 1000.39046097c45.56695499 0 82.4922232-197.00623328 82.5015456-234.7518555 0-37.75494459-36.9345906-68.35043303-82.4922232-68.34111062-45.57627738-0.00932239-82.52019037 30.59548842-82.51086798 68.34111062z" p-id="5406" data-v-c6073ba8></path></svg></div><!----></div></div>
+    <script src="/mylinuxbook/assets/js/app.4ad5f28c.js" defer></script><script src="/mylinuxbook/assets/js/7.c4013074.js" defer></script><script src="/mylinuxbook/assets/js/2.da4ee029.js" defer></script><script src="/mylinuxbook/assets/js/1.8f7de685.js" defer></script><script src="/mylinuxbook/assets/js/44.20bb18b5.js" defer></script>
+  </body>
+</html>

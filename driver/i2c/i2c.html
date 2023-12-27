@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>I2C 设备 | Linux 学习笔记</title>
+    <meta name="generator" content="VuePress 1.9.10">
+    
+    <meta name="description" content="Linux 学习笔记">
+    
+    <link rel="preload" href="/mylinuxbook/assets/css/0.styles.47dc1b2a.css" as="style"><link rel="preload" href="/mylinuxbook/assets/js/app.4ad5f28c.js" as="script"><link rel="preload" href="/mylinuxbook/assets/js/7.c4013074.js" as="script"><link rel="preload" href="/mylinuxbook/assets/js/2.da4ee029.js" as="script"><link rel="preload" href="/mylinuxbook/assets/js/1.8f7de685.js" as="script"><link rel="preload" href="/mylinuxbook/assets/js/37.8ab4fea2.js" as="script"><link rel="prefetch" href="/mylinuxbook/assets/js/10.2a392a75.js"><link rel="prefetch" href="/mylinuxbook/assets/js/11.c06597a0.js"><link rel="prefetch" href="/mylinuxbook/assets/js/14.abfc81a7.js"><link rel="prefetch" href="/mylinuxbook/assets/js/15.8e04b7be.js"><link rel="prefetch" href="/mylinuxbook/assets/js/16.caf936ae.js"><link rel="prefetch" href="/mylinuxbook/assets/js/17.c375f3a8.js"><link rel="prefetch" href="/mylinuxbook/assets/js/18.8903301e.js"><link rel="prefetch" href="/mylinuxbook/assets/js/19.7ce306d8.js"><link rel="prefetch" href="/mylinuxbook/assets/js/20.5cd38348.js"><link rel="prefetch" href="/mylinuxbook/assets/js/21.2166e19b.js"><link rel="prefetch" href="/mylinuxbook/assets/js/22.8e2d2de4.js"><link rel="prefetch" href="/mylinuxbook/assets/js/23.02b6bf6e.js"><link rel="prefetch" href="/mylinuxbook/assets/js/24.b60c762f.js"><link rel="prefetch" href="/mylinuxbook/assets/js/25.9248acd9.js"><link rel="prefetch" href="/mylinuxbook/assets/js/26.78d25e49.js"><link rel="prefetch" href="/mylinuxbook/assets/js/27.3b523aff.js"><link rel="prefetch" href="/mylinuxbook/assets/js/28.3dc2c5d6.js"><link rel="prefetch" href="/mylinuxbook/assets/js/29.260e7456.js"><link rel="prefetch" href="/mylinuxbook/assets/js/3.77e74f7f.js"><link rel="prefetch" href="/mylinuxbook/assets/js/30.d8cf5cbe.js"><link rel="prefetch" href="/mylinuxbook/assets/js/31.aa735092.js"><link rel="prefetch" href="/mylinuxbook/assets/js/32.4e3e63fe.js"><link rel="prefetch" href="/mylinuxbook/assets/js/33.c253453f.js"><link rel="prefetch" href="/mylinuxbook/assets/js/34.6f66487f.js"><link rel="prefetch" href="/mylinuxbook/assets/js/35.50343bd1.js"><link rel="prefetch" href="/mylinuxbook/assets/js/36.94ff80f2.js"><link rel="prefetch" href="/mylinuxbook/assets/js/38.c6108e07.js"><link rel="prefetch" href="/mylinuxbook/assets/js/39.1457bbfb.js"><link rel="prefetch" href="/mylinuxbook/assets/js/4.e378dd76.js"><link rel="prefetch" href="/mylinuxbook/assets/js/40.e1bdfd94.js"><link rel="prefetch" href="/mylinuxbook/assets/js/41.66465ce3.js"><link rel="prefetch" href="/mylinuxbook/assets/js/42.b89cf0de.js"><link rel="prefetch" href="/mylinuxbook/assets/js/43.f94e4875.js"><link rel="prefetch" href="/mylinuxbook/assets/js/44.20bb18b5.js"><link rel="prefetch" href="/mylinuxbook/assets/js/45.801523e5.js"><link rel="prefetch" href="/mylinuxbook/assets/js/46.f433d4b9.js"><link rel="prefetch" href="/mylinuxbook/assets/js/47.8affa365.js"><link rel="prefetch" href="/mylinuxbook/assets/js/48.72d455b2.js"><link rel="prefetch" href="/mylinuxbook/assets/js/49.c50686a8.js"><link rel="prefetch" href="/mylinuxbook/assets/js/5.78636818.js"><link rel="prefetch" href="/mylinuxbook/assets/js/50.cb3b550f.js"><link rel="prefetch" href="/mylinuxbook/assets/js/51.6a62369f.js"><link rel="prefetch" href="/mylinuxbook/assets/js/52.7e2b9374.js"><link rel="prefetch" href="/mylinuxbook/assets/js/53.3674e134.js"><link rel="prefetch" href="/mylinuxbook/assets/js/54.afd91567.js"><link rel="prefetch" href="/mylinuxbook/assets/js/55.c78bed3b.js"><link rel="prefetch" href="/mylinuxbook/assets/js/56.035f0150.js"><link rel="prefetch" href="/mylinuxbook/assets/js/57.b1b0bca2.js"><link rel="prefetch" href="/mylinuxbook/assets/js/58.e1f90db2.js"><link rel="prefetch" href="/mylinuxbook/assets/js/59.07c30f18.js"><link rel="prefetch" href="/mylinuxbook/assets/js/6.05d48268.js"><link rel="prefetch" href="/mylinuxbook/assets/js/60.0f4d3030.js"><link rel="prefetch" href="/mylinuxbook/assets/js/61.7fe51358.js"><link rel="prefetch" href="/mylinuxbook/assets/js/62.4b8a6bf3.js"><link rel="prefetch" href="/mylinuxbook/assets/js/63.f02ded6c.js"><link rel="prefetch" href="/mylinuxbook/assets/js/64.d5738a5d.js"><link rel="prefetch" href="/mylinuxbook/assets/js/8.9126a2d6.js"><link rel="prefetch" href="/mylinuxbook/assets/js/9.944e3509.js"><link rel="prefetch" href="/mylinuxbook/assets/js/vendors~docsearch.d9fedd68.js">
+    <link rel="stylesheet" href="/mylinuxbook/assets/css/0.styles.47dc1b2a.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container" data-v-7dd95ae2><div data-v-7dd95ae2><div class="password-shadow password-wrapper-out" style="display:none;" data-v-59e6cb88 data-v-7dd95ae2 data-v-7dd95ae2><h3 class="title" data-v-59e6cb88>Linux 学习笔记</h3> <p class="description" data-v-59e6cb88>Linux 学习笔记</p> <label id="box" class="inputBox" data-v-59e6cb88><input type="password" value="" data-v-59e6cb88> <span data-v-59e6cb88>Konck! Knock!</span> <button data-v-59e6cb88>OK</button></label> <div class="footer" data-v-59e6cb88><span data-v-59e6cb88><i class="iconfont reco-theme" data-v-59e6cb88></i> <a target="blank" href="https://vuepress-theme-reco.recoluan.com" data-v-59e6cb88>vuePress-theme-reco</a></span> <span data-v-59e6cb88><i class="iconfont reco-copyright" data-v-59e6cb88></i> <a data-v-59e6cb88><!---->
+          
+        <!---->
+        2023
+      </a></span></div></div> <div class="hide" data-v-7dd95ae2><header class="navbar" data-v-7dd95ae2><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/mylinuxbook/" class="home-link router-link-active"><!----> <span class="site-name">Linux 学习笔记</span></a> <div class="links"><div class="color-picker"><a class="color-button"><i class="iconfont reco-color"></i></a> <div class="color-picker-menu" style="display:none;"><div class="mode-options"><h4 class="title">Choose mode</h4> <ul class="color-mode-options"><li class="dark">dark</li><li class="auto active">auto</li><li class="light">light</li></ul></div></div></div> <div class="search-box"><i class="iconfont reco-search"></i> <input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/mylinuxbook/" class="nav-link"><i class="undefined"></i>
+  Home
+</a></div> <a href="https://github.com/Lqinggang" target="_blank" rel="noopener noreferrer" class="repo-link"><i class="iconfont reco-github"></i>
+    GitHub
+    <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></nav></div></header> <div class="sidebar-mask" data-v-7dd95ae2></div> <aside class="sidebar" data-v-7dd95ae2><div class="personal-info-wrapper" data-v-1fad0c41 data-v-7dd95ae2><!----> <!----> <div class="num" data-v-1fad0c41><div data-v-1fad0c41><h3 data-v-1fad0c41>27</h3> <h6 data-v-1fad0c41>Articles</h6></div> <div data-v-1fad0c41><h3 data-v-1fad0c41>0</h3> <h6 data-v-1fad0c41>Tags</h6></div></div> <ul class="social-links" data-v-1fad0c41></ul> <hr data-v-1fad0c41></div> <nav class="nav-links"><div class="nav-item"><a href="/mylinuxbook/" class="nav-link"><i class="undefined"></i>
+  Home
+</a></div> <a href="https://github.com/Lqinggang" target="_blank" rel="noopener noreferrer" class="repo-link"><i class="iconfont reco-github"></i>
+    GitHub
+    <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></nav> <ul class="sidebar-links"><li><a href="/mylinuxbook/" aria-current="page" class="sidebar-link">首页</a></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>设备驱动</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>虚拟文件系统</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>网络通信</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>进程/线程</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>同步</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>中断和异常</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>定时器</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>示例</span> <span class="arrow right"></span></p> <!----></section></li><li><a href="/mylinuxbook/reference.html" class="sidebar-link">参考文献</a></li></ul> </aside> <div class="password-shadow password-wrapper-in" style="display:none;" data-v-59e6cb88 data-v-7dd95ae2><h3 class="title" data-v-59e6cb88></h3> <!----> <label id="box" class="inputBox" data-v-59e6cb88><input type="password" value="" data-v-59e6cb88> <span data-v-59e6cb88>Konck! Knock!</span> <button data-v-59e6cb88>OK</button></label> <div class="footer" data-v-59e6cb88><span data-v-59e6cb88><i class="iconfont reco-theme" data-v-59e6cb88></i> <a target="blank" href="https://vuepress-theme-reco.recoluan.com" data-v-59e6cb88>vuePress-theme-reco</a></span> <span data-v-59e6cb88><i class="iconfont reco-copyright" data-v-59e6cb88></i> <a data-v-59e6cb88><!---->
+          
+        <!---->
+        2023
+      </a></span></div></div> <div data-v-7dd95ae2><div data-v-7dd95ae2><main class="page" style="padding-right:0;"><section style="display:;"><div class="page-title"><h1 class="title">I2C 设备</h1> <div data-v-8a445198><!----> <!----> <!----> <!----></div></div> <div class="theme-reco-content content__default"><h1 id="i2c-设备"><a href="#i2c-设备" class="header-anchor">#</a> I2C 设备</h1> <p>I2C(内置集成电路) 总线通过时钟线SCL、数据线SDA这两根信号线实现设备之间数据的交互, I2C 总线支持多主控模式, 任何能够进行发送和接收的设备够可以成为主设备, 主控能够控制数据的传输和时钟频率, 在任意时刻只能由一个主控</p> <p>对于I2C, 为了避免总线信号的混乱, 要求各设备连接到总线的输出端<strong>必须是开漏输出或集电极开路输出的结构</strong></p> <p><strong>I2C 总线空闲时, 上拉电阻使 SDA 和 SCL 都保持高电平状态</strong>, 根据开漏输出或集电极开路输出信号的&quot;线与&quot;逻辑, I2C 总线上任意器件输出低电平都会使相应总线上的信号线变低</p> <div class="custom-block tip"><p class="title">说明</p><p>&quot;线与&quot;逻辑指的是两个或两个以上的输出直接互连就可实现&quot;与&quot;的逻辑功能, 只有输出端是开漏(对于CMOS器件)输出或集电极开路(对于TTL器件)输出时才满足此条件</p></div><p>当 SCL 稳定在高电平时, SDA 由高到低(下降沿)产生一个起始位, 由低到高(上升沿)产生一个停止位, 起始位和停止位都是由I2C主设备产生</p> <p>在选择从设备时, 如果从设备地址采用 7 位地址格式, 则主设备在发起传输过程前， 需先发送 1 字节的地址信息, 前 7 位为设备地址，最后 1 位为读写标志, 之后, 每次传输的数据也是 1 字节, 从 MSB 开始传输, 每个字节传送完后, 在 SCL 的第 9 个上升沿到来前, 接收方应该发出 1  个 ACK位, SCL 上的时钟脉冲由 I2C 主控方发出, 在第 8 个时钟周期之后, 主控方应该释放 SDA(为了从设备返回 ACK)</p> <p>如下，是 I2C 总线的时序图, 在编写 I2C 驱动的时候将围绕这个时序图展开(这个图不太准确)</p> <p><img src="/mylinuxbook/assets/img/i2c.d82c5d63.png" alt="i2c时序图"></p> <p>I2C 驱动由 3 个部分组成, 即 I2C 核心、I2C 总线驱动以及 I2C 设备驱动</p> <h2 id="i2c-核心"><a href="#i2c-核心" class="header-anchor">#</a> I2C 核心</h2> <p>I2C 核心提供了 I2C 总线驱动和设备驱动的注册、注销方法，I2C 通信方法上层的与具体适配器无关的代码以及探测设备、检测设备地址的上层代码等</p> <h2 id="i2c-总线驱动"><a href="#i2c-总线驱动" class="header-anchor">#</a> I2C 总线驱动</h2> <p>I2C 总线驱动是对 I2C 硬件体系结构中适配器端的实现，适配器可由 CPU 控制，甚至可直接集成在 CPU 内部</p> <p>I2C 总线驱动主要包含了 I2C 适配器数据结构 i2c_adapter、I2C 适配器的 Algorithm 数据结构 i2c_algorithm 和控制 I2C 适配器产生通信信号的函数</p> <h3 id="i2c-adapter"><a href="#i2c-adapter" class="header-anchor">#</a> i2c_adapter</h3> <div class="language-c extra-class"><pre class="language-c"><code><span class="token comment">/*
+ * i2c_adapter is the structure used to identify a physical i2c bus along
+ * with the access algorithms necessary to access it.
+ */</span>
+<span class="token keyword">struct</span> <span class="token class-name">i2c_adapter</span> <span class="token punctuation">{</span>
+    <span class="token keyword">struct</span> <span class="token class-name">module</span> <span class="token operator">*</span>owner<span class="token punctuation">;</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">int</span> class<span class="token punctuation">;</span>       <span class="token comment">/* classes to allow probing for */</span>
+    <span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">i2c_algorithm</span> <span class="token operator">*</span>algo<span class="token punctuation">;</span> <span class="token comment">/* the algorithm to access the bus */</span>
+    <span class="token keyword">void</span> <span class="token operator">*</span>algo_data<span class="token punctuation">;</span>
+
+    <span class="token comment">/* data fields that are valid for all devices   */</span>
+    <span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">i2c_lock_operations</span> <span class="token operator">*</span>lock_ops<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">rt_mutex</span> bus_lock<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">rt_mutex</span> mux_lock<span class="token punctuation">;</span>
+
+    <span class="token keyword">int</span> timeout<span class="token punctuation">;</span>            <span class="token comment">/* in jiffies */</span>
+    <span class="token keyword">int</span> retries<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">device</span> dev<span class="token punctuation">;</span>      <span class="token comment">/* the adapter device */</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">long</span> locked_flags<span class="token punctuation">;</span> <span class="token comment">/* owned by the I2C core */</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">I2C_ALF_IS_SUSPENDED</span>        <span class="token expression"><span class="token number">0</span></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">I2C_ALF_SUSPEND_REPORTED</span>    <span class="token expression"><span class="token number">1</span></span></span>
+
+    <span class="token keyword">int</span> nr<span class="token punctuation">;</span>
+    <span class="token keyword">char</span> name<span class="token punctuation">[</span><span class="token number">48</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">completion</span> dev_released<span class="token punctuation">;</span>
+
+    <span class="token keyword">struct</span> <span class="token class-name">mutex</span> userspace_clients_lock<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">list_head</span> userspace_clients<span class="token punctuation">;</span>
+
+    <span class="token keyword">struct</span> <span class="token class-name">i2c_bus_recovery_info</span> <span class="token operator">*</span>bus_recovery_info<span class="token punctuation">;</span>
+    <span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">i2c_adapter_quirks</span> <span class="token operator">*</span>quirks<span class="token punctuation">;</span>
+
+    <span class="token keyword">struct</span> <span class="token class-name">irq_domain</span> <span class="token operator">*</span>host_notify_domain<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">regulator</span> <span class="token operator">*</span>bus_regulator<span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name function">to_i2c_adapter</span><span class="token expression"><span class="token punctuation">(</span>d<span class="token punctuation">)</span> <span class="token function">container_of</span><span class="token punctuation">(</span>d<span class="token punctuation">,</span> <span class="token keyword">struct</span> <span class="token class-name">i2c_adapter</span><span class="token punctuation">,</span> dev<span class="token punctuation">)</span></span></span>
+</code></pre></div><p>如上, 是 i2c 适配器结构体, 其对应于物理上的一个适配器</p> <h3 id="i2c-algorithm"><a href="#i2c-algorithm" class="header-anchor">#</a> i2c_algorithm</h3> <div class="language-c extra-class"><pre class="language-c"><code><span class="token comment">/**
+ * struct i2c_algorithm - represent I2C transfer method
+ * @master_xfer: Issue a set of i2c transactions to the given I2C adapter
+ *   defined by the msgs array, with num messages available to transfer via
+ *   the adapter specified by adap.
+ * @master_xfer_atomic: same as @master_xfer. Yet, only using atomic context
+ *   so e.g. PMICs can be accessed very late before shutdown. Optional.
+ * @smbus_xfer: Issue smbus transactions to the given I2C adapter. If this
+ *   is not present, then the bus layer will try and convert the SMBus calls
+ *   into I2C transfers instead.
+ * @smbus_xfer_atomic: same as @smbus_xfer. Yet, only using atomic context
+ *   so e.g. PMICs can be accessed very late before shutdown. Optional.
+ * @functionality: Return the flags that this algorithm/adapter pair supports
+ *   from the ``I2C_FUNC_*`` flags.
+ * @reg_slave: Register given client to I2C slave mode of this adapter
+ * @unreg_slave: Unregister given client from I2C slave mode of this adapter
+ *
+ * The following structs are for those who like to implement new bus drivers:
+ * i2c_algorithm is the interface to a class of hardware solutions which can
+ * be addressed using the same bus algorithms - i.e. bit-banging or the PCF8584
+ * to name two of the most common.
+ *
+ * The return codes from the ``master_xfer{_atomic}`` fields should indicate the
+ * type of error code that occurred during the transfer, as documented in the
+ * Kernel Documentation file Documentation/i2c/fault-codes.rst. Otherwise, the
+ * number of messages executed should be returned.
+ */</span>
+<span class="token keyword">struct</span> <span class="token class-name">i2c_algorithm</span> <span class="token punctuation">{</span>
+    <span class="token comment">/*
+     * If an adapter algorithm can't do I2C-level access, set master_xfer
+     * to NULL. If an adapter algorithm can do SMBus access, set
+     * smbus_xfer. If set to NULL, the SMBus protocol is simulated
+     * using common I2C messages.
+     *
+     * master_xfer should return the number of messages successfully
+     * processed, or a negative value on error
+     */</span>
+    <span class="token keyword">int</span> <span class="token punctuation">(</span><span class="token operator">*</span>master_xfer<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">i2c_adapter</span> <span class="token operator">*</span>adap<span class="token punctuation">,</span> <span class="token keyword">struct</span> <span class="token class-name">i2c_msg</span> <span class="token operator">*</span>msgs<span class="token punctuation">,</span> <span class="token keyword">int</span> num<span class="token punctuation">)</span><span class="token punctuation">;</span>    <span class="token comment">/* 用于产生I2C访问周期需要的信号 */</span>
+    <span class="token keyword">int</span> <span class="token punctuation">(</span><span class="token operator">*</span>master_xfer_atomic<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">i2c_adapter</span> <span class="token operator">*</span>adap<span class="token punctuation">,</span> <span class="token keyword">struct</span> <span class="token class-name">i2c_msg</span> <span class="token operator">*</span>msgs<span class="token punctuation">,</span> <span class="token keyword">int</span> num<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> <span class="token punctuation">(</span><span class="token operator">*</span>smbus_xfer<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">i2c_adapter</span> <span class="token operator">*</span>adap<span class="token punctuation">,</span> u16 addr<span class="token punctuation">,</span> <span class="token keyword">unsigned</span> <span class="token keyword">short</span> flags<span class="token punctuation">,</span> <span class="token keyword">char</span> read_write<span class="token punctuation">,</span> u8 command<span class="token punctuation">,</span> <span class="token keyword">int</span> size<span class="token punctuation">,</span> <span class="token keyword">union</span> i2c_smbus_data <span class="token operator">*</span>data<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> <span class="token punctuation">(</span><span class="token operator">*</span>smbus_xfer_atomic<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">i2c_adapter</span> <span class="token operator">*</span>adap<span class="token punctuation">,</span> u16 addr<span class="token punctuation">,</span> <span class="token keyword">unsigned</span> <span class="token keyword">short</span> flags<span class="token punctuation">,</span> <span class="token keyword">char</span> read_write<span class="token punctuation">,</span>
+    <span class="token comment">/* To determine what the adapter supports */</span>
+    <span class="token function">u32</span> <span class="token punctuation">(</span><span class="token operator">*</span>functionality<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">i2c_adapter</span> <span class="token operator">*</span>adap<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">if</span> <span class="token expression"><span class="token function">IS_ENABLED</span><span class="token punctuation">(</span>CONFIG_I2C_SLAVE<span class="token punctuation">)</span></span></span>
+    <span class="token keyword">int</span> <span class="token punctuation">(</span><span class="token operator">*</span>reg_slave<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">i2c_client</span> <span class="token operator">*</span>client<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> <span class="token punctuation">(</span><span class="token operator">*</span>unreg_slave<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">i2c_client</span> <span class="token operator">*</span>client<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">endif</span></span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><p>如上, 是 i2c_algorithm  结构体，I2C 适配器通过 i2c_algorithm 提供的通信函数来控制适配器产生特定的访问周期</p> <h3 id="i2c-msg"><a href="#i2c-msg" class="header-anchor">#</a> i2c_msg</h3> <div class="language-c extra-class"><pre class="language-c"><code><span class="token comment">/**
+ * struct i2c_msg - an I2C transaction segment beginning with START
+ *
+ * @addr: Slave address, either 7 or 10 bits. When this is a 10 bit address,
+ *   %I2C_M_TEN must be set in @flags and the adapter must support
+ *   %I2C_FUNC_10BIT_ADDR.
+ *
+ * @flags:
+ *   Supported by all adapters:
+ *   %I2C_M_RD: read data (from slave to master). Guaranteed to be 0x0001!
+ *
+ *   Optional:
+ *   %I2C_M_DMA_SAFE: the buffer of this message is DMA safe. Makes only sense
+ *     in kernelspace, because userspace buffers are copied anyway
+ *
+ *   Only if I2C_FUNC_10BIT_ADDR is set:
+ *   %I2C_M_TEN: this is a 10 bit chip address
+ *
+ *   Only if I2C_FUNC_SMBUS_READ_BLOCK_DATA is set:
+ *   %I2C_M_RECV_LEN: message length will be first received byte
+ *
+ *   Only if I2C_FUNC_NOSTART is set:
+ *   %I2C_M_NOSTART: skip repeated start sequence
+
+ *   Only if I2C_FUNC_PROTOCOL_MANGLING is set:
+ *   %I2C_M_NO_RD_ACK: in a read message, master ACK/NACK bit is skipped
+ *   %I2C_M_IGNORE_NAK: treat NACK from client as ACK
+ *   %I2C_M_REV_DIR_ADDR: toggles the Rd/Wr bit
+ *   %I2C_M_STOP: force a STOP condition after the message
+ *
+ * @len: Number of data bytes in @buf being read from or written to the I2C
+ *   slave address. For read transactions where %I2C_M_RECV_LEN is set, the
+ *   caller guarantees that this buffer can hold up to %I2C_SMBUS_BLOCK_MAX
+ *   bytes in addition to the initial length byte sent by the slave (plus,
+ *   if used, the SMBus PEC); and this value will be incremented by the number
+ *   of block data bytes received.
+ *
+ * @buf: The buffer into which data is read, or from which it's written.
+ *
+ * An i2c_msg is the low level representation of one segment of an I2C
+ * transaction.  It is visible to drivers in the @i2c_transfer() procedure,
+ * to userspace from i2c-dev, and to I2C adapter drivers through the
+ * @i2c_adapter.@master_xfer() method.
+ *
+ * Except when I2C &quot;protocol mangling&quot; is used, all I2C adapters implement
+ * the standard rules for I2C transactions.  Each transaction begins with a
+ * START.  That is followed by the slave address, and a bit encoding read
+ * versus write.  Then follow all the data bytes, possibly including a byte
+ * with SMBus PEC.  The transfer terminates with a NAK, or when all those
+ * bytes have been transferred and ACKed.  If this is the last message in a
+ * group, it is followed by a STOP.  Otherwise it is followed by the next
+ * @i2c_msg transaction segment, beginning with a (repeated) START.
+ *
+ * Alternatively, when the adapter supports %I2C_FUNC_PROTOCOL_MANGLING then
+ * passing certain @flags may have changed those standard protocol behaviors.
+ * Those flags are only for use with broken/nonconforming slaves, and with
+ * adapters which are known to support the specific mangling options they need.
+ */</span>
+<span class="token keyword">struct</span> <span class="token class-name">i2c_msg</span> <span class="token punctuation">{</span>
+    __u16 addr<span class="token punctuation">;</span>
+    __u16 flags<span class="token punctuation">;</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">I2C_M_RD</span>        <span class="token expression"><span class="token number">0x0001</span>  </span><span class="token comment">/* guaranteed to be 0x0001! */</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">I2C_M_TEN</span>       <span class="token expression"><span class="token number">0x0010</span>  </span><span class="token comment">/* use only if I2C_FUNC_10BIT_ADDR */</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">I2C_M_DMA_SAFE</span>      <span class="token expression"><span class="token number">0x0200</span>  </span><span class="token comment">/* use only in kernel space */</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">I2C_M_RECV_LEN</span>      <span class="token expression"><span class="token number">0x0400</span>  </span><span class="token comment">/* use only if I2C_FUNC_SMBUS_READ_BLOCK_DATA */</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">I2C_M_NO_RD_ACK</span>     <span class="token expression"><span class="token number">0x0800</span>  </span><span class="token comment">/* use only if I2C_FUNC_PROTOCOL_MANGLING */</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">I2C_M_IGNORE_NAK</span>    <span class="token expression"><span class="token number">0x1000</span>  </span><span class="token comment">/* use only if I2C_FUNC_PROTOCOL_MANGLING */</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">I2C_M_REV_DIR_ADDR</span>  <span class="token expression"><span class="token number">0x2000</span>  </span><span class="token comment">/* use only if I2C_FUNC_PROTOCOL_MANGLING */</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">I2C_M_NOSTART</span>       <span class="token expression"><span class="token number">0x4000</span>  </span><span class="token comment">/* use only if I2C_FUNC_NOSTART */</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">I2C_M_STOP</span>      <span class="token expression"><span class="token number">0x8000</span>  </span><span class="token comment">/* use only if I2C_FUNC_PROTOCOL_MANGLING */</span></span>
+    __u16 len<span class="token punctuation">;</span>
+    __u8 <span class="token operator">*</span>buf<span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><p>如上， 是 i2c 消息结构体, i2c 核心中, 通过收发该结构体数据来完成 i2c 设备间数据的交互</p> <h2 id="i2c-设备驱动"><a href="#i2c-设备驱动" class="header-anchor">#</a> I2C 设备驱动</h2> <p>I2C 设备驱动是对 I2C 硬件体系结构中设备端的实现，设备一般挂接在受 CPU 控制的 I2C 适配器上, 通过 I2C 适配器与 CPU 交换数据</p> <p>I2C 设备驱动主要包含 i2c_driver 和 i2c_client</p> <h3 id="i2c-driver"><a href="#i2c-driver" class="header-anchor">#</a> i2c_driver</h3> <div class="language-c extra-class"><pre class="language-c"><code>
+<span class="token comment">/**
+ * struct i2c_driver - represent an I2C device driver
+ * @class: What kind of i2c device we instantiate (for detect)
+ * @probe: Callback for device binding
+ * @remove: Callback for device unbinding
+ * @shutdown: Callback for device shutdown
+ * @alert: Alert callback, for example for the SMBus alert protocol
+ * @command: Callback for bus-wide signaling (optional)
+ * @driver: Device driver model driver
+ * @id_table: List of I2C devices supported by this driver
+ * @detect: Callback for device detection
+ * @address_list: The I2C addresses to probe (for detect)
+ * @clients: List of detected clients we created (for i2c-core use only)
+ * @flags: A bitmask of flags defined in &amp;enum i2c_driver_flags
+ *
+ * The driver.owner field should be set to the module owner of this driver.
+ * The driver.name field should be set to the name of this driver.
+ *
+ * For automatic device detection, both @detect and @address_list must
+ * be defined. @class should also be set, otherwise only devices forced
+ * with module parameters will be created. The detect function must
+ * fill at least the name field of the i2c_board_info structure it is
+ * handed upon successful detection, and possibly also the flags field.
+ *
+ * If @detect is missing, the driver will still work fine for enumerated
+ * devices. Detected devices simply won't be supported. This is expected
+ * for the many I2C/SMBus devices which can't be detected reliably, and
+ * the ones which can always be enumerated in practice.
+ *
+ * The i2c_client structure which is handed to the @detect callback is
+ * not a real i2c_client. It is initialized just enough so that you can
+ * call i2c_smbus_read_byte_data and friends on it. Don't do anything
+ * else with it. In particular, calling dev_dbg and friends on it is
+ * not allowed.
+ */</span>
+<span class="token keyword">struct</span> <span class="token class-name">i2c_driver</span> <span class="token punctuation">{</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">int</span> class<span class="token punctuation">;</span>
+
+    <span class="token comment">/* Standard driver model interfaces */</span>
+    <span class="token keyword">int</span> <span class="token punctuation">(</span><span class="token operator">*</span>probe<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">i2c_client</span> <span class="token operator">*</span>client<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">void</span> <span class="token punctuation">(</span><span class="token operator">*</span>remove<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">i2c_client</span> <span class="token operator">*</span>client<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+
+    <span class="token comment">/* driver model interfaces that don't relate to enumeration  */</span>
+    <span class="token keyword">void</span> <span class="token punctuation">(</span><span class="token operator">*</span>shutdown<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">i2c_client</span> <span class="token operator">*</span>client<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">/* Alert callback, for example for the SMBus alert protocol.
+     * The format and meaning of the data value depends on the protocol.
+     * For the SMBus alert protocol, there is a single bit of data passed
+     * as the alert response's low bit (&quot;event flag&quot;).
+     * For the SMBus Host Notify protocol, the data corresponds to the
+     * 16-bit payload data reported by the slave device acting as master.
+     */</span>
+    <span class="token keyword">void</span> <span class="token punctuation">(</span><span class="token operator">*</span>alert<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">i2c_client</span> <span class="token operator">*</span>client<span class="token punctuation">,</span> <span class="token keyword">enum</span> <span class="token class-name">i2c_alert_protocol</span> protocol<span class="token punctuation">,</span>
+              <span class="token keyword">unsigned</span> <span class="token keyword">int</span> data<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">/* a ioctl like command that can be used to perform specific functions
+     * with the device.
+     */</span>
+    <span class="token keyword">int</span> <span class="token punctuation">(</span><span class="token operator">*</span>command<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">i2c_client</span> <span class="token operator">*</span>client<span class="token punctuation">,</span> <span class="token keyword">unsigned</span> <span class="token keyword">int</span> cmd<span class="token punctuation">,</span> <span class="token keyword">void</span> <span class="token operator">*</span>arg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">struct</span> <span class="token class-name">device_driver</span> driver<span class="token punctuation">;</span>
+    <span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">i2c_device_id</span> <span class="token operator">*</span>id_table<span class="token punctuation">;</span>
+
+    <span class="token comment">/* Device detection callback for automatic device creation */</span>
+    <span class="token keyword">int</span> <span class="token punctuation">(</span><span class="token operator">*</span>detect<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">i2c_client</span> <span class="token operator">*</span>client<span class="token punctuation">,</span> <span class="token keyword">struct</span> <span class="token class-name">i2c_board_info</span> <span class="token operator">*</span>info<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> <span class="token keyword">unsigned</span> <span class="token keyword">short</span> <span class="token operator">*</span>address_list<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">list_head</span> clients<span class="token punctuation">;</span>
+
+    u32 flags<span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name function">to_i2c_driver</span><span class="token expression"><span class="token punctuation">(</span>d<span class="token punctuation">)</span> <span class="token function">container_of</span><span class="token punctuation">(</span>d<span class="token punctuation">,</span> <span class="token keyword">struct</span> <span class="token class-name">i2c_driver</span><span class="token punctuation">,</span> driver<span class="token punctuation">)</span></span></span>
+</code></pre></div><p>如上, 是 I2C 驱动结构体</p> <h3 id="i2c-client"><a href="#i2c-client" class="header-anchor">#</a> i2c_client</h3> <div class="language-c extra-class"><pre class="language-c"><code><span class="token comment">/**
+ * struct i2c_client - represent an I2C slave device
+ * @flags: see I2C_CLIENT_* for possible flags
+ * @addr: Address used on the I2C bus connected to the parent adapter.
+ * @name: Indicates the type of the device, usually a chip name that's
+ *  generic enough to hide second-sourcing and compatible revisions.
+ * @adapter: manages the bus segment hosting this I2C device
+ * @dev: Driver model device node for the slave.
+ * @init_irq: IRQ that was set at initialization
+ * @irq: indicates the IRQ generated by this device (if any)
+ * @detected: member of an i2c_driver.clients list or i2c-core's
+ *  userspace_devices list
+ * @slave_cb: Callback when I2C slave mode of an adapter is used. The adapter
+ *  calls it to pass on slave events to the slave driver.
+ * @devres_group_id: id of the devres group that will be created for resources
+ *  acquired when probing this device.
+ *
+ * An i2c_client identifies a single device (i.e. chip) connected to an
+ * i2c bus. The behaviour exposed to Linux is defined by the driver
+ * managing the device.
+ */</span>
+<span class="token keyword">struct</span> <span class="token class-name">i2c_client</span> <span class="token punctuation">{</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">short</span> flags<span class="token punctuation">;</span>       <span class="token comment">/* div., see below      */</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">I2C_CLIENT_PEC</span>      <span class="token expression"><span class="token number">0x04</span>    </span><span class="token comment">/* Use Packet Error Checking */</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">I2C_CLIENT_TEN</span>      <span class="token expression"><span class="token number">0x10</span>    </span><span class="token comment">/* we have a ten bit chip address */</span></span>
+                    <span class="token comment">/* Must equal I2C_M_TEN below */</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">I2C_CLIENT_SLAVE</span>    <span class="token expression"><span class="token number">0x20</span>    </span><span class="token comment">/* we are the slave */</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">I2C_CLIENT_HOST_NOTIFY</span>  <span class="token expression"><span class="token number">0x40</span>    </span><span class="token comment">/* We want to use I2C host notify */</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">I2C_CLIENT_WAKE</span>     <span class="token expression"><span class="token number">0x80</span>    </span><span class="token comment">/* for board_info; true iff can wake */</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">I2C_CLIENT_SCCB</span>     <span class="token expression"><span class="token number">0x9000</span>  </span><span class="token comment">/* Use Omnivision SCCB protocol */</span></span>
+                    <span class="token comment">/* Must match I2C_M_STOP|IGNORE_NAK */</span>
+
+    <span class="token keyword">unsigned</span> <span class="token keyword">short</span> addr<span class="token punctuation">;</span>        <span class="token comment">/* chip address - NOTE: 7bit    */</span>
+                    <span class="token comment">/* addresses are stored in the  */</span>
+                    <span class="token comment">/* _LOWER_ 7 bits       */</span>
+    <span class="token keyword">char</span> name<span class="token punctuation">[</span>I2C_NAME_SIZE<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">i2c_adapter</span> <span class="token operator">*</span>adapter<span class="token punctuation">;</span>    <span class="token comment">/* the adapter we sit on    */</span>
+    <span class="token keyword">struct</span> <span class="token class-name">device</span> dev<span class="token punctuation">;</span>      <span class="token comment">/* the device structure     */</span>
+    <span class="token keyword">int</span> init_irq<span class="token punctuation">;</span>           <span class="token comment">/* irq set at initialization    */</span>
+    <span class="token keyword">int</span> irq<span class="token punctuation">;</span>            <span class="token comment">/* irq issued by device     */</span>
+    <span class="token keyword">struct</span> <span class="token class-name">list_head</span> detected<span class="token punctuation">;</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">if</span> <span class="token expression"><span class="token function">IS_ENABLED</span><span class="token punctuation">(</span>CONFIG_I2C_SLAVE<span class="token punctuation">)</span></span></span>
+    <span class="token class-name">i2c_slave_cb_t</span> slave_cb<span class="token punctuation">;</span>    <span class="token comment">/* callback for slave mode  */</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">endif</span></span>
+    <span class="token keyword">void</span> <span class="token operator">*</span>devres_group_id<span class="token punctuation">;</span>      <span class="token comment">/* ID of probe devres group */</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name function">to_i2c_client</span><span class="token expression"><span class="token punctuation">(</span>d<span class="token punctuation">)</span> <span class="token function">container_of</span><span class="token punctuation">(</span>d<span class="token punctuation">,</span> <span class="token keyword">struct</span> <span class="token class-name">i2c_client</span><span class="token punctuation">,</span> dev<span class="token punctuation">)</span></span></span>
+</code></pre></div><p>如上, i2c_client 对应于真实的物理设备, 每个 I2C 设备都需要一个 i2c_client 来描述, 一个 i2c_client 依附于 i2c_adapter</p> <h2 id="i2c-驱动实现的主要工作"><a href="#i2c-驱动实现的主要工作" class="header-anchor">#</a> I2C 驱动实现的主要工作</h2> <ol><li><p>提供 I2C 适配器的硬件驱动，探测、初始化 I2C 适配器、驱动 CPU 控制的 I2C 适配器从硬件上产生各种信号以及处理 I2C 中断等</p></li> <li><p>提供 I2C 适配器的 algorightm。 用于具体适配器的 xxx_xfer() 函数填充 i2c_algorithm 的 master_xfer 指针，并把 i2c_algorithm 指针赋值给 i2c_adapter 的 algo 指针</p></li> <li><p>实现 I2C 设备驱动中 i2c_driver 接口。 用具体设备探测(probe)、移除(remove)、挂起(suspend)和恢复(resume)的函数指针和 i2c_device_id 设备 ID 表赋值给 i2c_driver 的 probe、remove、suspend、resume和 id_table 指针</p></li> <li><p>实现 I2C 设备所对应类型的具体驱动。i2c_driver 只是实现设备与总线的挂接</p></li></ol></div></section> <footer class="page-edit"><!----> <!----></footer> <div class="page-nav"><p class="inner"><span class="prev"><a href="/mylinuxbook/driver/cdev/cdev_details.html" class="prev">
+          字符设备驱动介绍
+        </a></span> <span class="next"><a href="/mylinuxbook/driver/i2c/i2c_bus.html">
+          I2C 总线
+        </a></span></p></div> <div class="comments-wrapper"><!----></div></main></div> <!----></div> <ul class="sub-sidebar sub-sidebar-wrapper" style="width:0;" data-v-b57cc07c data-v-7dd95ae2></ul></div></div></div><div class="global-ui"><div class="back-to-ceiling" style="right:1rem;bottom:6rem;width:2.5rem;height:2.5rem;border-radius:.25rem;line-height:2.5rem;display:none;" data-v-c6073ba8 data-v-c6073ba8><svg t="1574745035067" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5404" class="icon" data-v-c6073ba8><path d="M526.60727968 10.90185116a27.675 27.675 0 0 0-29.21455937 0c-131.36607665 82.28402758-218.69155461 228.01873535-218.69155402 394.07834331a462.20625001 462.20625001 0 0 0 5.36959153 69.94390903c1.00431239 6.55289093-0.34802892 13.13561351-3.76865779 18.80351572-32.63518765 54.11355614-51.75690182 118.55860487-51.7569018 187.94566865a371.06718723 371.06718723 0 0 0 11.50484808 91.98906777c6.53300375 25.50556257 41.68394495 28.14064038 52.69160883 4.22606766 17.37162448-37.73630017 42.14135425-72.50938081 72.80769204-103.21549295 2.18761121 3.04276886 4.15646224 6.24463696 6.40373557 9.22774369a1871.4375 1871.4375 0 0 0 140.04691725 5.34970492 1866.36093723 1866.36093723 0 0 0 140.04691723-5.34970492c2.24727335-2.98310674 4.21612437-6.18497483 6.3937923-9.2178004 30.66633723 30.70611158 55.4360664 65.4791928 72.80769147 103.21549355 11.00766384 23.91457269 46.15860503 21.27949489 52.69160879-4.22606768a371.15156223 371.15156223 0 0 0 11.514792-91.99901164c0-69.36717486-19.13165746-133.82216804-51.75690182-187.92578088-3.42062944-5.66790279-4.76302748-12.26056868-3.76865837-18.80351632a462.20625001 462.20625001 0 0 0 5.36959269-69.943909c-0.00994388-166.08943902-87.32547796-311.81420293-218.6915546-394.09823051zM605.93803103 357.87693858a93.93749974 93.93749974 0 1 1-187.89594924 6.1e-7 93.93749974 93.93749974 0 0 1 187.89594924-6.1e-7z" p-id="5405" data-v-c6073ba8></path><path d="M429.50777625 765.63860547C429.50777625 803.39355007 466.44236686 1000.39046097 512.00932183 1000.39046097c45.56695499 0 82.4922232-197.00623328 82.5015456-234.7518555 0-37.75494459-36.9345906-68.35043303-82.4922232-68.34111062-45.57627738-0.00932239-82.52019037 30.59548842-82.51086798 68.34111062z" p-id="5406" data-v-c6073ba8></path></svg></div><!----></div></div>
+    <script src="/mylinuxbook/assets/js/app.4ad5f28c.js" defer></script><script src="/mylinuxbook/assets/js/7.c4013074.js" defer></script><script src="/mylinuxbook/assets/js/2.da4ee029.js" defer></script><script src="/mylinuxbook/assets/js/1.8f7de685.js" defer></script><script src="/mylinuxbook/assets/js/37.8ab4fea2.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>通用文件模型 | Linux 学习笔记</title>
+    <meta name="generator" content="VuePress 1.9.10">
+    
+    <meta name="description" content="Linux 学习笔记">
+    
+    <link rel="preload" href="/mylinuxbook/assets/css/0.styles.47dc1b2a.css" as="style"><link rel="preload" href="/mylinuxbook/assets/js/app.4ad5f28c.js" as="script"><link rel="preload" href="/mylinuxbook/assets/js/7.c4013074.js" as="script"><link rel="preload" href="/mylinuxbook/assets/js/2.da4ee029.js" as="script"><link rel="preload" href="/mylinuxbook/assets/js/1.8f7de685.js" as="script"><link rel="preload" href="/mylinuxbook/assets/js/56.035f0150.js" as="script"><link rel="prefetch" href="/mylinuxbook/assets/js/10.2a392a75.js"><link rel="prefetch" href="/mylinuxbook/assets/js/11.c06597a0.js"><link rel="prefetch" href="/mylinuxbook/assets/js/14.abfc81a7.js"><link rel="prefetch" href="/mylinuxbook/assets/js/15.8e04b7be.js"><link rel="prefetch" href="/mylinuxbook/assets/js/16.caf936ae.js"><link rel="prefetch" href="/mylinuxbook/assets/js/17.c375f3a8.js"><link rel="prefetch" href="/mylinuxbook/assets/js/18.8903301e.js"><link rel="prefetch" href="/mylinuxbook/assets/js/19.7ce306d8.js"><link rel="prefetch" href="/mylinuxbook/assets/js/20.5cd38348.js"><link rel="prefetch" href="/mylinuxbook/assets/js/21.2166e19b.js"><link rel="prefetch" href="/mylinuxbook/assets/js/22.8e2d2de4.js"><link rel="prefetch" href="/mylinuxbook/assets/js/23.02b6bf6e.js"><link rel="prefetch" href="/mylinuxbook/assets/js/24.b60c762f.js"><link rel="prefetch" href="/mylinuxbook/assets/js/25.9248acd9.js"><link rel="prefetch" href="/mylinuxbook/assets/js/26.78d25e49.js"><link rel="prefetch" href="/mylinuxbook/assets/js/27.3b523aff.js"><link rel="prefetch" href="/mylinuxbook/assets/js/28.3dc2c5d6.js"><link rel="prefetch" href="/mylinuxbook/assets/js/29.260e7456.js"><link rel="prefetch" href="/mylinuxbook/assets/js/3.77e74f7f.js"><link rel="prefetch" href="/mylinuxbook/assets/js/30.d8cf5cbe.js"><link rel="prefetch" href="/mylinuxbook/assets/js/31.aa735092.js"><link rel="prefetch" href="/mylinuxbook/assets/js/32.4e3e63fe.js"><link rel="prefetch" href="/mylinuxbook/assets/js/33.c253453f.js"><link rel="prefetch" href="/mylinuxbook/assets/js/34.6f66487f.js"><link rel="prefetch" href="/mylinuxbook/assets/js/35.50343bd1.js"><link rel="prefetch" href="/mylinuxbook/assets/js/36.94ff80f2.js"><link rel="prefetch" href="/mylinuxbook/assets/js/37.8ab4fea2.js"><link rel="prefetch" href="/mylinuxbook/assets/js/38.c6108e07.js"><link rel="prefetch" href="/mylinuxbook/assets/js/39.1457bbfb.js"><link rel="prefetch" href="/mylinuxbook/assets/js/4.e378dd76.js"><link rel="prefetch" href="/mylinuxbook/assets/js/40.e1bdfd94.js"><link rel="prefetch" href="/mylinuxbook/assets/js/41.66465ce3.js"><link rel="prefetch" href="/mylinuxbook/assets/js/42.b89cf0de.js"><link rel="prefetch" href="/mylinuxbook/assets/js/43.f94e4875.js"><link rel="prefetch" href="/mylinuxbook/assets/js/44.20bb18b5.js"><link rel="prefetch" href="/mylinuxbook/assets/js/45.801523e5.js"><link rel="prefetch" href="/mylinuxbook/assets/js/46.f433d4b9.js"><link rel="prefetch" href="/mylinuxbook/assets/js/47.8affa365.js"><link rel="prefetch" href="/mylinuxbook/assets/js/48.72d455b2.js"><link rel="prefetch" href="/mylinuxbook/assets/js/49.c50686a8.js"><link rel="prefetch" href="/mylinuxbook/assets/js/5.78636818.js"><link rel="prefetch" href="/mylinuxbook/assets/js/50.cb3b550f.js"><link rel="prefetch" href="/mylinuxbook/assets/js/51.6a62369f.js"><link rel="prefetch" href="/mylinuxbook/assets/js/52.7e2b9374.js"><link rel="prefetch" href="/mylinuxbook/assets/js/53.3674e134.js"><link rel="prefetch" href="/mylinuxbook/assets/js/54.afd91567.js"><link rel="prefetch" href="/mylinuxbook/assets/js/55.c78bed3b.js"><link rel="prefetch" href="/mylinuxbook/assets/js/57.b1b0bca2.js"><link rel="prefetch" href="/mylinuxbook/assets/js/58.e1f90db2.js"><link rel="prefetch" href="/mylinuxbook/assets/js/59.07c30f18.js"><link rel="prefetch" href="/mylinuxbook/assets/js/6.05d48268.js"><link rel="prefetch" href="/mylinuxbook/assets/js/60.0f4d3030.js"><link rel="prefetch" href="/mylinuxbook/assets/js/61.7fe51358.js"><link rel="prefetch" href="/mylinuxbook/assets/js/62.4b8a6bf3.js"><link rel="prefetch" href="/mylinuxbook/assets/js/63.f02ded6c.js"><link rel="prefetch" href="/mylinuxbook/assets/js/64.d5738a5d.js"><link rel="prefetch" href="/mylinuxbook/assets/js/8.9126a2d6.js"><link rel="prefetch" href="/mylinuxbook/assets/js/9.944e3509.js"><link rel="prefetch" href="/mylinuxbook/assets/js/vendors~docsearch.d9fedd68.js">
+    <link rel="stylesheet" href="/mylinuxbook/assets/css/0.styles.47dc1b2a.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container" data-v-7dd95ae2><div data-v-7dd95ae2><div class="password-shadow password-wrapper-out" style="display:none;" data-v-59e6cb88 data-v-7dd95ae2 data-v-7dd95ae2><h3 class="title" data-v-59e6cb88>Linux 学习笔记</h3> <p class="description" data-v-59e6cb88>Linux 学习笔记</p> <label id="box" class="inputBox" data-v-59e6cb88><input type="password" value="" data-v-59e6cb88> <span data-v-59e6cb88>Konck! Knock!</span> <button data-v-59e6cb88>OK</button></label> <div class="footer" data-v-59e6cb88><span data-v-59e6cb88><i class="iconfont reco-theme" data-v-59e6cb88></i> <a target="blank" href="https://vuepress-theme-reco.recoluan.com" data-v-59e6cb88>vuePress-theme-reco</a></span> <span data-v-59e6cb88><i class="iconfont reco-copyright" data-v-59e6cb88></i> <a data-v-59e6cb88><!---->
+          
+        <!---->
+        2023
+      </a></span></div></div> <div class="hide" data-v-7dd95ae2><header class="navbar" data-v-7dd95ae2><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/mylinuxbook/" class="home-link router-link-active"><!----> <span class="site-name">Linux 学习笔记</span></a> <div class="links"><div class="color-picker"><a class="color-button"><i class="iconfont reco-color"></i></a> <div class="color-picker-menu" style="display:none;"><div class="mode-options"><h4 class="title">Choose mode</h4> <ul class="color-mode-options"><li class="dark">dark</li><li class="auto active">auto</li><li class="light">light</li></ul></div></div></div> <div class="search-box"><i class="iconfont reco-search"></i> <input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/mylinuxbook/" class="nav-link"><i class="undefined"></i>
+  Home
+</a></div> <a href="https://github.com/Lqinggang" target="_blank" rel="noopener noreferrer" class="repo-link"><i class="iconfont reco-github"></i>
+    GitHub
+    <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></nav></div></header> <div class="sidebar-mask" data-v-7dd95ae2></div> <aside class="sidebar" data-v-7dd95ae2><div class="personal-info-wrapper" data-v-1fad0c41 data-v-7dd95ae2><!----> <!----> <div class="num" data-v-1fad0c41><div data-v-1fad0c41><h3 data-v-1fad0c41>27</h3> <h6 data-v-1fad0c41>Articles</h6></div> <div data-v-1fad0c41><h3 data-v-1fad0c41>0</h3> <h6 data-v-1fad0c41>Tags</h6></div></div> <ul class="social-links" data-v-1fad0c41></ul> <hr data-v-1fad0c41></div> <nav class="nav-links"><div class="nav-item"><a href="/mylinuxbook/" class="nav-link"><i class="undefined"></i>
+  Home
+</a></div> <a href="https://github.com/Lqinggang" target="_blank" rel="noopener noreferrer" class="repo-link"><i class="iconfont reco-github"></i>
+    GitHub
+    <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></nav> <ul class="sidebar-links"><li><a href="/mylinuxbook/" aria-current="page" class="sidebar-link">首页</a></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>设备驱动</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading open"><span>虚拟文件系统</span> <span class="arrow down"></span></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/mylinuxbook/fs/" aria-current="page" class="sidebar-link">虚拟文件系统</a></li><li><a href="/mylinuxbook/fs/commonfs.html" aria-current="page" class="active sidebar-link">通用文件模型</a></li><li><a href="/mylinuxbook/fs/specialfs.html" class="sidebar-link">特殊文件系统</a></li></ul></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>网络通信</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>进程/线程</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>同步</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>中断和异常</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>定时器</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>示例</span> <span class="arrow right"></span></p> <!----></section></li><li><a href="/mylinuxbook/reference.html" class="sidebar-link">参考文献</a></li></ul> </aside> <div class="password-shadow password-wrapper-in" style="display:none;" data-v-59e6cb88 data-v-7dd95ae2><h3 class="title" data-v-59e6cb88></h3> <!----> <label id="box" class="inputBox" data-v-59e6cb88><input type="password" value="" data-v-59e6cb88> <span data-v-59e6cb88>Konck! Knock!</span> <button data-v-59e6cb88>OK</button></label> <div class="footer" data-v-59e6cb88><span data-v-59e6cb88><i class="iconfont reco-theme" data-v-59e6cb88></i> <a target="blank" href="https://vuepress-theme-reco.recoluan.com" data-v-59e6cb88>vuePress-theme-reco</a></span> <span data-v-59e6cb88><i class="iconfont reco-copyright" data-v-59e6cb88></i> <a data-v-59e6cb88><!---->
+          
+        <!---->
+        2023
+      </a></span></div></div> <div data-v-7dd95ae2><div data-v-7dd95ae2><main class="page" style="padding-right:0;"><section style="display:;"><div class="page-title"><h1 class="title">通用文件模型</h1> <div data-v-8a445198><!----> <!----> <!----> <!----></div></div> <div class="theme-reco-content content__default"><h1 id="通用文件模型"><a href="#通用文件模型" class="header-anchor">#</a> 通用文件模型</h1> <p>通用文件模型可以理解为面向对象的, 对于上层应用, 调用的都是同一个方法，比如read, write, open 等, 在底层实现上, 会根据不同的设备执行对应的操作, 这部分通过函数指针来实现, 对于不同部分全部采用函数指针的形式定义, 上层执行请求之后VFS执行指定请求对应的回调函数</p> <h2 id="通用文件模型对象"><a href="#通用文件模型对象" class="header-anchor">#</a> 通用文件模型对象</h2> <p>通用文件模型由如下对象组成</p> <ol><li>超级块对象</li></ol> <p>存放已安装文件系统的有关信息. 对于基于磁盘的文件系统, 这类对象通常对应于存放在磁盘上的文件系统控制块</p> <ol start="2"><li>索引节点对象</li></ol> <p>存放关于具体文件的一般信息. 对于基于磁盘的文件系统，这类对象通常对应于存放在磁盘上的文件控制块，每个索引节点对象都有一个索引节点，这个节点号唯一地标识文件系统中的文件</p> <ol start="3"><li>文件对象</li></ol> <p>存放打开文件与进程之间进行交互的有关信息，这类信息仅当进程访问文件期间存在于内核内存中</p> <ol start="4"><li>目录对象</li></ol> <p>存放目录项(也就是文件的特定名称)与对应文件进程链接的有关信息，每个磁盘文件系统都以自己特有的方式将该类信息存放在磁盘上</p> <div id="super_block"></div>
+### 超级块对象
+<div class="language-c extra-class"><pre class="language-c"><code><span class="token keyword">struct</span> <span class="token class-name">super_block</span> <span class="token punctuation">{</span>
+    <span class="token keyword">struct</span> <span class="token class-name">list_head</span>    s_list<span class="token punctuation">;</span>     <span class="token comment">/* Keep this first */</span>
+    <span class="token class-name">dev_t</span>           s_dev<span class="token punctuation">;</span>      <span class="token comment">/* search index; _not_ kdev_t */</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">char</span>       s_blocksize_bits<span class="token punctuation">;</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">long</span>       s_blocksize<span class="token punctuation">;</span>
+    <span class="token class-name">loff_t</span>          s_maxbytes<span class="token punctuation">;</span> <span class="token comment">/* Max file size */</span>
+    <span class="token keyword">struct</span> <span class="token class-name">file_system_type</span> <span class="token operator">*</span>s_type<span class="token punctuation">;</span>
+    <span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">super_operations</span>   <span class="token operator">*</span>s_op<span class="token punctuation">;</span>
+    <span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">dquot_operations</span>   <span class="token operator">*</span>dq_op<span class="token punctuation">;</span>
+    <span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">quotactl_ops</span>   <span class="token operator">*</span>s_qcop<span class="token punctuation">;</span>
+    <span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">export_operations</span> <span class="token operator">*</span>s_export_op<span class="token punctuation">;</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">long</span>       s_flags<span class="token punctuation">;</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">long</span>       s_iflags<span class="token punctuation">;</span>   <span class="token comment">/* internal SB_I_* flags */</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">long</span>       s_magic<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">dentry</span>       <span class="token operator">*</span>s_root<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">rw_semaphore</span> s_umount<span class="token punctuation">;</span>
+    <span class="token keyword">int</span>         s_count<span class="token punctuation">;</span>
+    <span class="token class-name">atomic_t</span>        s_active<span class="token punctuation">;</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">ifdef</span> <span class="token expression">CONFIG_SECURITY</span></span>
+    <span class="token keyword">void</span>                    <span class="token operator">*</span>s_security<span class="token punctuation">;</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">endif</span></span>
+    <span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">xattr_handler</span> <span class="token operator">*</span><span class="token operator">*</span>s_xattr<span class="token punctuation">;</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">ifdef</span> <span class="token expression">CONFIG_FS_ENCRYPTION</span></span>
+    <span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">fscrypt_operations</span> <span class="token operator">*</span>s_cop<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">key</span>      <span class="token operator">*</span>s_master_keys<span class="token punctuation">;</span> <span class="token comment">/* master crypto keys in use */</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">endif</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">ifdef</span> <span class="token expression">CONFIG_FS_VERITY</span></span>
+    <span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">fsverity_operations</span> <span class="token operator">*</span>s_vop<span class="token punctuation">;</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">endif</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">ifdef</span> <span class="token expression">CONFIG_UNICODE</span></span>
+    <span class="token keyword">struct</span> <span class="token class-name">unicode_map</span> <span class="token operator">*</span>s_encoding<span class="token punctuation">;</span>
+    __u16 s_encoding_flags<span class="token punctuation">;</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">endif</span></span>
+    <span class="token keyword">struct</span> <span class="token class-name">hlist_bl_head</span>    s_roots<span class="token punctuation">;</span>    <span class="token comment">/* alternate root dentries for NFS */</span>
+    <span class="token keyword">struct</span> <span class="token class-name">list_head</span>    s_mounts<span class="token punctuation">;</span>   <span class="token comment">/* list of mounts; _not_ for fs use */</span>
+    <span class="token keyword">struct</span> <span class="token class-name">block_device</span> <span class="token operator">*</span>s_bdev<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">backing_dev_info</span> <span class="token operator">*</span>s_bdi<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">mtd_info</span>     <span class="token operator">*</span>s_mtd<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">hlist_node</span>   s_instances<span class="token punctuation">;</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">int</span>        s_quota_types<span class="token punctuation">;</span>  <span class="token comment">/* Bitmask of supported quota types */</span>
+    <span class="token keyword">struct</span> <span class="token class-name">quota_info</span>   s_dquot<span class="token punctuation">;</span>    <span class="token comment">/* Diskquota specific options */</span>
+
+    <span class="token keyword">struct</span> <span class="token class-name">sb_writers</span>   s_writers<span class="token punctuation">;</span>
+
+    <span class="token comment">/*
+     * Keep s_fs_info, s_time_gran, s_fsnotify_mask, and
+     * s_fsnotify_marks together for cache efficiency. They are frequently
+     * accessed and rarely modified.
+     */</span>
+    <span class="token keyword">void</span>            <span class="token operator">*</span>s_fs_info<span class="token punctuation">;</span> <span class="token comment">/* Filesystem private info */</span>
+
+    <span class="token comment">/* Granularity of c/m/atime in ns (cannot be worse than a second) */</span>
+    u32         s_time_gran<span class="token punctuation">;</span>
+    <span class="token comment">/* Time limits for c/m/atime in seconds */</span>
+    <span class="token class-name">time64_t</span>           s_time_min<span class="token punctuation">;</span>
+    <span class="token class-name">time64_t</span>           s_time_max<span class="token punctuation">;</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">ifdef</span> <span class="token expression">CONFIG_FSNOTIFY</span></span>
+    __u32           s_fsnotify_mask<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">fsnotify_mark_connector</span> __rcu    <span class="token operator">*</span>s_fsnotify_marks<span class="token punctuation">;</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">endif</span></span>
+
+    <span class="token keyword">char</span>            s_id<span class="token punctuation">[</span><span class="token number">32</span><span class="token punctuation">]</span><span class="token punctuation">;</span>   <span class="token comment">/* Informational name */</span>
+    <span class="token class-name">uuid_t</span>          s_uuid<span class="token punctuation">;</span>     <span class="token comment">/* UUID */</span>
+
+    <span class="token keyword">unsigned</span> <span class="token keyword">int</span>        s_max_links<span class="token punctuation">;</span>
+    <span class="token class-name">fmode_t</span>         s_mode<span class="token punctuation">;</span>
+
+    <span class="token comment">/*
+     * The next field is for VFS *only*. No filesystems have any business
+     * even looking at it. You had been warned.
+     */</span>
+    <span class="token keyword">struct</span> <span class="token class-name">mutex</span> s_vfs_rename_mutex<span class="token punctuation">;</span>    <span class="token comment">/* Kludge */</span>
+
+    <span class="token comment">/*
+     * Filesystem subtype.  If non-empty the filesystem type field
+     * in /proc/mounts will be &quot;type.subtype&quot;
+     */</span>
+    <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>s_subtype<span class="token punctuation">;</span>
+
+    <span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">dentry_operations</span> <span class="token operator">*</span>s_d_op<span class="token punctuation">;</span> <span class="token comment">/* default d_op for dentries */</span>
+
+    <span class="token comment">/*
+     * Saved pool identifier for cleancache (-1 means none)
+     */</span>
+    <span class="token keyword">int</span> cleancache_poolid<span class="token punctuation">;</span>
+
+    <span class="token keyword">struct</span> <span class="token class-name">shrinker</span> s_shrink<span class="token punctuation">;</span>   <span class="token comment">/* per-sb shrinker handle */</span>
+
+    <span class="token comment">/* Number of inodes with nlink == 0 but still referenced */</span>
+    <span class="token class-name">atomic_long_t</span> s_remove_count<span class="token punctuation">;</span>
+
+    <span class="token comment">/* Pending fsnotify inode refs */</span>
+    <span class="token class-name">atomic_long_t</span> s_fsnotify_inode_refs<span class="token punctuation">;</span>
+
+    <span class="token comment">/* Being remounted read-only */</span>
+    <span class="token keyword">int</span> s_readonly_remount<span class="token punctuation">;</span>
+
+    <span class="token comment">/* per-sb errseq_t for reporting writeback errors via syncfs */</span>
+    <span class="token class-name">errseq_t</span> s_wb_err<span class="token punctuation">;</span>
+
+    <span class="token comment">/* AIO completions deferred from interrupt context */</span>
+    <span class="token keyword">struct</span> <span class="token class-name">workqueue_struct</span> <span class="token operator">*</span>s_dio_done_wq<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">hlist_head</span> s_pins<span class="token punctuation">;</span>
+
+    <span class="token comment">/*
+     * Owning user namespace and default context in which to
+     * interpret filesystem uids, gids, quotas, device nodes,
+     * xattrs and security labels.
+     */</span>
+    <span class="token keyword">struct</span> <span class="token class-name">user_namespace</span> <span class="token operator">*</span>s_user_ns<span class="token punctuation">;</span>
+
+    <span class="token comment">/*
+     * The list_lru structure is essentially just a pointer to a table
+     * of per-node lru lists, each of which has its own spinlock.
+     * There is no need to put them into separate cachelines.
+     */</span>
+    <span class="token keyword">struct</span> <span class="token class-name">list_lru</span>     s_dentry_lru<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">list_lru</span>     s_inode_lru<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">rcu_head</span>     rcu<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">work_struct</span>  destroy_work<span class="token punctuation">;</span>
+
+    <span class="token keyword">struct</span> <span class="token class-name">mutex</span>        s_sync_lock<span class="token punctuation">;</span>    <span class="token comment">/* sync serialisation lock */</span>
+
+    <span class="token comment">/*
+     * Indicates how deep in a filesystem stack this SB is
+     */</span>
+    <span class="token keyword">int</span> s_stack_depth<span class="token punctuation">;</span>
+
+    <span class="token comment">/* s_inode_list_lock protects s_inodes */</span>
+    <span class="token class-name">spinlock_t</span>      s_inode_list_lock ____cacheline_aligned_in_smp<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">list_head</span>    s_inodes<span class="token punctuation">;</span>   <span class="token comment">/* all inodes */</span>
+
+    <span class="token class-name">spinlock_t</span>      s_inode_wblist_lock<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">list_head</span>    s_inodes_wb<span class="token punctuation">;</span>    <span class="token comment">/* writeback inodes */</span>
+<span class="token punctuation">}</span> __randomize_layout<span class="token punctuation">;</span>
+</code></pre></div><p>所有的超级块对象都以双向循环链表的形式链接到一起, 链表中第一个元素使用 super_blocks 变量来表示</p> <div id="inode"></div>
+### 索引节点对象
+<div class="language-c extra-class"><pre class="language-c"><code><span class="token comment">/*
+ * Keep mostly read-only and often accessed (especially for
+ * the RCU path lookup and 'stat' data) fields at the beginning
+ * of the 'struct inode'
+ */</span>
+<span class="token keyword">struct</span> <span class="token class-name">inode</span> <span class="token punctuation">{</span>
+    <span class="token class-name">umode_t</span>         i_mode<span class="token punctuation">;</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">short</span>      i_opflags<span class="token punctuation">;</span>
+    <span class="token class-name">kuid_t</span>          i_uid<span class="token punctuation">;</span>
+    <span class="token class-name">kgid_t</span>          i_gid<span class="token punctuation">;</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">int</span>        i_flags<span class="token punctuation">;</span>
+
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">ifdef</span> <span class="token expression">CONFIG_FS_POSIX_ACL</span></span>
+    <span class="token keyword">struct</span> <span class="token class-name">posix_acl</span>    <span class="token operator">*</span>i_acl<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">posix_acl</span>    <span class="token operator">*</span>i_default_acl<span class="token punctuation">;</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">endif</span></span>
+
+    <span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">inode_operations</span>   <span class="token operator">*</span>i_op<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">super_block</span>  <span class="token operator">*</span>i_sb<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">address_space</span>    <span class="token operator">*</span>i_mapping<span class="token punctuation">;</span>
+
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">ifdef</span> <span class="token expression">CONFIG_SECURITY</span></span>
+    <span class="token keyword">void</span>            <span class="token operator">*</span>i_security<span class="token punctuation">;</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">endif</span></span>
+
+    <span class="token comment">/* Stat data, not accessed from path walking */</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">long</span>       i_ino<span class="token punctuation">;</span>
+    <span class="token comment">/*
+     * Filesystems may only read i_nlink directly.  They shall use the
+     * following functions for modification:
+     *
+     *    (set|clear|inc|drop)_nlink
+     *    inode_(inc|dec)_link_count
+     */</span>
+    <span class="token keyword">union</span> <span class="token punctuation">{</span>
+        <span class="token keyword">const</span> <span class="token keyword">unsigned</span> <span class="token keyword">int</span> i_nlink<span class="token punctuation">;</span>
+        <span class="token keyword">unsigned</span> <span class="token keyword">int</span> __i_nlink<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+    <span class="token class-name">dev_t</span>           i_rdev<span class="token punctuation">;</span>
+    <span class="token class-name">loff_t</span>          i_size<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">timespec64</span>   i_atime<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">timespec64</span>   i_mtime<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">timespec64</span>   i_ctime<span class="token punctuation">;</span>
+    <span class="token class-name">spinlock_t</span>      i_lock<span class="token punctuation">;</span> <span class="token comment">/* i_blocks, i_bytes, maybe i_size */</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">short</span>          i_bytes<span class="token punctuation">;</span>
+    u8          i_blkbits<span class="token punctuation">;</span>
+    u8          i_write_hint<span class="token punctuation">;</span>
+    <span class="token class-name">blkcnt_t</span>        i_blocks<span class="token punctuation">;</span>
+
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">ifdef</span> <span class="token expression">__NEED_I_SIZE_ORDERED</span></span>
+    <span class="token class-name">seqcount_t</span>      i_size_seqcount<span class="token punctuation">;</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">endif</span></span>
+
+    <span class="token comment">/* Misc */</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">long</span>       i_state<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">rw_semaphore</span> i_rwsem<span class="token punctuation">;</span>
+
+    <span class="token keyword">unsigned</span> <span class="token keyword">long</span>       dirtied_when<span class="token punctuation">;</span>   <span class="token comment">/* jiffies of first dirtying */</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">long</span>       dirtied_time_when<span class="token punctuation">;</span>
+
+    <span class="token keyword">struct</span> <span class="token class-name">hlist_node</span>   i_hash<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">list_head</span>    i_io_list<span class="token punctuation">;</span>  <span class="token comment">/* backing dev IO list */</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">ifdef</span> <span class="token expression">CONFIG_CGROUP_WRITEBACK</span></span>
+    <span class="token keyword">struct</span> <span class="token class-name">bdi_writeback</span>    <span class="token operator">*</span>i_wb<span class="token punctuation">;</span>      <span class="token comment">/* the associated cgroup wb */</span>
+
+    <span class="token comment">/* foreign inode detection, see wbc_detach_inode() */</span>
+    <span class="token keyword">int</span>         i_wb_frn_winner<span class="token punctuation">;</span>
+    u16         i_wb_frn_avg_time<span class="token punctuation">;</span>
+    u16         i_wb_frn_history<span class="token punctuation">;</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">endif</span></span>
+    <span class="token keyword">struct</span> <span class="token class-name">list_head</span>    i_lru<span class="token punctuation">;</span>      <span class="token comment">/* inode LRU list */</span>
+    <span class="token keyword">struct</span> <span class="token class-name">list_head</span>    i_sb_list<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">list_head</span>    i_wb_list<span class="token punctuation">;</span>  <span class="token comment">/* backing dev writeback list */</span>
+    <span class="token keyword">union</span> <span class="token punctuation">{</span>
+        <span class="token keyword">struct</span> <span class="token class-name">hlist_head</span>   i_dentry<span class="token punctuation">;</span>
+        <span class="token keyword">struct</span> <span class="token class-name">rcu_head</span>     i_rcu<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+    <span class="token class-name">atomic64_t</span>      i_version<span class="token punctuation">;</span>
+    <span class="token class-name">atomic64_t</span>      i_sequence<span class="token punctuation">;</span> <span class="token comment">/* see futex */</span>
+    <span class="token class-name">atomic_t</span>        i_count<span class="token punctuation">;</span>
+    <span class="token class-name">atomic_t</span>        i_dio_count<span class="token punctuation">;</span>
+    <span class="token class-name">atomic_t</span>        i_writecount<span class="token punctuation">;</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">if</span> <span class="token expression"><span class="token function">defined</span><span class="token punctuation">(</span>CONFIG_IMA<span class="token punctuation">)</span> <span class="token operator">||</span> <span class="token function">defined</span><span class="token punctuation">(</span>CONFIG_FILE_LOCKING<span class="token punctuation">)</span></span></span>
+    <span class="token class-name">atomic_t</span>        i_readcount<span class="token punctuation">;</span> <span class="token comment">/* struct files open RO */</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">endif</span></span>
+    <span class="token keyword">union</span> <span class="token punctuation">{</span>
+        <span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">file_operations</span>    <span class="token operator">*</span>i_fop<span class="token punctuation">;</span> <span class="token comment">/* former -&gt;i_op-&gt;default_file_ops */</span>
+        <span class="token keyword">void</span> <span class="token punctuation">(</span><span class="token operator">*</span>free_inode<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">inode</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">file_lock_context</span>    <span class="token operator">*</span>i_flctx<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">address_space</span>    i_data<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">list_head</span>    i_devices<span class="token punctuation">;</span>
+    <span class="token keyword">union</span> <span class="token punctuation">{</span>
+        <span class="token keyword">struct</span> <span class="token class-name">pipe_inode_info</span>  <span class="token operator">*</span>i_pipe<span class="token punctuation">;</span>
+        <span class="token keyword">struct</span> <span class="token class-name">block_device</span> <span class="token operator">*</span>i_bdev<span class="token punctuation">;</span>
+        <span class="token keyword">struct</span> <span class="token class-name">cdev</span>     <span class="token operator">*</span>i_cdev<span class="token punctuation">;</span>
+        <span class="token keyword">char</span>            <span class="token operator">*</span>i_link<span class="token punctuation">;</span>
+       <span class="token keyword">unsigned</span>        i_dir_seq<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+    __u32           i_generation<span class="token punctuation">;</span>
+
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">ifdef</span> <span class="token expression">CONFIG_FSNOTIFY</span></span>
+    __u32           i_fsnotify_mask<span class="token punctuation">;</span> <span class="token comment">/* all events this inode cares about */</span>
+    <span class="token keyword">struct</span> <span class="token class-name">fsnotify_mark_connector</span> __rcu    <span class="token operator">*</span>i_fsnotify_marks<span class="token punctuation">;</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">endif</span></span>
+
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">ifdef</span> <span class="token expression">CONFIG_FS_ENCRYPTION</span></span>
+    <span class="token keyword">struct</span> <span class="token class-name">fscrypt_info</span> <span class="token operator">*</span>i_crypt_info<span class="token punctuation">;</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">endif</span></span>
+
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">ifdef</span> <span class="token expression">CONFIG_FS_VERITY</span></span>
+    <span class="token keyword">struct</span> <span class="token class-name">fsverity_info</span>    <span class="token operator">*</span>i_verity_info<span class="token punctuation">;</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">endif</span></span>
+
+    <span class="token keyword">void</span>            <span class="token operator">*</span>i_private<span class="token punctuation">;</span> <span class="token comment">/* fs or device private pointer */</span>
+<span class="token punctuation">}</span> __randomize_layout<span class="token punctuation">;</span>
+</code></pre></div><p>文件系统处理文件所需要的所有信息都存放在索引节点对象</p> <div id="file"></div>
+### 文件对象
+<div class="language-c extra-class"><pre class="language-c"><code><span class="token keyword">struct</span> <span class="token class-name">file</span> <span class="token punctuation">{</span>
+    <span class="token keyword">union</span> <span class="token punctuation">{</span>
+        <span class="token keyword">struct</span> <span class="token class-name">llist_node</span>   fu_llist<span class="token punctuation">;</span>
+        <span class="token keyword">struct</span> <span class="token class-name">rcu_head</span>     fu_rcuhead<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> f_u<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">path</span>     f_path<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">inode</span>        <span class="token operator">*</span>f_inode<span class="token punctuation">;</span>   <span class="token comment">/* cached value */</span>
+    <span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">file_operations</span>    <span class="token operator">*</span>f_op<span class="token punctuation">;</span>
+
+    <span class="token comment">/*
+     * Protects f_ep_links, f_flags.
+     * Must not be taken from IRQ context.
+     */</span>
+    <span class="token class-name">spinlock_t</span>      f_lock<span class="token punctuation">;</span>
+    <span class="token keyword">enum</span> <span class="token class-name">rw_hint</span>        f_write_hint<span class="token punctuation">;</span>
+    <span class="token class-name">atomic_long_t</span>       f_count<span class="token punctuation">;</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">int</span>        f_flags<span class="token punctuation">;</span>
+    <span class="token class-name">fmode_t</span>         f_mode<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">mutex</span>        f_pos_lock<span class="token punctuation">;</span>
+    <span class="token class-name">loff_t</span>          f_pos<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">fown_struct</span>  f_owner<span class="token punctuation">;</span>
+    <span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">cred</span>   <span class="token operator">*</span>f_cred<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">file_ra_state</span>    f_ra<span class="token punctuation">;</span>
+
+    u64         f_version<span class="token punctuation">;</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">ifdef</span> <span class="token expression">CONFIG_SECURITY</span></span>
+    <span class="token keyword">void</span>            <span class="token operator">*</span>f_security<span class="token punctuation">;</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">endif</span></span>
+    <span class="token comment">/* needed for tty driver, and maybe others */</span>
+    <span class="token keyword">void</span>            <span class="token operator">*</span>private_data<span class="token punctuation">;</span>
+
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">ifdef</span> <span class="token expression">CONFIG_EPOLL</span></span>
+    <span class="token comment">/* Used by fs/eventpoll.c to link all the hooks to this file */</span>
+    <span class="token keyword">struct</span> <span class="token class-name">list_head</span>    f_ep_links<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">list_head</span>    f_tfile_llink<span class="token punctuation">;</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">endif</span> <span class="token comment">/* #ifdef CONFIG_EPOLL */</span></span>
+    <span class="token keyword">struct</span> <span class="token class-name">address_space</span>    <span class="token operator">*</span>f_mapping<span class="token punctuation">;</span>
+    <span class="token class-name">errseq_t</span>        f_wb_err<span class="token punctuation">;</span>
+    <span class="token class-name">errseq_t</span>        f_sb_err<span class="token punctuation">;</span> <span class="token comment">/* for syncfs */</span>
+<span class="token punctuation">}</span> __randomize_layout
+  <span class="token keyword">__attribute__</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token function">aligned</span><span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">/* lest something weird decides that 2 is OK
+</span></code></pre></div><p>文件对象描述进程怎样与一个打开的文件进行交互，文件对象是在文件被打开时创建的, 存放文件对象中的主要信息是文件指针，即文件中当前的位置，下一个操作将在该位置发生</p> <p>文件对象通常由一个名为 filp 的 slab 高速缓存分配，filp描述符地址存放在 filp_cachep 变量中</p> <p>注意 struct file 中的 <code>struct file_opeations *f_op</code> 这个成员, 这个成员是不同文件对象对应的文件操作集合, 正如<a href="/mylinuxbook/driver/cdev/cdev_details.html">字符设备驱动详解</a>中描述的, 在执行打开指定的文件时, 会执行指定文件对应的文件操作, 其使用方式类似如下:</p> <div class="language-c extra-class"><pre class="language-c"><code>filp<span class="token operator">-&gt;</span>f_op<span class="token operator">-&gt;</span><span class="token function">xxxx</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div><div id="dentry"></div>
+### 目录项对象
+<div class="language-c extra-class"><pre class="language-c"><code><span class="token keyword">struct</span> <span class="token class-name">dentry</span> <span class="token punctuation">{</span>
+    <span class="token comment">/* RCU lookup touched fields */</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">int</span> d_flags<span class="token punctuation">;</span>       <span class="token comment">/* protected by d_lock */</span>
+    <span class="token class-name">seqcount_spinlock_t</span> d_seq<span class="token punctuation">;</span>  <span class="token comment">/* per dentry seqlock */</span>
+    <span class="token keyword">struct</span> <span class="token class-name">hlist_bl_node</span> d_hash<span class="token punctuation">;</span>    <span class="token comment">/* lookup hash list */</span>
+    <span class="token keyword">struct</span> <span class="token class-name">dentry</span> <span class="token operator">*</span>d_parent<span class="token punctuation">;</span>    <span class="token comment">/* parent directory */</span>
+    <span class="token keyword">struct</span> <span class="token class-name">qstr</span> d_name<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">inode</span> <span class="token operator">*</span>d_inode<span class="token punctuation">;</span>      <span class="token comment">/* Where the name belongs to - NULL is
+                     * negative */</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">char</span> d_iname<span class="token punctuation">[</span>DNAME_INLINE_LEN<span class="token punctuation">]</span><span class="token punctuation">;</span>    <span class="token comment">/* small names */</span>
+
+    <span class="token comment">/* Ref lookup also touches following */</span>
+    <span class="token keyword">struct</span> <span class="token class-name">lockref</span> d_lockref<span class="token punctuation">;</span>   <span class="token comment">/* per-dentry lock and refcount */</span>
+    <span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">dentry_operations</span> <span class="token operator">*</span>d_op<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">super_block</span> <span class="token operator">*</span>d_sb<span class="token punctuation">;</span>   <span class="token comment">/* The root of the dentry tree */</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">long</span> d_time<span class="token punctuation">;</span>       <span class="token comment">/* used by d_revalidate */</span>
+    <span class="token keyword">void</span> <span class="token operator">*</span>d_fsdata<span class="token punctuation">;</span>         <span class="token comment">/* fs-specific data */</span>
+
+    <span class="token keyword">union</span> <span class="token punctuation">{</span>
+        <span class="token keyword">struct</span> <span class="token class-name">list_head</span> d_lru<span class="token punctuation">;</span>     <span class="token comment">/* LRU list */</span>
+        <span class="token class-name">wait_queue_head_t</span> <span class="token operator">*</span>d_wait<span class="token punctuation">;</span>  <span class="token comment">/* in-lookup ones only */</span>
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">list_head</span> d_child<span class="token punctuation">;</span>   <span class="token comment">/* child of parent list */</span>
+    <span class="token keyword">struct</span> <span class="token class-name">list_head</span> d_subdirs<span class="token punctuation">;</span> <span class="token comment">/* our children */</span>
+    <span class="token comment">/*
+     * d_alias and d_rcu can share memory
+     */</span>
+    <span class="token keyword">union</span> <span class="token punctuation">{</span>
+        <span class="token keyword">struct</span> <span class="token class-name">hlist_node</span> d_alias<span class="token punctuation">;</span>  <span class="token comment">/* inode alias list */</span>
+        <span class="token keyword">struct</span> <span class="token class-name">hlist_bl_node</span> d_in_lookup_hash<span class="token punctuation">;</span>  <span class="token comment">/* only for in-lookup ones */</span>
+        <span class="token keyword">struct</span> <span class="token class-name">rcu_head</span> d_rcu<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> d_u<span class="token punctuation">;</span>
+<span class="token punctuation">}</span> __randomize_layout<span class="token punctuation">;</span>
+</code></pre></div><p>VFS 把每个目录看作由若干子目录和文件组成的一个普通文件</p> <p>目录项对象在磁盘上并没有对应的映像，因此在 dentry 结构中不包含支撑该对象已被修改的字段</p> <h2 id="进程相关的文件"><a href="#进程相关的文件" class="header-anchor">#</a> 进程相关的文件</h2> <div id="files_struct"></div>
+### 进程当前打开的文件
+<div class="language-c extra-class"><pre class="language-c"><code><span class="token comment">/*
+ * Open file table structure
+ */</span>
+<span class="token keyword">struct</span> <span class="token class-name">files_struct</span> <span class="token punctuation">{</span>
+  <span class="token comment">/*  
+   * read mostly part
+   */</span>
+    <span class="token class-name">atomic_t</span> count<span class="token punctuation">;</span>
+    bool resize_in_progress<span class="token punctuation">;</span>
+    <span class="token class-name">wait_queue_head_t</span> resize_wait<span class="token punctuation">;</span>
+
+    <span class="token keyword">struct</span> <span class="token class-name">fdtable</span> __rcu <span class="token operator">*</span>fdt<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">fdtable</span> fdtab<span class="token punctuation">;</span>
+  <span class="token comment">/*  
+   * written part on a separate cache line in SMP
+   */</span>
+    <span class="token class-name">spinlock_t</span> file_lock ____cacheline_aligned_in_smp<span class="token punctuation">;</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">int</span> next_fd<span class="token punctuation">;</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">long</span> close_on_exec_init<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">long</span> open_fds_init<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">long</span> full_fds_bits_init<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">file</span> __rcu <span class="token operator">*</span> fd_array<span class="token punctuation">[</span>NR_OPEN_DEFAULT<span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><p>struct files_struct 结构体用于表示进程当前打开的文件, 其存放在进程描述符 struct task_struct 的 files 字段中, 每当一个进程被执行时, 都会初始化该结构体, 我们通过 open 函数打开一个文件时, 返回的文件描述符将作为索引值, 找到对应的文件结构体</p></div></section> <footer class="page-edit"><!----> <!----></footer> <div class="page-nav"><p class="inner"><span class="prev"><a href="/mylinuxbook/fs/" class="prev router-link-active">
+          虚拟文件系统
+        </a></span> <span class="next"><a href="/mylinuxbook/fs/specialfs.html">
+          特殊文件系统
+        </a></span></p></div> <div class="comments-wrapper"><!----></div></main></div> <!----></div> <ul class="sub-sidebar sub-sidebar-wrapper" style="width:0;" data-v-b57cc07c data-v-7dd95ae2></ul></div></div></div><div class="global-ui"><div class="back-to-ceiling" style="right:1rem;bottom:6rem;width:2.5rem;height:2.5rem;border-radius:.25rem;line-height:2.5rem;display:none;" data-v-c6073ba8 data-v-c6073ba8><svg t="1574745035067" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5404" class="icon" data-v-c6073ba8><path d="M526.60727968 10.90185116a27.675 27.675 0 0 0-29.21455937 0c-131.36607665 82.28402758-218.69155461 228.01873535-218.69155402 394.07834331a462.20625001 462.20625001 0 0 0 5.36959153 69.94390903c1.00431239 6.55289093-0.34802892 13.13561351-3.76865779 18.80351572-32.63518765 54.11355614-51.75690182 118.55860487-51.7569018 187.94566865a371.06718723 371.06718723 0 0 0 11.50484808 91.98906777c6.53300375 25.50556257 41.68394495 28.14064038 52.69160883 4.22606766 17.37162448-37.73630017 42.14135425-72.50938081 72.80769204-103.21549295 2.18761121 3.04276886 4.15646224 6.24463696 6.40373557 9.22774369a1871.4375 1871.4375 0 0 0 140.04691725 5.34970492 1866.36093723 1866.36093723 0 0 0 140.04691723-5.34970492c2.24727335-2.98310674 4.21612437-6.18497483 6.3937923-9.2178004 30.66633723 30.70611158 55.4360664 65.4791928 72.80769147 103.21549355 11.00766384 23.91457269 46.15860503 21.27949489 52.69160879-4.22606768a371.15156223 371.15156223 0 0 0 11.514792-91.99901164c0-69.36717486-19.13165746-133.82216804-51.75690182-187.92578088-3.42062944-5.66790279-4.76302748-12.26056868-3.76865837-18.80351632a462.20625001 462.20625001 0 0 0 5.36959269-69.943909c-0.00994388-166.08943902-87.32547796-311.81420293-218.6915546-394.09823051zM605.93803103 357.87693858a93.93749974 93.93749974 0 1 1-187.89594924 6.1e-7 93.93749974 93.93749974 0 0 1 187.89594924-6.1e-7z" p-id="5405" data-v-c6073ba8></path><path d="M429.50777625 765.63860547C429.50777625 803.39355007 466.44236686 1000.39046097 512.00932183 1000.39046097c45.56695499 0 82.4922232-197.00623328 82.5015456-234.7518555 0-37.75494459-36.9345906-68.35043303-82.4922232-68.34111062-45.57627738-0.00932239-82.52019037 30.59548842-82.51086798 68.34111062z" p-id="5406" data-v-c6073ba8></path></svg></div><!----></div></div>
+    <script src="/mylinuxbook/assets/js/app.4ad5f28c.js" defer></script><script src="/mylinuxbook/assets/js/7.c4013074.js" defer></script><script src="/mylinuxbook/assets/js/2.da4ee029.js" defer></script><script src="/mylinuxbook/assets/js/1.8f7de685.js" defer></script><script src="/mylinuxbook/assets/js/56.035f0150.js" defer></script>
+  </body>
+</html>
