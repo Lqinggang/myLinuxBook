@@ -1,8 +1,9 @@
 # I2C 总线驱动
 
-### i2c\_bus\_type
+## i2c\_bus\_type
 
 ```c
+struct bus_type i2c_bus_type = {
     .name       = "i2c",
     .match      = i2c_device_match,
     .probe      = i2c_device_probe,
@@ -16,4 +17,13 @@ EXPORT_SYMBOL_GPL(i2c_bus_type);
 
 i2c_bus_type 将在 i2c_init 函数中通过 bus_register 函数进行注册
 
+## i2c\_client\_type
 
+```c
+struct device_type i2c_client_type = {
+    .groups     = i2c_dev_groups,
+    .uevent     = i2c_device_uevent,
+    .release    = i2c_client_dev_release,
+};
+EXPORT_SYMBOL_GPL(i2c_client_type);
+```
