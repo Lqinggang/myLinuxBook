@@ -56,7 +56,14 @@ module.exports = {
                             [ '/driver/i2c/i2c_device.md', 'I2C 设备驱动' ],
                             [ '/driver/i2c/i2c_pi4b.md', 'I2C 适配示例' ]
                         ]
+                    },
+                    {
+                        title: "SPI 设备",
+                        children: [
+                            [ '/driver/spi/spi.md', 'SPI 设备' ]
+                        ]
                     }
+
                 ]
             },
             {
