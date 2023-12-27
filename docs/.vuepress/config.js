@@ -53,7 +53,8 @@ module.exports = {
                             [ '/driver/i2c/i2c_bus.md', 'I2C 总线' ],
                             [ '/driver/i2c/i2c_core.md', 'I2C 核心' ],
                             [ '/driver/i2c/i2c_adapter.md', 'I2C 适配器' ],
-                            [ '/driver/i2c/i2c_device.md', 'I2C 设备驱动' ]
+                            [ '/driver/i2c/i2c_device.md', 'I2C 设备驱动' ],
+                            [ '/driver/i2c/i2c_pi4b.md', 'I2C 适配示例' ]
                         ]
                     }
                 ]
